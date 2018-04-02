@@ -21,6 +21,13 @@ public:
     void OnPrepare();
     void OnPrepareRejected();
     void OnPrepareTimeout();
+
+    // Generate a new value to propose
+    void Propose();
+private:
+    bool is_preparing_;
+    bool can_skip_prepare_;
+    bool rejected_;
 };
 
 }

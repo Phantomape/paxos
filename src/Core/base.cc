@@ -12,5 +12,9 @@ Base::~Base() {
     std::cout << "Base::~Base()" << std::endl;
 }
 
+int Base::BroadcastMessage() {
+    std::cout << "Base::BroadcastMessage()" << std::endl;
+}
+
 }
 
