@@ -11,7 +11,11 @@ public:
     ~MsgCounter();
 
     void AddAcceptedMsg();
+    void AddReceivedMsg();
     void AddRejectedMsg();
-}
+
+    bool IsPassed();
+    bool IsRejected();
+};
 
 }

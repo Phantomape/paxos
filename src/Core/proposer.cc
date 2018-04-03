@@ -45,6 +45,26 @@ void Proposer::OnPrepare() {
         // Skip this msg if not preparing or id differs
         return;
     }
+
+    // Received a message
+    msg_counter.AddReceived();
+    
+    if (true) {// Accepted
+        msg_counter.AddAccepted();
+    } 
+    else {
+        is_rejected_ = true;
+        msg_counter.AddRejected();
+    }
+
+    if (msg_counter.IsPassed()) {
+        can_skip_prepare_ = true;
+
+        Accept();
+    } 
+    else if (msg_counter.IsRejected()) {
+
+    }
 }
 
 void Proposer::OnPrepareRejected() {}
