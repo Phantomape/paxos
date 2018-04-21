@@ -2,6 +2,7 @@
 
 #include "base.h"
 #include "msg_counter.h"
+#include "test_paxos_msg.pb.h"
 
 namespace paxos {
 
@@ -27,6 +28,7 @@ public:
     void Propose();
 private:
     bool is_preparing_;
+    bool is_accepting_;
     bool is_rejected_;
     bool can_skip_prepare_;
     bool rejected_;

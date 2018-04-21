@@ -12,10 +12,12 @@ set (Paxos_VERSION_MINOR 0)
 aux_source_directory(. DIR_ROOT_SRCS)
 
 # Include header files
-include_directories(src/Core)
+include_directories(src/core)
 
-add_subdirectory(src/Core)
+add_subdirectory(src/core)
+add_subdirectory(proto)
 
 add_executable(Paxos test.cc ${DIR_ROOT_SRCS})
 
+# Link a target to given libraries, e.g. Paxos is linked to CoreLib
 target_link_libraries(Paxos CoreLib)

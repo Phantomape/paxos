@@ -24,11 +24,11 @@ void MsgCounter::AddRejectedMsg() {
     std::cout << "MsgCounter::AddRejectedMsg()" << std::endl;
 }
 
-void MsgCounter::IsPassed() {
+bool MsgCounter::IsPassed() {
     std::cout << "MsgCounter::IsPassed()" << std::endl;
 }
 
-void MsgCounter::IsRejected() {
+bool MsgCounter::IsRejected() {
     std::cout << "MsgCounter::IsRejected()" << std::endl;
 }
 

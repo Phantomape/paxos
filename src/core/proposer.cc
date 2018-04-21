@@ -1,4 +1,5 @@
 #include "proposer.h"
+#include "test_paxos_msg.pb.h"
 #include <iostream>
 #include <string>
 
@@ -6,6 +7,7 @@ namespace paxos {
     
 Proposer::Proposer() {
     std::cout << "Proposer::Proposer()" << std::endl;
+    GOOGLE_PROTOBUF_VERIFY_VERSION;
 }
 
 Proposer::~Proposer() {
@@ -14,6 +16,7 @@ Proposer::~Proposer() {
 
 void Proposer::Accept() {
     std::cout << "Proposer::Accept()" << std::endl;
+    is_accepting_ = true;
 }
 
 void Proposer::Prepare() {
@@ -36,7 +39,10 @@ void Proposer::Prepare() {
 void Proposer::ExitPrepare() {}
 void Proposer::ExitAccept() {}
 
-void Proposer::OnAccept() {}
+void Proposer::OnAccept() {
+
+}
+
 void Proposer::OnAcceptRejected() {}
 void Proposer::OnAcceptTimeout() {}
 
@@ -47,14 +53,14 @@ void Proposer::OnPrepare() {
     }
 
     // Received a message
-    msg_counter.AddReceived();
+    msg_counter.AddReceivedMsg();
     
     if (true) {// Accepted
-        msg_counter.AddAccepted();
+        msg_counter.AddAcceptedMsg();
     } 
     else {
         is_rejected_ = true;
-        msg_counter.AddRejected();
+        msg_counter.AddRejectedMsg();
     }
 
     if (msg_counter.IsPassed()) {
