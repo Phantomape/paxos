@@ -2,7 +2,7 @@
 
 #include "base.h"
 #include "msg_counter.h"
-#include "test_paxos_msg.pb.h"
+#include "paxos_msg.pb.h"
 
 namespace paxos {
 

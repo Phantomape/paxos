@@ -12,7 +12,7 @@ Base::~Base() {
     std::cout << "Base::~Base()" << std::endl;
 }
 
-int Base::BroadcastMessage() {
+int Base::BroadcastMessage(const PaxosMsg &paxos_msg) {
     std::cout << "Base::BroadcastMessage()" << std::endl;
 }
 

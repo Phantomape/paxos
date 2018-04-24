@@ -1,5 +1,4 @@
 #include "proposer.h"
-#include "test_paxos_msg.pb.h"
 #include <iostream>
 #include <string>
 
@@ -32,8 +31,10 @@ void Proposer::Prepare() {
     }
 
     // Calculate votes
+    PaxosMsg paxos_msg;
+    paxos_msg.set_msgtype(1);   // Replace 1 with some enum
 
-    BroadcastMessage();
+    BroadcastMessage(paxos_msg);
 }
 
 void Proposer::ExitPrepare() {}
@@ -81,6 +82,12 @@ void Proposer::Propose() {
     
     // check whether it can skip prepare without rejection
     // else goes into Prepare()
+    if (can_skip_prepare_ == true) {
+        Accept();
+    }
+    else {
+        Prepare();
+    }
 }
 
 }
