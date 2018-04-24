@@ -31,10 +31,10 @@ void Proposer::Prepare() {
     }
 
     // Calculate votes
-    PaxosMsg paxos_msg;
-    paxos_msg.set_msgtype(1);   // Replace 1 with some enum
+    PaxosMsg send_paxos_msg;
+    send_paxos_msg.set_msgtype(1);   // Replace 1 with some enum
 
-    BroadcastMessage(paxos_msg);
+    BroadcastMessage(send_paxos_msg);
 }
 
 void Proposer::ExitPrepare() {}
