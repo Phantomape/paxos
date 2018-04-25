@@ -14,7 +14,7 @@ set (CMAKE_CXX_STANDARD 11)
 aux_source_directory(. DIR_ROOT_SRCS)
 
 # Include header files
-include_directories(src/core)
+include_directories(include)
 
 add_subdirectory(src/core)
 add_subdirectory(proto)
