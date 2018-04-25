@@ -16,6 +16,8 @@ public:
     bool operator > (const Ballot &other) const;
     
     uint64_t proposal_id_;
+
+    void reset();
 };
 
 }

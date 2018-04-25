@@ -2,6 +2,7 @@
 
 #include "base.h"
 #include "msg_counter.h"
+#include "ballot.h"
 
 namespace paxos {
 
@@ -19,7 +20,7 @@ public:
     void OnAccept();
     void OnAcceptRejected();
     void OnAcceptTimeout();
-    void OnPrepare();
+    void OnPrepare(const PaxosMsg &paxos_msg);
     void OnPrepareRejected();
     void OnPrepareTimeout();
 
@@ -32,6 +33,11 @@ private:
     bool can_skip_prepare_;
     bool rejected_;
 
+    std::string val_;
+
+    uint64_t proposal_id_;
+
+    Ballot highest_other_pre_accept_ballot_;
     MsgCounter msg_counter; // Fully defined before owner class???s
 };
 

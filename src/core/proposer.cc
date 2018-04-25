@@ -1,4 +1,5 @@
 #include "proposer.h"
+#include "ballot.h"
 #include <iostream>
 #include <string>
 
@@ -21,10 +22,12 @@ void Proposer::Accept() {
 void Proposer::Prepare() {
     std::cout << "Proposer::Prepare()" << std::endl;
 
+    ExitAccept();
     is_preparing_ = true;
     can_skip_prepare_ = false;
     rejected_ = false;
 
+    highest_other_pre_accept_ballot_.reset();
     bool need_new_ballot = false;
     if (need_new_ballot) {
         // No idea
@@ -38,7 +41,11 @@ void Proposer::Prepare() {
 }
 
 void Proposer::ExitPrepare() {}
-void Proposer::ExitAccept() {}
+void Proposer::ExitAccept() {
+    if (is_accepting_) {
+        is_accepting_ = false;
+    }
+}
 
 void Proposer::OnAccept() {
 
@@ -47,9 +54,14 @@ void Proposer::OnAccept() {
 void Proposer::OnAcceptRejected() {}
 void Proposer::OnAcceptTimeout() {}
 
-void Proposer::OnPrepare() {
+void Proposer::OnPrepare(const PaxosMsg &recv_paxos_msg) {
     if (!is_preparing_) {
         // Skip this msg if not preparing or id differs
+        return;
+    }
+
+    // Ignore those with different proposal_id
+    if (recv_paxos_msg.proposalid() != proposal_id_) {
         return;
     }
 
@@ -82,7 +94,7 @@ void Proposer::Propose() {
     
     // check whether it can skip prepare without rejection
     // else goes into Prepare()
-    if (can_skip_prepare_ == true) {
+    if (can_skip_prepare_) {
         Accept();
     }
     else {

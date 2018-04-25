@@ -9,6 +9,8 @@ project(Paxos)
 set (Paxos_VERSION_MAJOR 1)
 set (Paxos_VERSION_MINOR 0)
 
+set (CMAKE_CXX_STANDARD 11)
+
 aux_source_directory(. DIR_ROOT_SRCS)
 
 # Include header files
