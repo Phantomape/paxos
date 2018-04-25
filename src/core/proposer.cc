@@ -66,14 +66,14 @@ void Proposer::OnPrepare(const PaxosMsg &recv_paxos_msg) {
     }
 
     // Received a message
-    msg_counter.AddReceivedMsg();
+    msg_counter.AddReceivedMsg(recv_paxos_msg.nodeid());
     
     if (true) {// Accepted
-        msg_counter.AddAcceptedMsg();
+        msg_counter.AddAcceptedMsg(recv_paxos_msg.nodeid());
     } 
     else {
         is_rejected_ = true;
-        msg_counter.AddRejectedMsg();
+        msg_counter.AddRejectedMsg(recv_paxos_msg.nodeid());
     }
 
     if (msg_counter.IsPassed()) {

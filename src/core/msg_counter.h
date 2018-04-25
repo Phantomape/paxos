@@ -10,9 +10,9 @@ public:
     MsgCounter();
     ~MsgCounter();
 
-    void AddAcceptedMsg();
-    void AddReceivedMsg();
-    void AddRejectedMsg();
+    void AddAcceptedMsg(const uint64_t node_id);
+    void AddReceivedMsg(const uint64_t node_id);
+    void AddRejectedMsg(const uint64_t node_id);
 
     bool IsPassed();
     bool IsRejected();

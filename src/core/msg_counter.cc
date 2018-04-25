@@ -12,15 +12,15 @@ MsgCounter::~MsgCounter() {
     std::cout << "MsgCounter::~MsgCounter()" << std::endl;
 }
 
-void MsgCounter::AddAcceptedMsg() {
+void MsgCounter::AddAcceptedMsg(const uint64_t node_id) {
     std::cout << "MsgCounter::AddAcceptedMsg()" << std::endl;
 }
 
-void MsgCounter::AddReceivedMsg() {
+void MsgCounter::AddReceivedMsg(const uint64_t node_id) {
     std::cout << "MsgCounter::AddReceivedMsg()" << std::endl;
 }
 
-void MsgCounter::AddRejectedMsg() {
+void MsgCounter::AddRejectedMsg(const uint64_t node_id) {
     std::cout << "MsgCounter::AddRejectedMsg()" << std::endl;
 }
 
