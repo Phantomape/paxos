@@ -17,6 +17,8 @@ public:
     void ExitPrepare();
     void ExitAccept();
 
+    void InitInstance();
+
     void OnAccept();
     void OnAcceptRejected();
     void OnAcceptTimeout();
@@ -36,6 +38,7 @@ private:
     std::string val_;
 
     uint64_t proposal_id_;
+    uint64_t highest_proposal_id_by_others_;
 
     Ballot highest_other_pre_accept_ballot_;
     MsgCounter msg_counter; // Fully defined before owner class???s

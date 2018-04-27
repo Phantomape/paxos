@@ -8,6 +8,14 @@ namespace paxos {
 Proposer::Proposer() {
     std::cout << "Proposer::Proposer()" << std::endl;
     GOOGLE_PROTOBUF_VERIFY_VERSION;
+    is_accepting_ = false;
+    is_preparing_ = false;
+
+    can_skip_prepare_ = false;
+
+    InitInstance();
+
+    is_rejected_ = false;
 }
 
 Proposer::~Proposer() {
@@ -17,6 +25,27 @@ Proposer::~Proposer() {
 void Proposer::Accept() {
     std::cout << "Proposer::Accept()" << std::endl;
     is_accepting_ = true;
+}
+
+void Proposer::ExitAccept() {
+    if (is_accepting_) {
+        is_accepting_ = false;
+    }
+}
+
+void Proposer::ExitPrepare() {
+    if (is_preparing_) {
+        is_preparing_ = false;
+    }
+}
+
+void Proposer::InitInstance() {
+    // Start a new round for msg_counter
+    val_.clear();
+    highest_proposal_id_by_others_ = 0;
+
+    ExitPrepare();
+    ExitAccept();
 }
 
 void Proposer::Prepare() {
@@ -38,13 +67,6 @@ void Proposer::Prepare() {
     send_paxos_msg.set_msgtype(1);   // Replace 1 with some enum
 
     BroadcastMessage(send_paxos_msg);
-}
-
-void Proposer::ExitPrepare() {}
-void Proposer::ExitAccept() {
-    if (is_accepting_) {
-        is_accepting_ = false;
-    }
 }
 
 void Proposer::OnAccept() {
