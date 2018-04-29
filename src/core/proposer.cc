@@ -41,6 +41,8 @@ void Proposer::ExitPrepare() {
 
 void Proposer::InitInstance() {
     // Start a new round for msg_counter
+    msg_counter.Init();
+
     val_.clear();
     highest_proposal_id_by_others_ = 0;
 

@@ -24,6 +24,13 @@ void MsgCounter::AddRejectedMsg(const uint64_t node_id) {
     std::cout << "MsgCounter::AddRejectedMsg()" << std::endl;
 }
 
+void MsgCounter::Init() {
+    std::cout << "MsgCounter::Init()" << std::endl;
+    ac_msg_node_ids.clear();
+    recv_msg_node_ids.clear();
+    rej_msg_node_ids.clear();
+}
+
 bool MsgCounter::IsPassed() {
     std::cout << "MsgCounter::IsPassed()" << std::endl;
 }
@@ -31,7 +38,6 @@ bool MsgCounter::IsPassed() {
 bool MsgCounter::IsRejected() {
     std::cout << "MsgCounter::IsRejected()" << std::endl;
 }
-
 
 }
 
