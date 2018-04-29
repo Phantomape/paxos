@@ -111,7 +111,13 @@ void Proposer::OnAccept(const PaxosMsg &paxos_msg) {
     }
 }
 
-void Proposer::OnAcceptRejected() {}
+void Proposer::OnAcceptRejected(const PaxosMsg &paxos_msg) {
+    if (paxos_msg.rejectbypromiseid() != 0) {
+        is_rejected_ = true;
+        UpdateOtherProposalId(paxos_msg.rejectbypromiseid());
+    }
+}
+
 void Proposer::OnAcceptTimeout() {}
 
 void Proposer::OnPrepare(const PaxosMsg &recv_paxos_msg) {

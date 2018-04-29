@@ -20,7 +20,7 @@ public:
     void InitInstance();
 
     void OnAccept(const PaxosMsg &paxos_msg);
-    void OnAcceptRejected();
+    void OnAcceptRejected(const PaxosMsg &paxos_msg);
     void OnAcceptTimeout();
     void OnPrepare(const PaxosMsg &paxos_msg);
     void OnPrepareRejected();
