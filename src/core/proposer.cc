@@ -61,12 +61,15 @@ void Proposer::Prepare() {
     highest_other_pre_accept_ballot_.reset();
     bool need_new_ballot = false;
     if (need_new_ballot) {
-        // No idea
+        // Init new proposer state
+        proposal_id_ = std::max(proposal_id_, highest_proposal_id_by_others_) + 1;
     }
 
     // Calculate votes
     PaxosMsg send_paxos_msg;
     send_paxos_msg.set_msgtype(1);   // Replace 1 with some enum
+
+    msg_counter.Init();
 
     BroadcastMessage(send_paxos_msg);
 }
