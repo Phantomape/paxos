@@ -24,7 +24,15 @@ Proposer::~Proposer() {
 
 void Proposer::Accept() {
     std::cout << "Proposer::Accept()" << std::endl;
+    ExitPrepare();
     is_accepting_ = true;
+
+    PaxosMsg paxos_msg;
+    paxos_msg.set_msgtype(1);
+
+    msg_counter.Init();
+
+    BroadcastMessage(paxos_msg);
 }
 
 void Proposer::ExitAccept() {
