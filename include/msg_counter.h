@@ -18,6 +18,7 @@ public:
 
     bool IsPassed();
     bool IsRejected();
+    bool IsAllReceived();
 
     std::set<uint64_t> recv_msg_node_ids;
     std::set<uint64_t> rej_msg_node_ids;

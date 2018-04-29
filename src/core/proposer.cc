@@ -82,8 +82,33 @@ void Proposer::Prepare() {
     BroadcastMessage(send_paxos_msg);
 }
 
-void Proposer::OnAccept() {
+void Proposer::OnAccept(const PaxosMsg &paxos_msg) {
+    if (!is_accepting_) {
+        return;
+    }
 
+    if (paxos_msg.proposalid() != proposal_id_) {
+        return;
+    }
+
+    msg_counter.AddReceivedMsg(paxos_msg.nodeid());
+
+    if (paxos_msg.rejectbypromiseid() == 0) {
+        msg_counter.AddAcceptedMsg(paxos_msg.nodeid());
+    }
+    else {
+        msg_counter.AddReceivedMsg(paxos_msg.nodeid());
+        is_rejected_ = true;
+        UpdateOtherProposalId(paxos_msg.rejectbypromiseid());
+    }
+
+    if (msg_counter.IsPassed()) {
+        can_skip_prepare_ = true;
+        Accept();
+    }
+    else if (msg_counter.IsRejected() || msg_counter.IsAllReceived()) {
+        // Do sth. I don't understand
+    }
 }
 
 void Proposer::OnAcceptRejected() {}
@@ -134,6 +159,12 @@ void Proposer::Propose() {
     }
     else {
         Prepare();
+    }
+}
+
+void Proposer::UpdateOtherProposalId(const uint64_t other_proposal_id) {
+    if (other_proposal_id > highest_proposal_id_by_others_) {
+        highest_proposal_id_by_others_ = other_proposal_id;
     }
 }
 

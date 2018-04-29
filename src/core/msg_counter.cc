@@ -31,6 +31,10 @@ void MsgCounter::Init() {
     rej_msg_node_ids.clear();
 }
 
+bool MsgCounter::IsAllReceived() {
+    std::cout << "MsgCounter::IsAllReceived()" << std::endl;
+}
+
 bool MsgCounter::IsPassed() {
     std::cout << "MsgCounter::IsPassed()" << std::endl;
 }

@@ -19,7 +19,7 @@ public:
 
     void InitInstance();
 
-    void OnAccept();
+    void OnAccept(const PaxosMsg &paxos_msg);
     void OnAcceptRejected();
     void OnAcceptTimeout();
     void OnPrepare(const PaxosMsg &paxos_msg);
@@ -28,6 +28,8 @@ public:
 
     // Generate a new value to propose
     void Propose();
+
+    void UpdateOtherProposalId(const uint64_t other_proposal_id);
 private:
     bool is_preparing_;
     bool is_accepting_;
