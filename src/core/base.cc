@@ -14,6 +14,11 @@ Base::~Base() {
 
 int Base::BroadcastMessage(const PaxosMsg &paxos_msg) {
     std::cout << "Base::BroadcastMessage()" << std::endl;
+    if (is_test_mode_) {
+        return 0;
+    }
+
+    // Do sth.
 }
 
 uint64_t Base::GetInstanceId() {
