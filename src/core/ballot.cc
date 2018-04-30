@@ -2,7 +2,10 @@
 
 namespace paxos {
 
-Ballot::Ballot() : proposal_id_(0) {}
+Ballot::Ballot() : proposal_id_(0), node_id_(0) {}
+
+Ballot::Ballot(const uint64_t proposal_id, const uint64_t node_id) 
+    : proposal_id_(proposal_id), node_id_(node_id) {}
 
 Ballot::~Ballot() {}
 

@@ -7,7 +7,7 @@ namespace paxos {
 class Ballot {
 public:
     Ballot();
-    Ballot(const uint64_t proposal_id);
+    Ballot(const uint64_t proposal_id, const uint64_t node_id_);
     ~Ballot();
 
     bool operator >= (const Ballot &other) const;
