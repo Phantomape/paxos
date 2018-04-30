@@ -15,6 +15,8 @@ Proposer::Proposer() {
 
     InitInstance();
 
+    timeout_instance_id_ = 0;
+
     is_rejected_ = false;
 }
 
@@ -118,7 +120,12 @@ void Proposer::OnAcceptRejected(const PaxosMsg &paxos_msg) {
     }
 }
 
-void Proposer::OnAcceptTimeout() {}
+void Proposer::OnAcceptTimeout() {
+    if (GetInstanceId() != timeout_instance_id_) {
+        return;
+    }
+    Prepare();
+}
 
 void Proposer::OnPrepare(const PaxosMsg &recv_paxos_msg) {
     if (!is_preparing_) {
@@ -152,8 +159,19 @@ void Proposer::OnPrepare(const PaxosMsg &recv_paxos_msg) {
     }
 }
 
-void Proposer::OnPrepareRejected() {}
-void Proposer::OnPrepareTimeout() {}
+void Proposer::OnPrepareRejected(const PaxosMsg &paxos_msg) {
+    if (paxos_msg.rejectbypromiseid() != 0) {
+        is_rejected_ = true;
+        UpdateOtherProposalId(paxos_msg.rejectbypromiseid());
+    }
+}
+
+void Proposer::OnPrepareTimeout() {
+    if (GetInstanceId() != timeout_instance_id_) {
+        return;
+    }
+    Prepare();
+}
 
 void Proposer::Propose() {
     // set the value

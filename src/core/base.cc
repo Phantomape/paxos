@@ -16,5 +16,10 @@ int Base::BroadcastMessage(const PaxosMsg &paxos_msg) {
     std::cout << "Base::BroadcastMessage()" << std::endl;
 }
 
+uint64_t Base::GetInstanceId() {
+    std::cout << "Base::GetInstanceId()" << std::endl;
+    return instance_id_;
+}
+
 }
 

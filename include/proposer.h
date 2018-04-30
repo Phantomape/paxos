@@ -23,7 +23,7 @@ public:
     void OnAcceptRejected(const PaxosMsg &paxos_msg);
     void OnAcceptTimeout();
     void OnPrepare(const PaxosMsg &paxos_msg);
-    void OnPrepareRejected();
+    void OnPrepareRejected(const PaxosMsg &paxos_msg);
     void OnPrepareTimeout();
 
     // Generate a new value to propose
@@ -41,6 +41,7 @@ private:
 
     uint64_t proposal_id_;
     uint64_t highest_proposal_id_by_others_;
+    uint64_t timeout_instance_id_;
 
     Ballot highest_other_pre_accept_ballot_;
     MsgCounter msg_counter; // Fully defined before owner class???s
