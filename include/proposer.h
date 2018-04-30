@@ -17,7 +17,7 @@ public:
     void ExitPrepare();
     void ExitAccept();
 
-    void InitInstance();
+    virtual void InitInstance();
 
     void OnAccept(const PaxosMsg &paxos_msg);
     void OnAcceptRejected(const PaxosMsg &paxos_msg);
