@@ -12,8 +12,21 @@ public:
     void Init();
     virtual void InitInstance();
 
-    void OnPrepare(const PaxosMsg &recv_paxos_msg);
-    void OnAccept(const PaxosMsg &paxos_msg);
+    const Ballot& GeteAcceptedBallot() const;
+    const Ballot& GetPromiseBallot() const;
+
+    const std::string& GetAcceptedValue();
+    void SetAcceptedValue(const std::string& accepted_val);
+
+    void SetAcceptedBallot(const Ballot& accepted_ballot);
+    void SetPromiseBallot(const Ballot& promised_ballot);
+
+    void OnPrepare(const PaxosMsg& recv_paxos_msg);
+    void OnAccept(const PaxosMsg& paxos_msg);
+private:
+    Ballot promised_ballot;
+    Ballot accepted_ballot;
+    std::string accepted_val_;
 };
 
 }

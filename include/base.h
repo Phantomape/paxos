@@ -1,5 +1,6 @@
 #pragma once
 
+#include "ballot.h"
 #include "paxos_msg.pb.h"
 
 namespace paxos {
