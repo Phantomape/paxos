@@ -1,5 +1,4 @@
 #include "proposer.h"
-#include "ballot.h"
 #include <iostream>
 #include <string>
 
