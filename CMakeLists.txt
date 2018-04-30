@@ -17,6 +17,7 @@ aux_source_directory(. DIR_ROOT_SRCS)
 include_directories(include)
 
 add_subdirectory(src/core)
+add_subdirectory(src/utils)
 add_subdirectory(proto)
 
 add_executable(Paxos test.cc ${DIR_ROOT_SRCS})
