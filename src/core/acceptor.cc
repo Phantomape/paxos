@@ -13,7 +13,7 @@ Acceptor::~Acceptor() {
     std::cout << "Acceptor::~Acceptor()" << std::endl;
 }
 
-void Acceptor::Init() {
+int Acceptor::Init() {
     uint64_t instance_id = 0;
     int res = 1;
     if (res != 0) {
@@ -25,6 +25,8 @@ void Acceptor::Init() {
     }
 
     SetInstanceId(instance_id);
+    // Not sure why we need a return value of integer
+    return 0;
 }
 
 void Acceptor::InitInstance() {

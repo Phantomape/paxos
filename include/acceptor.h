@@ -9,7 +9,7 @@ public:
     Acceptor();
     ~Acceptor();
 
-    void Init();
+    int Init();
     virtual void InitInstance();
 
     const Ballot& GeteAcceptedBallot() const;
