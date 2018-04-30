@@ -16,6 +16,6 @@ public:
     const uint64_t GetCurrentInstanceId();
     const uint64_t GetMinInstanceId();
 
-}
+};
 
 }

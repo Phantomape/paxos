@@ -8,6 +8,10 @@ class Learner : public Base {
 public:
     Learner();
     ~Learner();
+
+    virtual void InitInstance();
+
+    const bool IsLearned();
 };
 
 }
