@@ -5,6 +5,10 @@
 
 namespace paxos {
 
+#define GROUPIDXLEN (sizeof(int))
+#define HEADLEN_LEN (sizeof(uint16_t))
+#define CHECKSUM_LEN (sizeof(uint32_t))
+
 class Base {
 public: 
     Base();

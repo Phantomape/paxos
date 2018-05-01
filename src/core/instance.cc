@@ -6,11 +6,20 @@ Instance::Instance() {}
 
 Instance::~Instance() {}
 
-int ForwardToAcceptor() {}
+int Instance::ForwardToAcceptor(const PaxosMsg& paxos_msg) {
+    std::cout << "Instance::ForwardToAcceptor()" << std::endl;
+    return 0;
+}
 
-int ForwardToLearner() {}
+int Instance::ForwardToLearner(const PaxosMsg& paxos_msg) {
+    std::cout << "Instance::ForwardToLearner()" << std::endl;
+    return 0;
+}
 
-int ForwardToProposer() {}
+int Instance::ForwardToProposer(const PaxosMsg& paxos_msg) {
+    std::cout << "Instance::ForwardToProposer()" << std::endl;
+    return 0;
+}
 
 int Instance::Init() {
     std::cout << "Instance::Init()" << std::endl;
@@ -40,7 +49,7 @@ int Instance::Init() {
     return 0;
 }
 
-void OnReceive(const std::string& str) {
+void Instance::OnReceive(const std::string& str) {
     if (str.size() <= 6) {
         // Throw an error
         return;
@@ -50,7 +59,7 @@ void OnReceive(const std::string& str) {
     // Unpack this basic message and call different function
 }
 
-int OnReceivePaxosMsg(const PaxosMsg& paxos_msg, const bool should_retry) {
+int Instance::OnReceivePaxosMsg(const PaxosMsg& paxos_msg, const bool should_retry) {
     if (false) {// Msg types for proposer
         // Check whether node id is valid
         return ForwardToProposer(paxos_msg);
