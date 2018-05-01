@@ -23,6 +23,8 @@ private:
     Acceptor acceptor;
     Learner learner;
     Proposer proposer;
+
+    bool is_started_;
 };
 
 }

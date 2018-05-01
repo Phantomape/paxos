@@ -36,7 +36,10 @@ int Instance::Init() {
 
 void Instance::Start() {
     std::cout << "Instance::Start()" << std::endl;
-    
+    learner.InitLearnerSynchronizer();
+    // Start ioloop
+    // Start checkpoint
+    is_started_ = true;
 }
 
 }
