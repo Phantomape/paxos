@@ -26,5 +26,10 @@ uint64_t Base::GetInstanceId() {
     return instance_id_;
 }
 
+int Base::UnpackBaseMsg(const std::string& str, Header& header, size_t& body_start_pos, size_t& body_len) {
+
+
+}
+
 }
 
