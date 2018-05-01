@@ -37,9 +37,16 @@ int Instance::Init() {
 void Instance::Start() {
     std::cout << "Instance::Start()" << std::endl;
     learner.InitLearnerSynchronizer();
-    // Start ioloop
-    // Start checkpoint
+    // Start ioloop ycheckpoint
     is_started_ = true;
+}
+
+void Instance::Stop() {
+    std::cout << "Instance::Stop()" << std::endl;
+    if (is_started_) {
+        // Stop ioloop and checkpoint
+        learner.Stop();
+    }
 }
 
 }
