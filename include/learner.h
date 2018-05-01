@@ -16,6 +16,8 @@ public:
     const bool IsLearned();
 
     void InitLearnerSynchronizer();
+
+    void Stop();
 private:
     Acceptor* acceptor;
     LearnerSynchronizer learner_synchronizer;
