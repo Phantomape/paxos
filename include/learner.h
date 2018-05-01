@@ -1,6 +1,8 @@
 #pragma once
 
+#include "acceptor.h"
 #include "base.h"
+#include "learner_synchronizer.h"
 
 namespace paxos {
 
@@ -12,6 +14,11 @@ public:
     virtual void InitInstance();
 
     const bool IsLearned();
+
+    void InitLearnerSynchronizer();
+private:
+    Acceptor* acceptor;
+    LearnerSynchronizer learner_synchronizer;
 };
 
 }

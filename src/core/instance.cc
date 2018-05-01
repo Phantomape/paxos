@@ -34,4 +34,9 @@ int Instance::Init() {
     return 0;
 }
 
+void Instance::Start() {
+    std::cout << "Instance::Start()" << std::endl;
+    
+}
+
 }

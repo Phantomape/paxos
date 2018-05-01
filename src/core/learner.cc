@@ -9,4 +9,8 @@ Learner::~Learner() {
 
 }
 
+void Learner::InitLearnerSynchronizer() {
+    learner_synchronizer.Start();
+}
+
 }
