@@ -1,11 +1,19 @@
 #pragma once
 
-#include <pthread.h>
+#include "concurrent.h"
 
 namespace paxos {
 
-class LearnerSynchronizer {
+class LearnerSynchronizer : public Thread{
+public:
+    LearnerSynchronizer();
+    ~LearnerSynchronizer();
 
+    void Ack();
+    void Confirm();
+    void Prepare();
+    void Run();
+    void Stop();
 };
 
 }
