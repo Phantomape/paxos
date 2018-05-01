@@ -6,6 +6,12 @@ Instance::Instance() {}
 
 Instance::~Instance() {}
 
+int ForwardToAcceptor() {}
+
+int ForwardToLearner() {}
+
+int ForwardToProposer() {}
+
 int Instance::Init() {
     std::cout << "Instance::Init()" << std::endl;
     int res = acceptor.Init();
@@ -31,6 +37,33 @@ int Instance::Init() {
     proposer.SetInstanceId(CurrentInstanceId);
 
     // Sth. I don't understand
+    return 0;
+}
+
+void OnReceive(const std::string& str) {
+    if (str.size() <= 6) {
+        // Throw an error
+        return;
+    }
+
+    size_t body_start_pos = 0, body_len = 0;
+    // Unpack this basic message and call different function
+}
+
+int OnReceivePaxosMsg(const PaxosMsg& paxos_msg, const bool should_retry) {
+    if (false) {// Msg types for proposer
+        // Check whether node id is valid
+        return ForwardToProposer(paxos_msg);
+    }
+    else if (false) {
+        return ForwardToAcceptor(paxos_msg);
+    }
+    else if (false) {
+        return ForwardToLearner(paxos_msg);
+    }
+    else {
+        // Throw invalid msg type error
+    }
     return 0;
 }
 
