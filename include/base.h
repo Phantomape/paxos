@@ -9,6 +9,8 @@ namespace paxos {
 #define HEADLEN_LEN (sizeof(uint16_t))
 #define CHECKSUM_LEN (sizeof(uint32_t))
 
+class Instance;
+
 class Base {
 public: 
     Base();
@@ -20,6 +22,10 @@ public:
     void NewInstance();
     void SetInstanceId(const uint64_t instance_id);
     int UnpackBaseMsg(const std::string& str, Header& header, size_t& body_start_pos, size_t& body_len);
+
+protected:
+    Instance* instance;
+
 private:
     bool is_test_mode_;
 
