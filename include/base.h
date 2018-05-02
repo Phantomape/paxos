@@ -21,6 +21,8 @@ public:
     virtual void InitInstance() = 0;
     uint64_t GetInstanceId();
     void NewInstance();
+    void PackBaseMsg(const std::string& buf, const int cmd, std::string& str);
+    int PackMsg(const PaxosMsg& paxos_msg, std::string& str);
     void SetInstanceId(const uint64_t instance_id);
     int UnpackBaseMsg(const std::string& str, Header& header, size_t& body_start_pos, size_t& body_len);
 

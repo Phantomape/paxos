@@ -32,6 +32,23 @@ uint64_t Base::GetInstanceId() {
     return instance_id_;
 }
 
+void Base::PackBaseMsg(const std::string& buf, const int cmd, std::string& str) {
+    
+}
+
+int Base::PackMsg(const PaxosMsg& paxos_msg, std::string& str) {
+    std::string buf;
+    bool is_succeeded = paxos_msg.SerializeToString(&str);
+    if (!is_succeeded) {
+        return -1;
+    }
+    
+    int cmd = 0;
+    PackBaseMsg(buf, cmd, str);
+
+    return 0;
+}
+
 int Base::UnpackBaseMsg(const std::string& str, Header& header, size_t& body_start_pos, size_t& body_len) {
     uint16_t header_len = 0;
     memcpy(&header_len, str.data() + GROUPIDXLEN, HEADLEN_LEN); 
