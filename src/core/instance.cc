@@ -10,8 +10,34 @@ void Instance::CheckNewValue() {
 
 }
 
-int Instance::ForwardToAcceptor(const PaxosMsg& paxos_msg) {
+int Instance::ForwardToAcceptor(const PaxosMsg& paxos_msg, const bool is_retry) {
     std::cout << "Instance::ForwardToAcceptor()" << std::endl;
+    // Sth. related to IsImFollower
+
+    if (paxos_msg.instanceid() != acceptor.GetInstanceId()) {
+    
+    }
+
+    if (paxos_msg.instanceid() == acceptor.GetInstanceId() + 1) {
+        PaxosMsg send_paxos_msg = paxos_msg;
+        send_paxos_msg.set_instanceid(acceptor.GetInstanceId());
+        send_paxos_msg.set_msgtype(1);
+
+        ForwardToLearner(send_paxos_msg);
+    }
+
+    if (paxos_msg.instanceid() == acceptor.GetInstanceId()) {
+        if (paxos_msg.msgtype() == 1) {
+            return acceptor.OnPrepare(paxos_msg);
+        }
+        else if (paxos_msg.msgtype() == 2) {
+            acceptor.OnAccept(paxos_msg);
+        }
+    }
+    else if (is_retry == false && paxos_msg.instanceid() > acceptor.GetInstanceId()) {
+        
+    }
+        
     return 0;
 }
 

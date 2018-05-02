@@ -15,7 +15,7 @@ public:
 
     void CheckNewValue();
 
-    int ForwardToAcceptor(const PaxosMsg& paxos_msg);
+    int ForwardToAcceptor(const PaxosMsg& paxos_msg, const bool is_retry);
     int ForwardToLearner(const PaxosMsg& paxos_msg);
     int ForwardToProposer(const PaxosMsg& paxos_msg);
 
