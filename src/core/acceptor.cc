@@ -34,7 +34,7 @@ void Acceptor::InitInstance() {
     accepted_val_ = "";
 }
 
-const Ballot& Acceptor::GeteAcceptedBallot() const {
+const Ballot& Acceptor::GetAcceptedBallot() const {
     std::cout << "Acceptor::GetAcceptedBallot()" << std::endl;
     return accepted_ballot;
 }
@@ -64,11 +64,30 @@ void Acceptor::SetPromiseBallot(const Ballot& promised_ballot) {
     this->promised_ballot = promised_ballot;
 }
 
-void Acceptor::OnPrepare(const PaxosMsg &recv_paxos_msg) {
+int Acceptor::OnPrepare(const PaxosMsg &recv_paxos_msg) {
     std::cout << "Acceptor::OnPrepare()" << std::endl;
 
     PaxosMsg send_paxos_msg;
     send_paxos_msg.set_msgtype(1); // Replace thie hard-coded number
+
+    Ballot ballot(recv_paxos_msg.proposalid(), recv_paxos_msg.nodeid());
+    if (ballot >= GetPromiseBallot()) {
+        send_paxos_msg.set_preacceptid(GetAcceptedBallot().proposal_id_);
+        send_paxos_msg.set_preacceptnodeid(GetAcceptedBallot().node_id_);
+
+        if (GetAcceptedBallot().proposal_id_ > 0) {
+            send_paxos_msg.set_value(GetAcceptedValue());
+        }
+        SetPromiseBallot(ballot);
+    }
+    else {
+        send_paxos_msg.set_rejectbypromiseid(GetPromiseBallot().proposal_id_);
+    }
+
+    uint64_t send_node_id = recv_paxos_msg.nodeid();
+    SendMessage(send_node_id, send_paxos_msg);
+
+    return 0;
 }
 
 void Acceptor::OnAccept(const PaxosMsg &paxos_msg) {

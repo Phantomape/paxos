@@ -12,7 +12,7 @@ public:
     int Init();
     virtual void InitInstance();
 
-    const Ballot& GeteAcceptedBallot() const;
+    const Ballot& GetAcceptedBallot() const;
     const Ballot& GetPromiseBallot() const;
 
     const std::string& GetAcceptedValue();
