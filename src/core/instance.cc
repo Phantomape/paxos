@@ -117,7 +117,7 @@ int Instance::OnReceivePaxosMsg(const PaxosMsg& paxos_msg, const bool should_ret
         return ForwardToProposer(paxos_msg);
     }
     else if (false) {
-        return ForwardToAcceptor(paxos_msg);
+        return ForwardToAcceptor(paxos_msg, should_retry);
     }
     else if (false) {
         return ForwardToLearner(paxos_msg);

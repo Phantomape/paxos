@@ -85,7 +85,7 @@ int Acceptor::OnPrepare(const PaxosMsg &recv_paxos_msg) {
     }
 
     uint64_t send_node_id = recv_paxos_msg.nodeid();
-    SendMessage(send_node_id, send_paxos_msg);
+    //SendMessage(send_node_id, send_paxos_msg);
 
     return 0;
 }
