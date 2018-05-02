@@ -12,6 +12,8 @@ public:
     Learner(const Instance* instance, const Acceptor* acceptor);
     ~Learner();
 
+    const uint64_t GetLatestInstanceID();
+
     virtual void InitInstance();
 
     const bool IsLearned();
@@ -22,6 +24,8 @@ public:
 private:
     Acceptor* acceptor;
     LearnerSynchronizer learner_synchronizer;
+
+    uint64_t highest_instance_id_;
 };
 
 }
