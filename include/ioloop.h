@@ -13,6 +13,8 @@ public:
     IoLoop();
     virtual ~IoLoop();
 
+    int AddRetryPaxosMsg(const PaxosMsg& paxos_msg);
+    void ClearRetryQueue();
     void Init(const int timeout_ms);
     void DealWithRetry();
     void Run();

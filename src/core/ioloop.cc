@@ -6,6 +6,21 @@ IoLoop::IoLoop() {}
 
 IoLoop::~IoLoop() {}
 
+int IoLoop::AddRetryPaxosMsg(const PaxosMsg& paxos_msg) {
+    if (retry_queue.size() > RETRY_QUEUE_MAX_LEN) {
+        retry_queue.pop();
+    }
+
+    retry_queue.push(paxos_msg);
+    return 0;
+}
+
+void IoLoop::ClearRetryQueue() {
+    while (!retry_queue.empty()) {
+        retry_queue.pop();
+    }
+}
+
 void IoLoop::Run() {
     is_end_ = false;
     is_start_ = true;
