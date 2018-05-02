@@ -4,6 +4,10 @@
 #include <string>
 
 namespace paxos {
+
+Base::Base() {
+    
+}
     
 Base::Base(const Instance* instance) {
     std::cout << "Base::Base()" << std::endl;

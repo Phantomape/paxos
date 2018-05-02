@@ -13,6 +13,7 @@ class Instance;
 
 class Base {
 public: 
+    Base();
     Base(const Instance* instance);
     virtual ~Base();
 
