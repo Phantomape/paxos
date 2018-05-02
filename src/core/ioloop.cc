@@ -45,7 +45,31 @@ void IoLoop::Init(const int timeout_ms) {
 }
 
 void IoLoop::DealWithRetry() {
-    
+    if (retry_queue.empty()) {
+        return;
+    }
+
+    bool has_retried = false;
+    while (!retry_queue.empty()) {
+        PaxosMsg& paxos_msg = retry_queue.front();
+        if (paxos_msg.instanceid() > instance->GetCurrentInstanceId() + 1) {
+            break;
+        }
+        else if (paxos_msg.instanceid() == instance->GetCurrentInstanceId() + 1) {
+            if (has_retried) {
+                instance->OnReceivePaxosMsg(paxos_msg, true);
+            }
+            else {
+                break;
+            }
+        }
+        else if (paxos_msg.instanceid() == instance->GetCurrentInstanceId()) {
+            instance->OnReceivePaxosMsg(paxos_msg);
+            has_retried = true;
+        }
+
+        retry_queue.pop();
+    }
 }
 
 }
