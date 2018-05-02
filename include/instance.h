@@ -13,6 +13,8 @@ public:
     Instance();
     ~Instance();
 
+    void CheckNewValue();
+
     int ForwardToAcceptor(const PaxosMsg& paxos_msg);
     int ForwardToLearner(const PaxosMsg& paxos_msg);
     int ForwardToProposer(const PaxosMsg& paxos_msg);

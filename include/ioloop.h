@@ -14,6 +14,7 @@ public:
     virtual ~IoLoop();
 
     void Init(const int timeout_ms);
+    void DealWithRetry();
     void Run();
     void Stop();
 private:

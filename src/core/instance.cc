@@ -6,6 +6,10 @@ Instance::Instance() {}
 
 Instance::~Instance() {}
 
+void Instance::CheckNewValue() {
+    
+}
+
 int Instance::ForwardToAcceptor(const PaxosMsg& paxos_msg) {
     std::cout << "Instance::ForwardToAcceptor()" << std::endl;
     return 0;
