@@ -1,5 +1,8 @@
 #pragma once
 
+#include <condition_variable>
+#include <deque>
+#include <mutex>
 #include <thread>
 
 namespace paxos {

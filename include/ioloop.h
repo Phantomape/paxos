@@ -13,7 +13,7 @@ public:
     IoLoop();
     virtual ~IoLoop();
 
-    void OneLoop(const int timeout_ms);
+    void Init(const int timeout_ms);
     void Run();
     void Stop();
 private:
