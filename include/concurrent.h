@@ -21,4 +21,29 @@ protected:
     std::thread thread_;
 };
 
+template <class T>
+class Queue {
+public:
+    Queue();
+    virtual ~Queue();
+
+    virtual size_t add(const T& t, bool signal = true, bool back = true);
+    void broadcast();
+    void clear();
+    bool empty();
+    T& peek();
+    bool peek(T& t, int timeout_ms);
+    size_t pop();
+    size_t pop(T* vals, size_t n);
+    virtual void lock();
+    virtual void unlock();
+    void signal();
+    size_t size() const;
+protected:
+    std::mutex lock_;
+    std::condition_variable cond_;
+    std::deque<T> storage_;
+    size_t size_;
+};
+
 }
