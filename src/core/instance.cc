@@ -7,7 +7,7 @@ Instance::Instance() {}
 Instance::~Instance() {}
 
 void Instance::CheckNewValue() {
-    
+
 }
 
 int Instance::ForwardToAcceptor(const PaxosMsg& paxos_msg) {
@@ -22,6 +22,28 @@ int Instance::ForwardToLearner(const PaxosMsg& paxos_msg) {
 
 int Instance::ForwardToProposer(const PaxosMsg& paxos_msg) {
     std::cout << "Instance::ForwardToProposer()" << std::endl;
+    // Sth. related to IsImFollower
+
+    if (paxos_msg.instanceid() != proposer.GetInstanceId()) {
+        if (paxos_msg.instanceid() + 1 == proposer.GetInstanceId()) {
+            if (paxos_msg.msgtype() == 1) {
+                proposer.OnPrepareRejected(paxos_msg);
+            }
+            else if (paxos_msg.msgtype() == 2) {
+                proposer.OnAcceptRejected(paxos_msg);
+            }
+        }
+
+        return 0;
+    }
+
+    if (paxos_msg.msgtype() == 3) {
+        proposer.OnPrepare(paxos_msg);
+    }
+    else if (paxos_msg.msgtype() == 4) {
+        proposer.OnAccept(paxos_msg);
+    }
+
     return 0;
 }
 
