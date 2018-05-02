@@ -6,7 +6,7 @@ namespace paxos {
 
 class Acceptor : public Base {
 public: 
-    Acceptor();
+    Acceptor(const Instance* instance);
     ~Acceptor();
 
     int Init();

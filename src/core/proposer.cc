@@ -1,10 +1,11 @@
+#include "instance.h"
 #include "proposer.h"
 #include <iostream>
 #include <string>
 
 namespace paxos {
     
-Proposer::Proposer() {
+Proposer::Proposer(const Instance* instance) : Base(instance) {
     std::cout << "Proposer::Proposer()" << std::endl;
     GOOGLE_PROTOBUF_VERIFY_VERSION;
     is_accepting_ = false;

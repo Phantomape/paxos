@@ -1,6 +1,7 @@
 #pragma once
 
 #include "acceptor.h"
+#include "base.h"
 #include "learner.h"
 #include "proposer.h"
 

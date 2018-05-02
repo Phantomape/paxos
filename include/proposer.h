@@ -8,7 +8,7 @@ namespace paxos {
 
 class Proposer : public Base {
 public:
-    Proposer();
+    Proposer(const Instance* instance);
     ~Proposer();
 
     void Accept();

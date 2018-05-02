@@ -1,14 +1,15 @@
 #pragma once
 
-#include "acceptor.h"
 #include "base.h"
 #include "learner_synchronizer.h"
 
 namespace paxos {
 
+class Acceptor;
+
 class Learner : public Base {
 public:
-    Learner();
+    Learner(const Instance* instance, const Acceptor* acceptor);
     ~Learner();
 
     virtual void InitInstance();

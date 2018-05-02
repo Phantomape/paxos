@@ -13,7 +13,7 @@ class Instance;
 
 class Base {
 public: 
-    Base();
+    Base(const Instance* instance);
     virtual ~Base();
 
     virtual int BroadcastMessage(const PaxosMsg &paxos_msg);

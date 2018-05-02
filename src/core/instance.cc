@@ -1,8 +1,13 @@
 #include "instance.h"
+#include "acceptor.h"
+#include "learner.h"
+#include "proposer.h"
 
 namespace paxos {
 
-Instance::Instance() {}
+Instance::Instance() : acceptor(this), learner(this, &acceptor), proposer(this) {
+
+}
 
 Instance::~Instance() {}
 

@@ -5,7 +5,7 @@
 
 namespace paxos {
     
-Acceptor::Acceptor() {
+Acceptor::Acceptor(const Instance* instance) : Base(instance){
     std::cout << "Acceptor::Acceptor()" << std::endl;
 }
 

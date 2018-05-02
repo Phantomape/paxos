@@ -1,8 +1,10 @@
+#include "acceptor.h"
 #include "learner.h"
 
 namespace paxos {
 
-Learner::Learner() {
+Learner::Learner(const Instance* instance, const Acceptor* acceptor) : Base(instance) {
+    this->acceptor = (Acceptor*)acceptor;
 }
 
 Learner::~Learner() {
