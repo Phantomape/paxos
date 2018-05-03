@@ -13,7 +13,7 @@ struct Packet {
 };
 
 class UdpRecv : public Thread {
-    UdpRecv(DefaultNetWork* default_network);
+    UdpRecv(DefaultNetwork* default_network);
     ~UdpRecv();
 
     int Init(const int port);
@@ -23,9 +23,10 @@ class UdpRecv : public Thread {
     void Stop();
     
 private:
-    DefaultNetWork* default_netWork;
+    DefaultNetwork* default_network;
     bool is_ended_;
     bool is_started_;
+    int socket_file_descriptor_;
 };
 
 class UdpSend : public Thread {
@@ -47,6 +48,7 @@ private:
     Queue<Packet*> send_queue;
     bool is_ended_;
     bool is_started_;
+    int socket_file_descriptor_;
 };
 
 }
