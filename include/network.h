@@ -12,10 +12,10 @@ public:
     virtual ~Network() {}
 
     //Network must not send/recieve any message before paxoslib called this funtion.
-    virtual void RunNetwork() = 0;
+    virtual void Run() = 0;
 
     //If paxoslib call this function, network need to stop receive any message.
-    virtual void StopNetwork() = 0;
+    virtual void Stop() = 0;
 
     virtual int SendMessageTCP(const int group_idx, const std::string& ip, const int port, const std::string& message) = 0;
 
