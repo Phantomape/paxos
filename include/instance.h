@@ -32,7 +32,7 @@ public:
     int OnReceivePaxosMsg(const PaxosMsg& paxos_msg, const bool should_retry = false);
 private:
     Acceptor acceptor;
-    IoLoop ioloop;
+    //IoLoop ioloop;
     Learner learner;
     Proposer proposer;
 
