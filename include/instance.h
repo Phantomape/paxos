@@ -2,6 +2,7 @@
 
 #include "acceptor.h"
 #include "base.h"
+#include "ioloop.h"
 #include "learner.h"
 #include "proposer.h"
 
@@ -31,6 +32,7 @@ public:
     int OnReceivePaxosMsg(const PaxosMsg& paxos_msg, const bool should_retry = false);
 private:
     Acceptor acceptor;
+    IoLoop ioloop;
     Learner learner;
     Proposer proposer;
 

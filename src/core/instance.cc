@@ -5,7 +5,7 @@
 
 namespace paxos {
 
-Instance::Instance() : acceptor(this), learner(this, &acceptor), proposer(this) {
+Instance::Instance() : acceptor(this), ioloop(this), learner(this, &acceptor), proposer(this) {
 
 }
 
@@ -40,7 +40,14 @@ int Instance::ForwardToAcceptor(const PaxosMsg& paxos_msg, const bool is_retry) 
         }
     }
     else if (is_retry == false && paxos_msg.instanceid() > acceptor.GetInstanceId()) {
-        
+        if (paxos_msg.instanceid() >= learner.GetLatestInstanceID()) {
+            if (paxos_msg.instanceid() < acceptor.GetInstanceId() + RETRY_QUEUE_MAX_LEN) {
+                ioloop.AddRetryPaxosMsg(paxos_msg);
+            }
+        }
+        else {
+            ioloop.ClearRetryQueue();
+        }
     }
         
     return 0;
