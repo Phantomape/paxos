@@ -8,9 +8,11 @@ namespace paxos {
 
 #define RETRY_QUEUE_MAX_LEN 300
 
+class Instance;
+
 class IoLoop : public Thread {
 public:
-    IoLoop();
+    IoLoop(Instance* instance);
     virtual ~IoLoop();
 
     int AddRetryPaxosMsg(const PaxosMsg& paxos_msg);

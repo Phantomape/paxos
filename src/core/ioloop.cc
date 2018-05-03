@@ -2,7 +2,7 @@
 
 namespace paxos {
 
-IoLoop::IoLoop() {}
+IoLoop::IoLoop(Instance* instance) : instance(instance) {}
 
 IoLoop::~IoLoop() {}
 
