@@ -17,7 +17,7 @@ public:
     Base(const Instance* instance);
     virtual ~Base();
 
-    virtual int BroadcastMessage(const PaxosMsg &paxos_msg);
+    virtual int BroadcastMessage(const PaxosMsg &paxos_msg, const int run_type, const int send_type);
     virtual void InitInstance() = 0;
     uint64_t GetInstanceId();
     void NewInstance();

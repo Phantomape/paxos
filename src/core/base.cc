@@ -18,13 +18,29 @@ Base::~Base() {
     std::cout << "Base::~Base()" << std::endl;
 }
 
-int Base::BroadcastMessage(const PaxosMsg &paxos_msg) {
+int Base::BroadcastMessage(const PaxosMsg &paxos_msg, const int run_type, const int send_type) {
     std::cout << "Base::BroadcastMessage()" << std::endl;
     if (is_test_mode_) {
         return 0;
     }
 
-    // Do sth.
+    if (run_type == 0 && instance->OnReceivePaxosMsg(paxos_msg) != 0) {
+        return -1;
+    }
+
+    std::string str;
+    int res = PackMsg(paxos_msg, str);
+    if (res != 0) {
+        return res;
+    }
+
+    // res = m_poMsgTransport->BroadcastMessage(m_poConfig->GetMyGroupIdx(), sBuffer, iSendType);
+
+    if (run_type == 1) {
+        instance->OnReceivePaxosMsg(paxos_msg);
+    }
+
+    return res;
 }
 
 uint64_t Base::GetInstanceId() {

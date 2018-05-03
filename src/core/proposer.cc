@@ -37,7 +37,7 @@ void Proposer::Accept() {
 
     msg_counter.Init();
 
-    BroadcastMessage(paxos_msg);
+    BroadcastMessage(paxos_msg, 1, 1);
 }
 
 void Proposer::ExitAccept() {
@@ -96,7 +96,7 @@ void Proposer::Prepare() {
 
     msg_counter.Init();
 
-    BroadcastMessage(send_paxos_msg);
+    BroadcastMessage(send_paxos_msg, 1, 1);
 }
 
 void Proposer::OnAccept(const PaxosMsg &paxos_msg) {
