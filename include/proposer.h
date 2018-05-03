@@ -17,6 +17,8 @@ public:
     void ExitPrepare();
     void ExitAccept();
 
+    const uint64_t GetProposalId();
+
     virtual void InitInstance();
 
     void OnAccept(const PaxosMsg &paxos_msg);

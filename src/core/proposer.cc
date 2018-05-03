@@ -49,6 +49,10 @@ void Proposer::ExitPrepare() {
     }
 }
 
+const uint64_t Proposer::GetProposalId() {
+    return proposal_id_;
+}
+
 void Proposer::InitInstance() {
     // Start a new round for msg_counter
     msg_counter.Init();
@@ -60,6 +64,8 @@ void Proposer::InitInstance() {
     ExitAccept();
 }
 
+// This method is where proposer would learn what value to propose, if
+// not value is chosen in this stage, they can propose their own value
 void Proposer::Prepare() {
     std::cout << "Proposer::Prepare()" << std::endl;
 
@@ -78,6 +84,8 @@ void Proposer::Prepare() {
     // Calculate votes
     PaxosMsg send_paxos_msg;
     send_paxos_msg.set_msgtype(1);   // Replace 1 with some enum
+    send_paxos_msg.set_instanceid(GetInstanceId());
+    send_paxos_msg.set_proposalid(GetProposalId());
 
     msg_counter.Init();
 
