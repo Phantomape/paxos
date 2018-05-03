@@ -18,6 +18,7 @@ public:
     void ExitAccept();
 
     const uint64_t GetProposalId();
+    const std::string& GetValue();
 
     virtual void InitInstance();
 
@@ -30,6 +31,8 @@ public:
 
     // Generate a new value to propose
     void Propose();
+
+    void SetValue(const std::string& val);
 
     void UpdateOtherProposalId(const uint64_t other_proposal_id);
 private:

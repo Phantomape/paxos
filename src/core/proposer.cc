@@ -31,6 +31,9 @@ void Proposer::Accept() {
 
     PaxosMsg paxos_msg;
     paxos_msg.set_msgtype(1);
+    paxos_msg.set_instanceid(GetInstanceId());
+    paxos_msg.set_proposalid(GetProposalId());
+    paxos_msg.set_value(GetValue());
 
     msg_counter.Init();
 
@@ -51,6 +54,10 @@ void Proposer::ExitPrepare() {
 
 const uint64_t Proposer::GetProposalId() {
     return proposal_id_;
+}
+
+const std::string& Proposer::GetValue() {
+    return val_;
 }
 
 void Proposer::InitInstance() {
