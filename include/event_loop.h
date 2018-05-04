@@ -1,5 +1,6 @@
 #pragma once
 
+#include "socket.h"
 #include <map>
 #include <mutex>
 #include <queue>
@@ -12,7 +13,7 @@ namespace paxos {
 
 class Event;
 // class TcpAcceptor;
-// class TcpClient;
+class TcpClient;
 // class MessageEvent;
 class NetWork;
 
@@ -36,7 +37,7 @@ public:
 
     virtual void SingleLoop(const int iTimeoutMs);
 
-    // void SetTcpClient(TcpClient * poTcpClient);
+    void SetTcpClient(TcpClient * tcp_client);
 
     void JumpoutEpollWait();
 
@@ -48,7 +49,7 @@ public:
 
     void DealwithTimeoutOne(const uint32_t iTimerID, const int iType);
 
-    // void AddEvent(int iFD, SocketAddress oAddr);
+    void AddEvent(int iFD, SocketAddress oAddr);
 
     void CreateEvent();
 
@@ -73,7 +74,7 @@ protected:
     //Timer m_oTimer;
     std::map<uint32_t, int> mapping_timer_id_2_fd_;
 
-    //std::queue<std::pair<int, SocketAddress> > m_oFDQueue;
+    std::queue<std::pair<int, SocketAddress> > queue_socket_addr_;
     std::mutex mutex_;
     //std::vector<MessageEvent *> m_vecCreatedEvent;
 

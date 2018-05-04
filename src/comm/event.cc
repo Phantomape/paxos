@@ -19,25 +19,19 @@ int Event::OnWrite() {
 
 void Event::OnTimeout(const uint32_t timer_id, const int type) {}
 
-/*
 void Event::JumpoutEpollWait() {
     event_loop->JumpoutEpollWait();
 }
-*/
 
-/*
-void Event :: AddEvent(const int iEvents)
-{
-    int iBeforeEvent = m_iEvents;
-    m_iEvents |= iEvents; 
-    if (m_iEvents == iBeforeEvent)
-    {
+void Event :: AddEvent(const int event) {
+    int previous_event = event;
+    event_ |= event; 
+    if (event_ == previous_event) {
         return;
     }
     
-    event_loop->ModEvent(this, m_iEvents);
+    event_loop->ModEvent(this, event_);
 }
-*/
 
 void Event::RemoveEvent(const int event)
 {
@@ -48,19 +42,19 @@ void Event::RemoveEvent(const int event)
     }
     
     if (event_ == 0) {
-        // event_loop->RemoveEvent(this);
+        event_loop->RemoveEvent(this);
     }
     else {
-        //event_loop->ModEvent(this, m_iEvents);
+        event_loop->ModEvent(this, event);
     }
 }
 
 void Event::AddTimer(const int timeout_ms, const int type, uint32_t& timer_id) {
-    //event_loop->AddTimer(this, iTimeoutMs, iType, iTimerID);
+    event_loop->AddTimer(this, timeout_ms, type, timer_id);
 }
 
-void Event::RemoveTimer(const uint32_t iTimerID) {
-    //event_loop->RemoveTimer(iTimerID);
+void Event::RemoveTimer(const uint32_t timer_id) {
+    event_loop->RemoveTimer(timer_id);
 }
 
 void Event::Destroy() {

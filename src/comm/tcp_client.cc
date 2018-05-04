@@ -1,7 +1,9 @@
 #include "event_loop.h"
 #include "network.h"
+#include "socket.h"
 #include "tcp_client.h"
 #include <arpa/inet.h>
+#include <assert.h>
 
 namespace paxos {
 
@@ -30,7 +32,7 @@ MessageEvent* TcpClient::GetEvent(const std::string& ip, const int port)
     uint32_t ip_addr = (uint32_t)inet_addr(ip.c_str());
     uint64_t node_id = (((uint64_t)ip_addr) << 32) | port;
 
-    std::lock_guard<std::mutex> lock_guard(mutex_);
+    std::lock_guard<std::mutex> lck(mutex_);
 
     auto it = map_event_.find(node_id);
     if (it != map_event_.end()) {
@@ -42,22 +44,25 @@ MessageEvent* TcpClient::GetEvent(const std::string& ip, const int port)
 
 MessageEvent* TcpClient::CreateEvent(const uint64_t node_id, const std::string & ip, const int port)
 {
-    /*
-    Socket oSocket;
-    oSocket.setNonBlocking(true);
-    oSocket.setNoDelay(true);
-    SocketAddress oAddr(ip, port);
-    oSocket.connect(oAddr);
+    Socket socket;
+    socket.SetNonBlocking(true);
+    socket.SetNoDelay(true);
+    SocketAddress addr(ip, port);
+    socket.Connect(addr);
 
-    MessageEvent * event = new MessageEvent(MessageEventType_SEND, oSocket.detachSocketHandle(), 
-            oAddr, m_eventLoop, m_poNetWork);
+    MessageEvent* event = new MessageEvent(
+        MessageEventType_SEND, 
+        socket.DetachSocketHandle(), 
+        addr, 
+        eventloop_, 
+        network_
+    );
     assert(event != nullptr);
 
     map_event_[node_id] = event;
     vec_event_.push_back(event);
 
     return event;
-    */
 }
 
 void TcpClient :: DealWithWrite()

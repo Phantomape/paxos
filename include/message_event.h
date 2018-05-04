@@ -1,6 +1,7 @@
 #pragma once
 
 #include "event.h"
+#include "socket.h"
 #include <mutex>
 
 namespace paxos {
@@ -22,7 +23,7 @@ public:
     MessageEvent(
         const int type, 
         const int fd, 
-        // const SocketAddress & oAddr,
+        const SocketAddress& addr,
         EventLoop* eventloop,
         Network* network
         );

@@ -480,7 +480,6 @@ void Socket::Shutdown() {
     }
 }
 
-
 ServerSocket::ServerSocket() {}
 
 ServerSocket::ServerSocket(const SocketAddress& addr) : SocketBase(addr.GetFamily(), -1) {

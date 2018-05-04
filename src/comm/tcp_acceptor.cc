@@ -1,3 +1,4 @@
+#include "event_loop.h"
 #include "tcp_acceptor.h"
 #include <poll.h>
 #include <stdio.h>
@@ -13,7 +14,7 @@ TcpAcceptor::TcpAcceptor() {
 TcpAcceptor::~TcpAcceptor() {}
 
 void TcpAcceptor::Listen(const std::string& ip_listened, const int port_listened) {
-    // m_oSocket.listen(SocketAddress(ip_listened, (unsigned short)port_listened));
+    server_socket_.Listen(SocketAddress(ip_listened, (unsigned short)port_listened));
 }
 
 void TcpAcceptor::Stop() {
@@ -23,80 +24,59 @@ void TcpAcceptor::Stop() {
     }
 }
 
-void TcpAcceptor::Run()
-{
+void TcpAcceptor::Run() {
     is_started_ = true;
 
-    //m_oSocket.setAcceptTimeout(500);
-    //m_oSocket.setNonBlocking(true);
-
-    /*
+    server_socket_.SetAcceptTimeout(500);
+    server_socket_.SetNonBlocking(true);
+    
     while (true) {
         struct pollfd pfd;
         int ret;
 
-        pfd.fd =  m_oSocket.getSocketHandle();
+        pfd.fd =  server_socket_.GetSocketHandle();
         pfd.events = POLLIN;
         ret = poll(&pfd, 1, 500);
 
-        if (ret != 0 && ret != -1)
-        {
+        if (ret != 0 && ret != -1) {
             SocketAddress oAddr;
             int fd = -1;
-            try
-            {
-                fd = m_oSocket.acceptfd(&oAddr);
+            try {
+                fd = server_socket_.AcceptFd(&oAddr);
             }
-            catch(...)
-            {
+            catch(...) {
                 fd = -1;
             }
             
-            if (fd >= 0)
-            {
-                BP->GetNetworkBP()->TcpAcceptFd();
-
-                PLImp("accepted!, fd %d ip %s port %d",
-                        fd, oAddr.getHost().c_str(), oAddr.getPort());
-
+            if (fd >= 0) {
                 AddEvent(fd, oAddr);
             }
         }
 
-        if (m_bIsEnd)
-        {
-            PLHead("TCP.Acceptor [END]");
+        if (is_eneded_) {
             return;
         }
     }
-    */
 }
 
 void TcpAcceptor::AddEventLoop(EventLoop* event_loop) {
     vec_event_loop_.push_back(event_loop);
 }
 
-/*
-void TcpAcceptor :: AddEvent(int iFD, SocketAddress oAddr)
-{
-    EventLoop * poMinActiveEventLoop = nullptr;
+void TcpAcceptor :: AddEvent(int iFD, SocketAddress oAddr) {
+    EventLoop* min_active_event_loop = nullptr;
     int iMinActiveEventCount = 1 << 30;
 
-    for (auto & poEventLoop : m_vecEventLoop)
-    {
-        int iActiveCount = poEventLoop->GetActiveEventCount();
-        if (iActiveCount < iMinActiveEventCount)
-        {
-            iMinActiveEventCount = iActiveCount;
-            poMinActiveEventLoop = poEventLoop;
+    for (auto& event_loop : vec_event_loop_) {
+        int active_event_count = event_loop->GetActiveEventCount();
+        if (active_event_count < iMinActiveEventCount) {
+            iMinActiveEventCount = active_event_count;
+            min_active_event_loop = event_loop;
         }
     }
 
-    //printf("this %p addevent %p fd %d ip %s port %d\n", 
-            //this, poMinActiveEventLoop, iFD, oAddr.getHost().c_str(), oAddr.getPort());
-    poMinActiveEventLoop->AddEvent(iFD, oAddr);
+    min_active_event_loop->AddEvent(iFD, oAddr);
 }
-*/
     
 }
 

@@ -2,6 +2,7 @@
 
 #include "concurrent.h"
 #include "message_event.h"
+#include "socket.h"
 #include <string>
 #include <vector>
 
@@ -23,10 +24,10 @@ public:
 
     void AddEventLoop(EventLoop* poEventLoop);
 
-    //void AddEvent(int iFD, SocketAddress oAddr);
+    void AddEvent(int iFD, SocketAddress oAddr);
 
 private:
-    //ServerSocket m_oSocket;
+    ServerSocket server_socket_;
     std::vector<EventLoop *> vec_event_loop_;
 
 private:

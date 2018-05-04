@@ -5,6 +5,7 @@
 #include <cstring>
 #include <sys/epoll.h>
 
+
 namespace paxos {
 
 EventLoop::EventLoop(NetWork* network) {
@@ -20,6 +21,12 @@ EventLoop::~EventLoop() {
 
 void EventLoop::ClearEvent() {
     
+}
+
+void EventLoop :: AddEvent(int fd, SocketAddress addr)
+{
+    std::lock_guard<std::mutex> lck(mutex_);
+    queue_socket_addr_.push(std::make_pair(fd, addr));
 }
 
 bool EventLoop::AddTimer(const Event* event, const int timeout, const int type, uint32_t& timer_id) {
@@ -41,7 +48,7 @@ bool EventLoop::AddTimer(const Event* event, const int timeout, const int type, 
 }
 
 void EventLoop::CreateEvent() {
-    std::lock_guard<std::mutex> lock_guard_(mutex_);
+    std::lock_guard<std::mutex> lck(mutex_);
 
     if (false) {
         return;
@@ -89,7 +96,7 @@ void EventLoop::DealwithTimeoutOne(const uint32_t timer_id, const int type) {
 }
 
 int EventLoop::GetActiveEventCount() {
-    std::lock_guard<std::mutex> lock_guard_(mutex_);
+    std::lock_guard<std::mutex> lck(mutex_);
     ClearEvent();
     return 0;
 }
