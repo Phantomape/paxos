@@ -104,7 +104,7 @@ public:
     
     virtual void Close();
 
-    virtual void ReSet();
+    virtual void Reset();
 
 protected:  
 
@@ -179,11 +179,11 @@ public:
 
     void SetAcceptTimeout(int timeout);
 
-    virtual void listen(const SocketAddress& addr, int backlog = SOMAXCONN);
+    virtual void Listen(const SocketAddress& addr, int backlog = SOMAXCONN);
 
-    virtual Socket* accept();
+    virtual Socket* Accept();
 
-    virtual int acceptfd(SocketAddress* addr);
+    virtual int AcceptFd(SocketAddress* addr);
 };
 
 class SocketException : public SysCallException {

@@ -1,4 +1,7 @@
 #include "socket.h"
+#include <fcntl.h>
+#include <sys/socket.h>
+#include <unistd.h>
 
 namespace paxos {
 
@@ -151,6 +154,114 @@ bool SocketAddress::operator ==(const SocketAddress& addr) const {
         return addr_.in.sin_addr.s_addr == addr.addr_.in.sin_addr.s_addr
                 && addr_.in.sin_port == addr.addr_.in.sin_port;
     }
+}
+
+SocketBase::SocketBase() : family_(AF_INET), handle_(-1) {}
+
+SocketBase::SocketBase(int family, int handle) : family_(family), handle_(handle) {
+    if (handle == -1) {
+        InitHandle(family);
+    }
+}
+
+SocketBase::~SocketBase() {
+    if (handle_ != -1) {
+        ::close(handle_);
+        handle_ = -1;
+    }
+}
+
+void SocketBase::InitHandle(int family) {
+    handle_ = ::socket(family, SOCK_STREAM, 0);
+    if (handle_ == -1) {
+        throw SocketException("socket error");
+    }
+}
+
+int SocketBase::GetFamily() const {
+    return family_;
+}
+
+int SocketBase::GetSocketHandle() const {
+    return handle_;
+}
+
+void SocketBase::SetSocketHandle(int handle, int family) {
+    if (handle_ != handle) {
+        Close();
+
+        handle_ = handle;
+        family_ = family;
+    }
+}
+
+int SocketBase::DetachSocketHandle() {
+    int handle = handle_;
+    handle_ = -1;
+    family_ = AF_INET;
+    return handle;
+}
+
+bool SocketBase::GetNonBlocking() const {
+    return GetNonBlocking(handle_);
+}
+
+void SocketBase::SetNonBlocking(bool on) {
+    SetNonBlocking(handle_, on);
+}
+
+bool SocketBase::GetNonBlocking(int fd) {
+    int flags = fcntl(fd, F_GETFL, 0);
+    return flags & O_NONBLOCK;
+}
+
+void SocketBase::SetNonBlocking(int fd, bool on) {
+    int flags = ::fcntl(fd, F_GETFL, 0);
+
+    if (on) {
+        if (flags & O_NONBLOCK) {
+            return;
+        }
+        flags |= O_NONBLOCK;
+    } else {
+        if (!(flags & O_NONBLOCK)) {
+            return;
+        }
+        flags &= ~O_NONBLOCK;
+    }
+
+    if (0 != ::fcntl(fd, F_SETFL, flags)) {
+        ;
+    }
+}
+
+socklen_t SocketBase::GetOption(int level, int option, void* value, socklen_t optLen) const {
+    if (::getsockopt(handle_, level, option, static_cast<char*>(value), &optLen) == -1) {
+        throw SocketException("getsockopt error");
+    }
+    return optLen;
+}
+
+void SocketBase::SetOption(int level, int option, void* value, socklen_t optLen) const {
+    if (::setsockopt(handle_, level, option, static_cast<char*>(value), optLen) == -1) {
+        throw SocketException("setsockopt error");
+    }
+}
+
+void SocketBase::Close() {
+    if (handle_ != -1) {
+        if (::close(handle_) == -1) {
+            handle_ = -1;
+            throw SocketException("close error");
+        } else {
+            handle_ = -1;
+        }
+    }
+}
+
+void SocketBase::Reset() {
+    Close();
+    InitHandle(family_);
 }
 
 }
