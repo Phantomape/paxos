@@ -1,5 +1,6 @@
 #pragma once
 
+#include "exception.h"
 #include <cerrno>
 #include <sys/socket.h>
 #include <netinet/in.h>
