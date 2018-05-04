@@ -25,8 +25,8 @@ public:
     void OnError(bool & bNeedDelete);
 
 private:
-    int pipe_fd[2];
-    std::string host;
+    int pipe_fd_[2];
+    std::string host_;
 };
 
 }
