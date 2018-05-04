@@ -28,13 +28,13 @@ public:
 
     void RemoveEvent(const Event * poEvent);
 
-    void StartLoop();
+    void Start();
 
     void Stop();
 
     void OnError(const int iEvents, Event * poEvent);
 
-    virtual void OneLoop(const int iTimeoutMs);
+    virtual void SingleLoop(const int iTimeoutMs);
 
     // void SetTcpClient(TcpClient * poTcpClient);
 
@@ -44,7 +44,7 @@ public:
 
     void RemoveTimer(const uint32_t iTimerID);
 
-    void DealwithTimeout(int & iNextTimeout);
+    void DealwithTimeout(int& timeout);
 
     void DealwithTimeoutOne(const uint32_t iTimerID, const int iType);
 
@@ -74,7 +74,7 @@ protected:
     std::map<uint32_t, int> mapping_timer_id_2_fd_;
 
     //std::queue<std::pair<int, SocketAddress> > m_oFDQueue;
-    std::mutex m_oMutex;
+    std::mutex mutex_;
     //std::vector<MessageEvent *> m_vecCreatedEvent;
 
 private:
