@@ -2,7 +2,7 @@
 
 namespace paxos {
 
-SysCallException::SysCallException(int err_code, const std::string& err_msg, bool detail = true) 
+SysCallException::SysCallException(int err_code, const std::string& err_msg, bool detail) 
     : err_code_(err_code), err_msg_(err_msg) {
     if (detail) {
         err_msg_.append(", ").append(::strerror(err_code_));

@@ -8,7 +8,7 @@ namespace paxos {
 
 class SysCallException : public std::exception {
 public:
-    SysCallException(int err_code, const std::string& err_msg, bool detail = true) {}
+    SysCallException(int err_code, const std::string& err_msg, bool detail = true);
 
     virtual ~SysCallException() throw () {}
 
