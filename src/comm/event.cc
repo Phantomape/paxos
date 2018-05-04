@@ -71,5 +71,4 @@ const bool Event :: IsDestroy() const {
     return is_destroried_;
 }
 
-
 }
