@@ -8,7 +8,7 @@
 
 namespace paxos {
 
-EventLoop::EventLoop(NetWork* network) {
+EventLoop::EventLoop(Network* network) {
     epoll_fd_ = -1;
     is_ended_ = false;
     this->network = network;

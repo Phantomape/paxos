@@ -1,5 +1,6 @@
 #pragma once
 
+#include <string>
 #include <vector>
 
 namespace paxos {
@@ -127,7 +128,7 @@ public:
             std::vector<std::pair<std::string, int> > & vec_vals) = 0;
 
 protected:
-    friend class NetWork; 
+    friend class Network; 
 
     virtual int OnReceiveMessage(const char * message, const int message_len) = 0;
 };

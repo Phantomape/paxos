@@ -15,12 +15,12 @@ class Event;
 // class TcpAcceptor;
 class TcpClient;
 // class MessageEvent;
-class NetWork;
+class Network;
 
 class EventLoop
 {
 public:
-    EventLoop(NetWork * network);
+    EventLoop(Network * network);
     virtual ~EventLoop();
 
     int Init(const int iEpollLength);
@@ -68,7 +68,7 @@ protected:
     int epoll_fd_;
     epoll_event epoll_events[MAX_NUM_EVENTS];
     std::map<int, EventCtx_t> mapping_id_2_event_context_;
-    NetWork * network;
+    Network * network;
     //TcpClient * m_poTcpClient;
     //Notify * m_poNotify;
     //Timer m_oTimer;
