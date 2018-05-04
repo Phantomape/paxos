@@ -480,4 +480,77 @@ void Socket::Shutdown() {
     }
 }
 
+
+ServerSocket::ServerSocket() {}
+
+ServerSocket::ServerSocket(const SocketAddress& addr) : SocketBase(addr.GetFamily(), -1) {
+    Listen(addr);
+}
+
+ServerSocket::~ServerSocket() {}
+
+void ServerSocket::Listen(const SocketAddress& addr, int backlog) {
+    SocketAddress::Addr localAddr;
+    addr.GetAddress(localAddr);
+
+    if (handle_ == -1 || family_ != addr.GetFamily()) {
+        Close();
+        InitHandle(addr.GetFamily());
+    }
+
+    if (handle_ < 0) {
+        throw SocketException("bad handle");
+    }
+
+    if (addr.GetFamily() == AF_UNIX) {
+        ::unlink(localAddr.un.sun_path);
+    } else {
+        int reuse = 1;
+        SetOption(SOL_SOCKET, SO_REUSEADDR, &reuse, sizeof(reuse));
+    }
+
+    if (::bind(handle_, &localAddr.addr, SocketAddress::GetAddressLength(localAddr)) == -1) {
+        throw SocketException("bind error");
+    }
+
+    if (::listen(handle_, backlog) == -1) {
+        throw SocketException("listen error");
+    }
+}
+
+int ServerSocket::GetAcceptTimeout() const {
+    timeval tv;
+    GetOption(SOL_SOCKET, SO_RCVTIMEO, &tv, sizeof(timeval));
+    return tv.tv_sec * 1000 + tv.tv_usec / 1000;
+}
+
+void ServerSocket::SetAcceptTimeout(int timeout) {
+    timeval tv;
+    tv.tv_sec = timeout / 1000;
+    tv.tv_usec = (timeout % 1000) * 1000;
+    SetOption(SOL_SOCKET, SO_RCVTIMEO, &tv, sizeof(tv));
+}
+
+Socket* ServerSocket::Accept() {
+    int fd = AcceptFd(NULL);
+    if (fd >= 0) {
+        return new Socket(family_, fd);
+    } else {
+        return NULL;
+    }
+}
+
+int ServerSocket::AcceptFd(SocketAddress* addr) {
+    SocketAddress::Addr a;
+    socklen_t n = sizeof(a);
+
+    int fd = ::accept(handle_, &a.addr, &n);
+    if (fd == -1 && (errno != EAGAIN && errno != EWOULDBLOCK)) {
+        throw SocketException("accept error");
+    } else if (fd >= 0 && addr) {
+        addr->SetAddress(a);
+    }
+    return fd;
+}
+
 }
