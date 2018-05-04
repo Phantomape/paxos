@@ -12,7 +12,7 @@ class Network;
 
 class TcpClient {
 public:
-    TcpClient(EventLoop* eventloop, Network* network);
+    TcpClient(EventLoop* event_loop, Network* network);
     ~TcpClient();
 
     int AddMessage(const std::string& ip, const int port, const std::string& message);
@@ -23,7 +23,7 @@ private:
     MessageEvent* CreateEvent(const uint64_t node_id, const std::string& ip, const int port);
     MessageEvent* GetEvent(const std::string& ip, const int port);
     
-    EventLoop* eventloop_;
+    EventLoop* event_loop_;
     Network* network_;
 
     std::map<uint64_t, MessageEvent*> map_event_;

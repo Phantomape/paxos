@@ -24,6 +24,6 @@ add_subdirectory(proto)
 add_executable(Paxos test.cc ${DIR_ROOT_SRCS})
 
 # Link a target to given libraries, e.g. Paxos is linked to CoreLib
-target_link_libraries(Paxos Core)
-target_link_libraries(Paxos Util)
-target_link_libraries(Paxos Comm)
+target_link_libraries(Paxos core)
+target_link_libraries(Paxos util)
+target_link_libraries(Paxos comm)

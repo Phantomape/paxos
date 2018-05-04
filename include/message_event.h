@@ -24,7 +24,7 @@ public:
         const int type, 
         const int fd, 
         const SocketAddress& addr,
-        EventLoop* eventloop,
+        EventLoop* event_loop,
         Network* network
         );
     ~MessageEvent();
@@ -60,6 +60,35 @@ private:
 
     void ReConnect();
 
+    Socket socket_;    
+    SocketAddress addr_;
+    std::string host_;
+    Network* network_;
+    int type_;
+
+    char read_head_buffer_[sizeof(int)];
+    int last_read_head_pos_;
+    //BytesBuffer m_oReadCacheBuffer;
+    int last_read_pos_;
+    int left_read_len_;
+
+    //BytesBuffer m_oWriteCacheBuffer;
+    int last_write_pos_;
+    int left_write_len_;
+
+    struct QueueData
+    {
+        uint64_t llEnqueueAbsTime;
+        std::string * psValue;
+    };    
+
+    std::queue<QueueData> m_oInQueue;
+    int queue_size_;
+    std::mutex mutex_;
+
+    uint64_t last_active_time_;
+
+    uint32_t reconnect_timeout_id_;
 };
 
 }

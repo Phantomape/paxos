@@ -7,8 +7,8 @@
 
 namespace paxos {
 
-TcpClient::TcpClient(EventLoop* eventloop, Network* network) 
-    : eventloop_(eventloop), network_(network) {
+TcpClient::TcpClient(EventLoop* event_loop, Network* network) 
+    : event_loop_(event_loop), network_(network) {
         vec_event_.reserve(1000);
 }
 
@@ -54,7 +54,7 @@ MessageEvent* TcpClient::CreateEvent(const uint64_t node_id, const std::string &
         MessageEventType_SEND, 
         socket.DetachSocketHandle(), 
         addr, 
-        eventloop_, 
+        event_loop_, 
         network_
     );
     assert(event != nullptr);
