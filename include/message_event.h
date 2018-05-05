@@ -3,6 +3,7 @@
 #include "event.h"
 #include "socket.h"
 #include <mutex>
+#include <queue>
 
 namespace paxos {
 

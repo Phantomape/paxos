@@ -13,7 +13,9 @@ struct Packet {
 };
 
 class UdpRecv : public Thread {
+public:
     UdpRecv(DefaultNetwork* default_network);
+    
     ~UdpRecv();
 
     int Init(const int port);
@@ -32,6 +34,7 @@ private:
 class UdpSend : public Thread {
 public:
     UdpSend();
+    
     ~UdpSend();
 
     int Init();
