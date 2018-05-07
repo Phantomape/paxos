@@ -281,5 +281,3 @@ void StateMachineFac::BeforeProposeCall(const int group_idx, const int state_mac
 }
 
 }
-
-
