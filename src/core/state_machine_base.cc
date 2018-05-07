@@ -1,3 +1,4 @@
+#include "def.h"
 #include "paxos_msg.pb.h"
 #include "state_machine_base.h"
 #include <set>
@@ -26,8 +27,7 @@ bool StateMachineFac::Execute(const int group_idx, const uint64_t instance_id, c
     }
 
     std::string sBodyValue = std::string(val.data() + sizeof(int), val.size() - sizeof(int));
-    if (state_machine_id == BATCH_PROPOSE_StateMachineID)
-    {
+    if (state_machine_id == BATCH_PROPOSE_STATE_MACHINE_ID) {
         BatchStateMachineCtx * batch_state_machine_ctx = nullptr;
         if (state_machine_ctx != nullptr && state_machine_ctx->ctx_ != nullptr) {
             batch_state_machine_ctx = (BatchStateMachineCtx *)state_machine_ctx->ctx_;
@@ -42,8 +42,8 @@ bool StateMachineFac::Execute(const int group_idx, const uint64_t instance_id, c
 
 bool StateMachineFac::BatchExecute(const int group_idx, const uint64_t instance_id, const std::string & sBodyValue, BatchStateMachineCtx * batch_state_machine_ctx) {
     BatchPaxosValues oBatchValues;
-    bool bSucc = oBatchValues.ParseFromArray(sBodyValue.data(), sBodyValue.size());
-    if (!bSucc) {
+    bool is_succeeded = oBatchValues.ParseFromArray(sBodyValue.data(), sBodyValue.size());
+    if (!is_succeeded) {
         return false;
     }
 
@@ -98,7 +98,7 @@ bool StateMachineFac::ExecuteForCheckpoint(const int group_idx, const uint64_t i
     }
 
     std::string sBodyValue = std::string(val.data() + sizeof(int), val.size() - sizeof(int));
-    if (state_machine_id == BATCH_PROPOSE_StateMachineID) {
+    if (state_machine_id == BATCH_PROPOSE_STATE_MACHINE_ID) {
         return BatchExecuteForCheckpoint(group_idx, instance_id, sBodyValue);
     }
     else {
@@ -109,8 +109,8 @@ bool StateMachineFac::ExecuteForCheckpoint(const int group_idx, const uint64_t i
 bool StateMachineFac::BatchExecuteForCheckpoint(const int group_idx, const uint64_t instance_id, 
         const std::string & sBodyValue) {
     BatchPaxosValues oBatchValues;
-    bool bSucc = oBatchValues.ParseFromArray(sBodyValue.data(), sBodyValue.size());
-    if (!bSucc) {   
+    bool is_succeeded = oBatchValues.ParseFromArray(sBodyValue.data(), sBodyValue.size());
+    if (!is_succeeded) {   
         return false;
     }
 
@@ -145,8 +145,7 @@ bool StateMachineFac::DoExecuteForCheckpoint(const int group_idx, const uint64_t
 }
 
 
-void StateMachineFac::PackPaxosValue(std::string & val, const int state_machine_id)
-{
+void StateMachineFac::PackPaxosValue(std::string & val, const int state_machine_id) {
     char sStateMachineID[sizeof(int)] = {0};
     if (state_machine_id != 0)
     {
@@ -156,12 +155,9 @@ void StateMachineFac::PackPaxosValue(std::string & val, const int state_machine_
     val = std::string(sStateMachineID, sizeof(sStateMachineID)) + val;
 }
 
-void StateMachineFac::AddStateMachine(StateMachine * state_machine)
-{
-    for (auto & state_machinet : vec_state_machine_list_)
-    {
-        if (state_machinet->StateMachineId() == state_machine->StateMachineId())
-        {
+void StateMachineFac::AddStateMachine(StateMachine * state_machine) {
+    for (auto & state_machinet : vec_state_machine_list_) {
+        if (state_machinet->StateMachineId() == state_machine->StateMachineId()) {
             return;
         }
     }
@@ -169,16 +165,15 @@ void StateMachineFac::AddStateMachine(StateMachine * state_machine)
     vec_state_machine_list_.push_back(state_machine);
 }
 
-const uint64_t StateMachineFac::GetCheckpointInstanceId(const int group_idx) const
-{
+const uint64_t StateMachineFac::GetCheckpointInstanceId(const int group_idx) const {
     uint64_t checkpoint_instance_id = -1;
     uint64_t checkpoint_instance_id_Insize = -1;
     bool use_state_machine = false;
 
     for (auto & state_machine : vec_state_machine_list_) {
         uint64_t checkpoint_instance_id = state_machine->GetCheckpointInstanceId(group_idx);
-        if (state_machine->StateMachineId() == SYSTEM_V_StateMachineID
-                || state_machine->StateMachineId() == MASTER_V_StateMachineID) {
+        if (state_machine->StateMachineId() == SYSTEM_V_STATE_MACHINE_ID
+                || state_machine->StateMachineId() == MASTER_V_STATE_MACHINE_ID) {
             //system variables 
             //master variables
             //if no user state machine, system and master's can use.
@@ -202,8 +197,7 @@ const uint64_t StateMachineFac::GetCheckpointInstanceId(const int group_idx) con
         }
         
         if (checkpoint_instance_id > checkpoint_instance_id
-                || checkpoint_instance_id == (uint64_t)-1)
-        {
+                || checkpoint_instance_id == (uint64_t)-1) {
             checkpoint_instance_id = checkpoint_instance_id;
         }
     }
@@ -211,46 +205,37 @@ const uint64_t StateMachineFac::GetCheckpointInstanceId(const int group_idx) con
     return use_state_machine ? checkpoint_instance_id : checkpoint_instance_id_Insize;
 }
 
-std::vector<StateMachine *> StateMachineFac::GetStateMachineList()
-{
+std::vector<StateMachine *> StateMachineFac::GetStateMachineList() {
     return vec_state_machine_list_;
 }
-
-//////////////////////////////////////////////////////////////////////
 
 void StateMachineFac::BeforePropose(const int group_idx, std::string & sValue)
 {
     int state_machine_id = 0;
     memcpy(&state_machine_id, sValue.data(), sizeof(int));
 
-    if (state_machine_id == 0)
-    {
+    if (state_machine_id == 0) {
         return;
     }
 
-    if (state_machine_id == BATCH_PROPOSE_StateMachineID)
-    {
+    if (state_machine_id == BATCH_PROPOSE_STATE_MACHINE_ID) {
         BeforeBatchPropose(group_idx, sValue);
     }
-    else
-    {
+    else {
         bool change = false;
         std::string sBodyValue = std::string(sValue.data() + sizeof(int), sValue.size() - sizeof(int));
         BeforeProposeCall(group_idx, state_machine_id, sBodyValue, change);
-        if (change)
-        {
+        if (change) {
             sValue.erase(sizeof(int));
             sValue.append(sBodyValue);
         }
     }
 }
 
-void StateMachineFac::BeforeBatchPropose(const int group_idx, std::string & sValue)
-{
+void StateMachineFac::BeforeBatchPropose(const int group_idx, std::string & sValue) {
     BatchPaxosValues oBatchValues;
-    bool bSucc = oBatchValues.ParseFromArray(sValue.data() + sizeof(int), sValue.size() - sizeof(int));
-    if (!bSucc)
-    {
+    bool is_succeeded = oBatchValues.ParseFromArray(sValue.data() + sizeof(int), sValue.size() - sizeof(int));
+    if (!is_succeeded) {
         return;
     }
 
@@ -269,29 +254,24 @@ void StateMachineFac::BeforeBatchPropose(const int group_idx, std::string & sVal
 
     if (change) {
         std::string sBodyValue;
-        bSucc = oBatchValues.SerializeToString(&sBodyValue);
-        assert(bSucc == true);
+        is_succeeded = oBatchValues.SerializeToString(&sBodyValue);
+        assert(is_succeeded == true);
         sValue.erase(sizeof(int));
         sValue.append(sBodyValue);
     }
 }
 
-void StateMachineFac::BeforeProposeCall(const int group_idx, const int state_machine_id, std::string & sBodyValue, bool & change)
-{
-    if (state_machine_id == 0)
-    {
+void StateMachineFac::BeforeProposeCall(const int group_idx, const int state_machine_id, std::string & sBodyValue, bool & change) {
+    if (state_machine_id == 0) {
         return;
     }
 
-    if (vec_state_machine_list_.size() == 0)
-    {
+    if (vec_state_machine_list_.size() == 0) {
         return;
     }
 
-    for (auto & state_machine : vec_state_machine_list_)
-    {
-        if (state_machine->StateMachineId() == state_machine_id)
-        {
+    for (auto & state_machine : vec_state_machine_list_) {
+        if (state_machine->StateMachineId() == state_machine_id) {
             if (state_machine->NeedCallBeforePropose()) {
                 change  = true;
                 return state_machine->BeforePropose(group_idx, sBodyValue);
