@@ -1,5 +1,7 @@
 #pragma once
 
+#include "internal_options.h"
+#include "options.h"
 #include <string>
 #include <vector>
 
@@ -12,18 +14,18 @@ public:
     Node() {}
     virtual ~Node() {}
 
-    static int Run(Node*& node);
+    static int Run(const Options& options, Node*& node);
 
     //Base function.
     virtual int Propose(const int group_idx, const std::string& val, uint64_t& instance_id) = 0;
 
     // virtual int Propose(const int group_idx, const std::string& val, uint64_t& instance_id) = 0;
 
-    virtual const uint64_t GetCurrentInstanceID(const int group_idx) = 0;
+    virtual const uint64_t GetCurrentInstanceId(const int group_idx) = 0;
 
-    virtual const uint64_t GetMinChosenInstanceID(const int group_idx) = 0;
+    virtual const uint64_t GetMinChosenInstanceId(const int group_idx) = 0;
 
-    virtual const uint64_t GetNodeID() const = 0;
+    virtual const uint64_t GetNodeId() const = 0;
 
     //Batch propose.
     
@@ -123,7 +125,7 @@ public:
 
     //Not suggest to use this function
     //pair: value,smid.
-    //Because of BatchPropose, a InstanceID maybe include multi-value.
+    //Because of BatchPropose, a InstanceId maybe include multi-value.
     virtual int GetInstanceValue(const int group_idx, const uint64_t instance_id, 
             std::vector<std::pair<std::string, int> > & vec_vals) = 0;
 
