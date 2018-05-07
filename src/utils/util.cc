@@ -1,8 +1,9 @@
 #include "util.h"
+#include <thread>
 
 namespace paxos {
 
-uint64_t OtherUtils :: GenGid(const uint64_t llNodeID)
+uint64_t Util::GenGid(const uint64_t llNodeID)
 {
     return (llNodeID ^ FastRand()) + FastRand();
 }
@@ -54,7 +55,7 @@ static void InitFastRandomSeed()
     ResetFastRandomSeed();
 }
 
-const uint32_t OtherUtils :: FastRand()
+const uint32_t Util::FastRand()
 {
     if (!seed_thread_safe.init)
     {
