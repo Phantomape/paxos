@@ -36,3 +36,6 @@
 
 # Built files
 build/*
+
+# Third party
+third_party/*
