@@ -17,7 +17,6 @@ int Node::Run(const Options & oOptions, Node *& poNode)
 
     //Breakpoint::m_poBreakpoint = nullptr;
     //BP->SetInstance(oOptions.poBreakpoint);
-
     /*
     PNode * poRealNode = new PNode();
     int ret = poRealNode->Init(oOptions, network);
@@ -38,7 +37,6 @@ int Node::Run(const Options & oOptions, Node *& poNode)
 
     poNode = poRealNode;
     */
-   
     return 0;
 }
     
