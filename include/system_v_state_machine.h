@@ -19,13 +19,14 @@ public:
             const uint64_t iMyNodeID,
             const LogStorage * poLogStorage,
             MembershipChangeCallback pMembershipChangeCallback);
+            
     ~SystemVSM();
 
     int Init();
 
     bool Execute(const int iGroupIdx, const uint64_t llInstanceID, const std::string & sValue, StateMachineCtx * poSMCtx);
 
-    const int SMID() const {return SYSTEM_V_STATE_MACHINE_ID;}
+    const int StateMachineId() const;
 
 public:
     const uint64_t GetGid() const;

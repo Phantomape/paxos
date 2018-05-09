@@ -18,6 +18,10 @@ SystemVSM::~SystemVSM()
 {
 }
 
+const int SystemVSM::StateMachineId() const {
+    return SYSTEM_V_STATE_MACHINE_ID;
+}
+
 int SystemVSM::Init()
 {
     int ret = m_oSystemVStore.Read(m_iMyGroupIdx, m_oSystemVariables);
