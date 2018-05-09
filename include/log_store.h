@@ -1,5 +1,7 @@
 #pragma once
 
+#include "bytes_buffer.h"
+#include "log_storage.h"
 #include <string>
 #include <mutex>
 
@@ -7,7 +9,7 @@ namespace paxos {
 
 class Database;
 
-#define FILEID_LEN (sizeof(int) + sizeof(int) + sizeof(uint32_t))
+#define FILEId_LEN (sizeof(int) + sizeof(int) + sizeof(uint32_t))
 
 class LogStoreLogger {
 public:
@@ -15,74 +17,72 @@ public:
 
     ~LogStoreLogger();
 
-    void Init(const std::string & sPath);
+    void Init(const std::string & path);
+
     void Log(const char * pcFormat, ...);
 
 private:
-    int m_iLogFd;
+    int log_fd_;
 };
 
 class LogStore {
 public:
     LogStore();
+
     ~LogStore();
 
-    int Init(const std::string & sPath, const int iMyGroupIdx, Database * poDatabase);
+    int Init(const std::string & path, const int iMyGroupIdx, Database * database);
 
-    int Append(const WriteOptions & oWriteOptions, const uint64_t llInstanceID, const std::string & sBuffer, std::string & sFileID);
+    int Append(const WriteOptions & write_options, const uint64_t instance_id, const std::string & sBuffer, std::string & file_id);
 
-    int Read(const std::string & sFileID, uint64_t & llInstanceID, std::string & sBuffer);
+    int Read(const std::string & file_id, uint64_t & instance_id, std::string & sBuffer);
 
-    int Del(const std::string & sFileID, const uint64_t llInstanceID);
+    int Del(const std::string & file_id, const uint64_t instance_id);
 
-    int ForceDel(const std::string & sFileID, const uint64_t llInstanceID);
+    int ForceDel(const std::string & file_id, const uint64_t instance_id);
 
-    ////////////////////////////////////////////
-
-    const bool IsValidFileID(const std::string & sFileID);
-
-    ////////////////////////////////////////////
+    const bool IsValidFileId(const std::string & file_id);
     
-    int RebuildIndex(Database * poDatabase, int & iNowFileWriteOffset);
+    int RebuildIndex(Database * database, int & current_file_write_offset);
 
-    int RebuildIndexForOneFile(const int iFileID, const int iOffset, 
-            Database * poDatabase, int & iNowFileWriteOffset, uint64_t & llNowInstanceID);
+    int RebuildIndexForOneFile(const int file_id, const int offset, 
+            Database * database, int & current_file_write_offset, uint64_t & llNowInstanceId);
 
 private:
-    void GenFileID(const int iFileID, const int iOffset, const uint32_t iCheckSum, std::string & sFileID);
+    void GenFileId(const int int_file_id, const int offset, const uint32_t iCheckSum, std::string & file_id);
 
-    void ParseFileID(const std::string & sFileID, int & iFileID, int & iOffset, uint32_t & iCheckSum);
+    void ParseFileId(const std::string & file_id, int & int_file_id, int & offset, uint32_t & iCheckSum);
 
-    int IncreaseFileID();
+    int IncreaseFileId();
 
-    int OpenFile(const int iFileID, int & iFd);
+    int OpenFile(const int file_id, int & fd);
 
-    int DeleteFile(const int iFileID);
+    int DeleteFile(const int file_id);
 
-    int GetFileFD(const int iNeedWriteSize, int & iFd, int & iFileID, int & iOffset);
+    int GetFileFD(const int need_write_size, int & fd, int & file_id, int & offset);
 
-    int ExpandFile(int iFd, int & iFileSize);
+    int ExpandFile(int fd, int & iFileSize);
     
 private:
-    int m_iFd;
-    int m_iMetaFd;
-    int m_iFileID;
-    std::string m_sPath;
-    BytesBuffer m_oTmpBuffer;
-    BytesBuffer m_oTmpAppendBuffer;
+    int fd_;
+    int meta_fd_;
+    int file_id_;
+    std::string path_;
+    BytesBuffer tmp_buffer_;
+    BytesBuffer tmp_append_buffer_;
 
-    std::mutex m_oMutex;
-    std::mutex m_oReadMutex;
+    std::mutex mutex_;
+    std::mutex read_mutex_;
 
-    int m_iDeletedMaxFileID;
-    int m_iMyGroupIdx;
+    int deleted_max_file_id_;
+    int group_idx_;
 
-    int m_iNowFileSize;
-    int m_iNowFileOffset;
+    int current_file_size_;
+    int current_file_offset_;
 
 private:
-    TimeStat m_oTimeStat;
-    LogStoreLogger m_oFileLogger;
+    TimeStat time_stat_;
+    LogStoreLogger file_logger_;
 };
 
 }
