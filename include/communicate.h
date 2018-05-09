@@ -9,9 +9,9 @@ enum Message_SendType {
     Message_SendType_TCP = 1,
 };
 
-class MsgTransport {
+class Communicate {
 public:
-    virtual ~MsgTransport() {}
+    virtual ~Communicate() {}
 
     virtual int SendMessage(
         const int group_idx, 
