@@ -12,7 +12,7 @@ class CheckpointMgr
 public:
     CheckpointMgr(
             Config * poConfig,
-            SMFac * poSMFac, 
+            StateMachineFac * poSMFac, 
             LogStorage * poLogStorage,
             const bool bUseCheckpointReplayer);
 
@@ -51,7 +51,7 @@ public:
 private:
     Config * m_poConfig;
     LogStorage * m_poLogStorage;
-    SMFac * m_poSMFac;
+    StateMachineFac * m_poSMFac;
     
     Replayer m_oReplayer;
     Cleaner m_oCleaner;

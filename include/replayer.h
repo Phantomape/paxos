@@ -6,7 +6,7 @@
 namespace paxos {
 
 class Config;
-class SMFac;
+class StateMachineFac;
 class LogStorage;
 class CheckpointMgr;
     
@@ -15,7 +15,7 @@ class Replayer : public Thread
 public:
     Replayer(
             Config * poConfig,
-            SMFac * poSMFac, 
+            StateMachineFac * poSMFac, 
             LogStorage * poLogStorage,
             CheckpointMgr * poCheckpointMgr);
 
@@ -23,7 +23,7 @@ public:
 
     void Stop();
 
-    void run();
+    void Run();
 
     void Pause();
 
@@ -36,7 +36,7 @@ private:
 
 private:
     Config * m_poConfig;
-    SMFac * m_poSMFac;
+    StateMachineFac * m_poSMFac;
     PaxosLog m_oPaxosLog;
     CheckpointMgr * m_poCheckpointMgr;
 
