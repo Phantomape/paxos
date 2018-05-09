@@ -15,6 +15,7 @@ aux_source_directory(. DIR_ROOT_SRCS)
 
 # Include header files
 include_directories(include)
+include_directories(third_party/leveldb/build/include)
 
 add_subdirectory(src/comm)
 add_subdirectory(src/conf)
