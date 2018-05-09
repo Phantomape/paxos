@@ -82,7 +82,7 @@ private:
 
 public:
 //private:
-    leveldb::Db * m_poLevelDb;
+    leveldb::DB * m_poLevelDb;
     PaxosComparator m_oPaxosCmp;
     bool m_bHasInit;
     

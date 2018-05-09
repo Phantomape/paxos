@@ -2,8 +2,7 @@
 #include "util.h"
 #include <algorithm> 
 
-namespace paxos
-{
+namespace paxos {
 
 Timer::Timer() : current_timer_id_(1) {
 }
