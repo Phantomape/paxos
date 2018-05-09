@@ -2,6 +2,7 @@
 
 #include "bytes_buffer.h"
 #include "log_storage.h"
+#include "util.h"
 #include <string>
 #include <mutex>
 

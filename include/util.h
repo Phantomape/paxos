@@ -1,6 +1,7 @@
 #pragma once
 
 #include <stdint.h>
+#include <string>
 #include <vector>
 
 namespace paxos {
@@ -23,11 +24,11 @@ public:
 
 class FileUtils {
 public:
-    static int IsDir(const std::string & sPath, bool & bIsDir);
+    static int IsDir(const std::string& path, bool& is_dir);
 
-    static int DeleteDir(const std::string & sDirPath);
+    static int DeleteDir(const std::string& dir_path);
 
-    static int IterDir(const std::string & sDirPath, std::vector<std::string> & vecFilePathList);
+    static int IterDir(const std::string& dir_path, std::vector<std::string> & vec_file_path_list);
 };
 
 class TimeStat {

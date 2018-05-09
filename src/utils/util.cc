@@ -1,4 +1,5 @@
 #include "util.h"
+#include <chrono>
 #include <thread>
 
 namespace paxos {
@@ -59,14 +60,14 @@ const uint32_t Util::FastRand() {
 
 
 const uint64_t Time::GetTimestampMS()  {
-    auto now_time = chrono::system_clock::now();
-    uint64_t now = (chrono::duration_cast<chrono::milliseconds>(now_time.time_since_epoch())).count();
+    auto now_time = std::chrono::system_clock::now();
+    uint64_t now = (std::chrono::duration_cast<std::chrono::milliseconds>(now_time.time_since_epoch())).count();
     return now;
 }
 
 const uint64_t Time::GetSteadyClockMS() {
-    auto now_time = chrono::steady_clock::now();
-    uint64_t now = (chrono::duration_cast<chrono::milliseconds>(now_time.time_since_epoch())).count();
+    auto now_time = std::chrono::steady_clock::now();
+    uint64_t now = (std::chrono::duration_cast<std::chrono::milliseconds>(now_time.time_since_epoch())).count();
     return now;
 }
 
@@ -79,16 +80,15 @@ TimeStat::TimeStat() {
 }
 
 int TimeStat::Point() {
-    uint64_t llNowTime = Time::GetSteadyClockMS();
-    int llPassTime = 0;
-    if (llNowTime > time_)
-    {
-        llPassTime = llNowTime - time_;
+    uint64_t current_time = Time::GetSteadyClockMS();
+    int passed_time = 0;
+    if (current_time > time_) {
+        passed_time = current_time - time_;
     }
 
-    time_ = llNowTime;
+    time_ = current_time;
 
-    return llPassTime;
+    return passed_time;
 }
 
 }
