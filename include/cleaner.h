@@ -1,5 +1,6 @@
 #pragma once
 
+#include "concurrent.h"
 #include <typeinfo>
 
 namespace paxos {
@@ -12,8 +13,7 @@ class StateMachineFac;
 class LogStorage;
 class CheckpointMgr;
 
-class Cleaner : public Thread
-{
+class Cleaner : public Thread {
 public:
     Cleaner(
             Config * poConfig,
