@@ -25,7 +25,7 @@ public:
 
     void Stop();
 
-    void run();
+    void Run();
 
     void Pause();
 
