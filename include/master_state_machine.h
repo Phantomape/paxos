@@ -28,7 +28,7 @@ public:
 
     bool Execute(const int iGroupIdx, const uint64_t llInstanceID, const std::string & sValue, StateMachineCtx * poSMCtx);
 
-    const int SMID() const {return MASTER_V_STATE_MACHINE_ID;}
+    const int StateMachineId() const;
 
     bool ExecuteForCheckpoint(const int iGroupIdx, const uint64_t llInstanceID, 
             const std::string & sPaxosValue)

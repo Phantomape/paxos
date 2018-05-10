@@ -79,6 +79,10 @@ int MasterStateMachine::UpdateMasterToStore(const uint64_t llMasterNodeID, const
     return m_oMVStore.Write(oWriteOptions, m_iMyGroupIdx, oVariables);
 }
 
+const int MasterStateMachine::StateMachineId() const {
+    return MASTER_V_STATE_MACHINE_ID;
+}
+
 int MasterStateMachine::LearnMaster(
         const uint64_t llInstanceID, 
         const MasterOperator & oMasterOper, 
