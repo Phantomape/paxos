@@ -2,6 +2,7 @@
 
 #include "internal_options.h"
 #include "options.h"
+#include "state_machine.h"
 #include <string>
 #include <vector>
 
@@ -19,7 +20,7 @@ public:
     //Base function.
     virtual int Propose(const int group_idx, const std::string& val, uint64_t& instance_id) = 0;
 
-    // virtual int Propose(const int group_idx, const std::string& val, uint64_t& instance_id) = 0;
+    virtual int Propose(const int iGroupIdx, const std::string & sValue, uint64_t & llInstanceID, StateMachineCtx * poSMCtx) = 0;
 
     virtual const uint64_t GetCurrentInstanceId(const int group_idx) = 0;
 

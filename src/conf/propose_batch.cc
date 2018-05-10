@@ -1,8 +1,9 @@
 #include "def.h"
+#include "notifier_pool.h"
+#include "paxos_msg.pb.h"
 #include "propose_batch.h"
 #include "state_machine_base.h"
 #include "util.h"
-#include "paxos_msg.pb.h"
 #include <assert.h>
 #include <chrono>
 #include <vector>
@@ -16,7 +17,7 @@ uint64_t GetThreadID() {
 }
 
 PendingProposal::PendingProposal()
-    : psValue(nullptr), poSMCtx(nullptr), pllInstanceID(nullptr), 
+    : psValue(nullptr), poStateMachineCtx(nullptr), pllInstanceID(nullptr), 
     piBatchIndex(nullptr), poNotifier(nullptr), llAbsEnqueueTime(0)
 {
 }
@@ -127,7 +128,7 @@ void ProposeBatch::AddProposal(const std::string & sValue, uint64_t & llInstance
     PendingProposal oPendingProposal;
     oPendingProposal.poNotifier = poNotifier;
     oPendingProposal.psValue = &sValue;
-    oPendingProposal.poSMCtx = poStateMachineCtx;
+    oPendingProposal.poStateMachineCtx = poStateMachineCtx;
     oPendingProposal.pllInstanceID = &llInstanceID;
     oPendingProposal.piBatchIndex = &iBatchIndex;
     oPendingProposal.llAbsEnqueueTime = Time::GetSteadyClockMS();
@@ -234,8 +235,12 @@ void ProposeBatch::PluckProposal(std::vector<PendingProposal> & vecRequest)
 
 void ProposeBatch::OnlyOnePropose(PendingProposal & oPendingProposal)
 {
-    int ret = m_poPaxosNode->Propose(m_iMyGroupIdx, *oPendingProposal.psValue,
-            *oPendingProposal.pllInstanceID, oPendingProposal.poSMCtx);
+    int ret = m_poPaxosNode->Propose(
+        m_iMyGroupIdx, 
+        *oPendingProposal.psValue, 
+        *oPendingProposal.pllInstanceID, 
+        oPendingProposal.poStateMachineCtx
+        );
     oPendingProposal.poNotifier->SendNotify(ret);
 }
 
@@ -259,10 +264,10 @@ void ProposeBatch::DoPropose(std::vector<PendingProposal> & vecRequest)
     for (auto & oPendingProposal : vecRequest)
     {
         PaxosValue * poValue = oBatchValues.add_values();
-        poValue->set_smid(oPendingProposal.poSMCtx != nullptr ? oPendingProposal.poSMCtx->m_iSMID : 0);
+        poValue->set_smid(oPendingProposal.poStateMachineCtx != nullptr ? oPendingProposal.poStateMachineCtx->state_machine_id_ : 0);
         poValue->set_value(*oPendingProposal.psValue);
 
-        oBatchStateMachineCtx.vec_state_machine_ctx_list_.push_back(oPendingProposal.poSMCtx);
+        oBatchStateMachineCtx.vec_state_machine_ctx_list_.push_back(oPendingProposal.poStateMachineCtx);
     }
 
     StateMachineCtx oCtx;

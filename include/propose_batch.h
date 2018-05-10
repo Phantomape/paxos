@@ -1,6 +1,7 @@
 #pragma once
 
 #include "node.h"
+#include "state_machine.h"
 #include <mutex>
 #include <queue>
 #include <condition_variable>
@@ -14,7 +15,7 @@ class PendingProposal
 public:
     PendingProposal();
     const std::string * psValue;
-    SMCtx * poSMCtx;
+    StateMachineCtx * poStateMachineCtx;
 
     //return parameter
     uint64_t * pllInstanceID; 
@@ -38,7 +39,7 @@ public:
 
     void Stop();
 
-    int Propose(const std::string & sValue, uint64_t & llInstanceID, uint32_t & iBatchIndex, SMCtx * poSMCtx);
+    int Propose(const std::string & sValue, uint64_t & llInstanceID, uint32_t & iBatchIndex, StateMachineCtx * poStateMachineCtx);
 
 public:
     void SetBatchCount(const int iBatchCount);
@@ -49,7 +50,7 @@ protected:
 
 private:
     void AddProposal(const std::string & sValue, uint64_t & llInstanceID, uint32_t & iBatchIndex, 
-            SMCtx * poSMCtx, Notifier * poNotifier);
+            StateMachineCtx * poStateMachineCtx, Notifier * poNotifier);
     void PluckProposal(std::vector<PendingProposal> & vecRequest);
     void OnlyOnePropose(PendingProposal & oPendingProposal);
     const bool NeedBatch();
