@@ -59,7 +59,7 @@ void MasterMgr::RunMaster()
     Start();
 }
 
-void MasterMgr::run()
+void MasterMgr::Run()
 {
     m_bIsStarted = true;
 

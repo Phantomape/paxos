@@ -6,6 +6,12 @@ IoLoop::IoLoop(Instance* instance) : instance(instance) {}
 
 IoLoop::~IoLoop() {}
 
+void IoLoop::AddNotify() {
+    message_queue.lock();
+    message_queue.add(nullptr);
+    message_queue.unlock();
+}
+
 int IoLoop::AddRetryPaxosMsg(const PaxosMsg& paxos_msg) {
     if (retry_queue.size() > RETRY_QUEUE_MAX_LEN) {
         retry_queue.pop();

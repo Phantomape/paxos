@@ -15,6 +15,7 @@ public:
     IoLoop(Instance* instance);
     virtual ~IoLoop();
 
+    void AddNotify();
     int AddRetryPaxosMsg(const PaxosMsg& paxos_msg);
     void ClearRetryQueue();
     void Init(const int timeout_ms);

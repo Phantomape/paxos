@@ -1,3 +1,4 @@
+#include "def.h"
 #include "instance.h"
 #include "acceptor.h"
 #include "learner.h"
@@ -81,6 +82,35 @@ int Instance::ForwardToProposer(const PaxosMsg& paxos_msg) {
     else if (paxos_msg.msgtype() == 4) {
         proposer.OnAccept(paxos_msg);
     }
+
+    return 0;
+}
+
+int Instance :: GetInstanceValue(const uint64_t llInstanceID, std::string & sValue, int & iSMID)
+{
+    iSMID = 0;
+
+    if (llInstanceID >= acceptor.GetInstanceId())
+    {
+        return Paxos_GetInstanceValue_Value_Not_Chosen_Yet;
+    }
+
+    AcceptorStateData oState; 
+    /*
+    int ret = m_oPaxosLog.ReadState(m_poConfig->GetMyGroupIdx(), llInstanceID, oState);
+    if (ret != 0 && ret != 1)
+    {
+        return -1;
+    }
+
+    if (ret == 1)
+    {
+        return Paxos_GetInstanceValue_Value_NotExist;
+    }
+    */
+
+    memcpy(&iSMID, oState.acceptedvalue().data(), sizeof(int));
+    sValue = std::string(oState.acceptedvalue().data() + sizeof(int), oState.acceptedvalue().size() - sizeof(int));
 
     return 0;
 }

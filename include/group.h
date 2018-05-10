@@ -1,5 +1,6 @@
 #pragma once
 
+#include "committer.h"
 #include "instance.h"
 #include "cleaner.h"
 #include "communicator.h"
@@ -51,5 +52,5 @@ private:
     int m_iInitRet;
     std::thread * m_poThread;
 };
-    
+
 }

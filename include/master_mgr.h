@@ -23,7 +23,7 @@ public:
 
     int Init();
 
-    void run();
+    void Run();
 
     void SetLeaseTime(const int iLeaseTimeMs);
 

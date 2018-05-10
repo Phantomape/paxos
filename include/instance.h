@@ -21,7 +21,12 @@ public:
     int ForwardToLearner(const PaxosMsg& paxos_msg);
     int ForwardToProposer(const PaxosMsg& paxos_msg);
 
+    int GetInstanceValue(const uint64_t instance_id, std::string & val, int & state_machine_id);
+
     int Init();
+    
+    int OnReceiveMessage(const char * msg, const int msg_len);
+
     void Start();
     void Stop();
 
