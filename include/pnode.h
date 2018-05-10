@@ -1,6 +1,8 @@
 #pragma once
 
+#include "default_network.h"
 #include "node.h"
+#include "notifier_pool.h"
 #include "options.h"
 #include "db.h"
 #include "default_network.h"
@@ -25,8 +27,8 @@ public:
 public:
     int Propose(const int iGroupIdx, const std::string & sValue, uint64_t & llInstanceID);
     int Propose(const int iGroupIdx, const std::string & sValue, uint64_t & llInstanceID, StateMachineCtx * poStateMachineCtx);
-    const uint64_t GetNowInstanceID(const int iGroupIdx);
-    const uint64_t GetMinChosenInstanceID(const int iGroupIdx);
+    const uint64_t GetCurrentInstanceId(const int iGroupIdx);
+    const uint64_t GetMinChosenInstanceId(const int iGroupIdx);
 
 public:
     //batch
@@ -41,7 +43,7 @@ public:
     void AddStateMachine(StateMachine * poSM);
     void AddStateMachine(const int iGroupIdx, StateMachine * poSM);
     int OnReceiveMessage(const char * pcMessage, const int iMessageLen);
-    const uint64_t GetMyNodeID() const;
+    const uint64_t GetMyNodeId() const;
     void SetTimeoutMs(const int iTimeoutMs);
 
 public:
@@ -98,7 +100,7 @@ private:
 
 private:
     MultiDatabase m_oDefaultLogStorage;
-    DFNetwork m_oDefaultNetwork;
+    DefaultNetwork m_oDefaultNetwork;
     NotifierPool m_oNotifierPool;
 
     uint64_t m_iMyNodeID;
