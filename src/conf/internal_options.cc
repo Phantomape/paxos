@@ -1,5 +1,4 @@
 #include "internal_options.h"
-#include "util.h"
 
 namespace paxos {
 

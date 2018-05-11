@@ -1,5 +1,6 @@
 #pragma once
 
+#include "log.h"
 #include <functional>
 #include <string>
 #include <vector>
@@ -35,6 +36,7 @@ public:
 
 private:
     void CreateNodeId();
+
     void ParseNodeId();
 
     uint64_t node_id_;
@@ -185,13 +187,13 @@ public:
     //optional
     //Notice, this function must be thread safe!
     //if pLogFunc == nullptr, we will print log to standard ouput.
-    //LogFunc pLogFunc;
+    LogFunc log_func_;
 
     //optional
     //If you use your own log function, then you control loglevel yourself, ignore this.
     //Check log.h to find 5 level.
     //Default is LogLevel::LogLevel_None, that means print no log.
-    //LogLevel eLogLevel;
+    LogLevel log_level_;
 
     //optional
     //If you use checkpoint replayer feature, set as true.
