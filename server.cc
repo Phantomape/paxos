@@ -38,16 +38,14 @@ PhxEchoServer::~PhxEchoServer()
     delete m_poPaxosNode;
 }
 
-int PhxEchoServer::MakeLogStoragePath(std::string & sLogStoragePath)
-{
+int PhxEchoServer::MakeLogStoragePath(std::string & sLogStoragePath) {
     char sTmp[128] = {0};
+    snprintf(sTmp, sizeof(sTmp), "./logpath_%s_%d", m_oMyNode.GetIp().c_str(), m_oMyNode.GetPort());
 
     sLogStoragePath = string(sTmp);
 
-    if (access(sLogStoragePath.c_str(), F_OK) == -1)
-    {
-        if (mkdir(sLogStoragePath.c_str(), S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH) == -1)
-        {       
+    if (access(sLogStoragePath.c_str(), F_OK) == -1) {
+        if (mkdir(sLogStoragePath.c_str(), S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH) == -1) {       
             printf("Create dir fail, path %s\n", sLogStoragePath.c_str());
             return -1;
         }       
@@ -56,38 +54,35 @@ int PhxEchoServer::MakeLogStoragePath(std::string & sLogStoragePath)
     return 0;
 }
 
-int PhxEchoServer::Run()
-{
-    paxos::Options oOptions;
+int PhxEchoServer::Run() {
+    paxos::Options options;
 
-    int ret = MakeLogStoragePath(oOptions.log_storage_path_);
-    if (ret != 0)
-    {
+    int ret = MakeLogStoragePath(options.log_storage_path_);
+    if (ret != 0) {
         return ret;
     }
 
     //this groupcount means run paxos group count.
     //every paxos group is independent, there are no any communicate between any 2 paxos group.
-    oOptions.group_count_ = 1;
+    options.group_count_ = 1;
 
-    oOptions.node_ = m_oMyNode;
-    oOptions.vec_node_info_list_ = m_vecNodeList;
+    options.node_ = m_oMyNode;
+    options.vec_node_info_list_ = m_vecNodeList;
 
     GroupStateMachineInfo oSMInfo;
     oSMInfo.group_idx_ = 0;
     //one paxos group can have multi state machine.
     oSMInfo.vec_state_machine_list_.push_back(&m_oEchoSM);
-    oOptions.vec_group_state_machine_info_list_.push_back(oSMInfo);
+    options.vec_group_state_machine_info_list_.push_back(oSMInfo);
 
     //use logger_google to print log
     LogFunc log_func;
 
     //set logger
-    oOptions.log_func_ = log_func;
+    options.log_func_ = log_func;
 
-    ret = Node::Run(oOptions, m_poPaxosNode);
-    if (ret != 0)
-    {
+    ret = Node::Run(options, m_poPaxosNode);
+    if (ret != 0) {
         printf("run paxos fail, ret %d\n", ret);
         return ret;
     }

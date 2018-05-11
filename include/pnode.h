@@ -43,7 +43,7 @@ public:
     void AddStateMachine(StateMachine * poSM);
     void AddStateMachine(const int iGroupIdx, StateMachine * poSM);
     int OnReceiveMessage(const char * pcMessage, const int iMessageLen);
-    const uint64_t GetMyNodeId() const;
+    const uint64_t GetNodeId() const;
     void SetTimeoutMs(const int iTimeoutMs);
 
 public:

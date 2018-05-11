@@ -381,7 +381,7 @@ void PNode::AddStateMachine(const int iGroupIdx, StateMachine * poSM)
     m_vecGroupList[iGroupIdx]->AddStateMachine(poSM);
 }
 
-const uint64_t PNode::GetMyNodeId() const
+const uint64_t PNode::GetNodeId() const
 {
     return m_iMyNodeID;
 }

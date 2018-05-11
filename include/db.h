@@ -82,22 +82,23 @@ private:
 
 public:
 //private:
-    leveldb::DB * m_poLevelDb;
-    PaxosComparator m_oPaxosCmp;
-    bool m_bHasInit;
+    leveldb::DB * leveldb_;
+    PaxosComparator paxos_cmp_;
+    bool has_init_;
     
-    LogStore * m_poValueStore;
-    std::string m_db_path;
+    LogStore * value_store_;
+    std::string db_path_;
 
-    int m_group_idx;
+    int group_idx_;
 
 private:
-    TimeStat m_oTimeStat;
+    TimeStat time_stat_;
 };
 
 class MultiDatabase : public LogStorage {
 public:
     MultiDatabase();
+
     ~MultiDatabase();
 
     int Init(const std::string & db_path, const int iGroupCount);
@@ -129,7 +130,7 @@ public:
     int GetMasterVariables(const int group_idx, std::string & buffer);
 
 private:
-    std::vector<Database *> m_vecDbList;
+    std::vector<Database *> vec_db_list_;
 };
 
 }

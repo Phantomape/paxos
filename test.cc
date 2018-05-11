@@ -54,9 +54,16 @@ int parse_ipport_list(const char * pcStr, NodeInfoList & vec_node_info_list) {
 }
 
 int main(int argc, char ** argv) {
+    char* ip_local = "127.0.0.1:11111";
+    char* ip_list = "127.0.0.1:11111,127.0.0.1:11112,127.0.0.1:11113";
+
     if (argc < 3) {
         cout << "wtf, insufficient args" << endl;
+        //return -1;
     }
+
+    argv[1] = ip_local;
+    argv[2] = ip_list;
 
     paxos::NodeInfo node;
     if (parse_ipport(argv[1], node) != 0) {

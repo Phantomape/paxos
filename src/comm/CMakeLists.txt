@@ -6,4 +6,4 @@ aux_source_directory(. DIR_LIB_SRCS)
 
 add_library(comm STATIC ${DIR_LIB_SRCS})
 
-target_link_libraries(comm foo protobuf)
+target_link_libraries(comm foo protobuf util)
