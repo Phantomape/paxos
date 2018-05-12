@@ -1,9 +1,9 @@
 #pragma once
 
 #include "base.h"
+#include "ioloop.h"
 #include "learner_synchronizer.h"
 #include "paxos_log.h"
-#include "ioloop.h"
 
 namespace paxos {
 
@@ -15,13 +15,15 @@ class Learner : public Base {
 public:
     Learner(
             const Config* config, 
-            const Commnunicate* communicate,
+            const Communicate* communicate,
             const Instance* instance,
             const Acceptor* acceptor,
             const LogStorage* log_storage,
             const IoLoop* ioloop,
             const CheckpointMgr* checkpoint_mgr,
-            const StateMachineFac* state_machine_fac);
+            const StateMachineFac* state_machine_fac
+            );
+
     ~Learner();
 
     const uint64_t GetLatestInstanceID();
@@ -34,8 +36,8 @@ public:
 
     void Stop();
 private:
-    Acceptor* acceptor;
-    LearnerSynchronizer learner_synchronizer;
+    Acceptor* acceptor_;
+    LearnerSynchronizer learner_synchronizer_;
 
     uint64_t highest_instance_id_;
 
