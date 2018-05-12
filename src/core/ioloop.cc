@@ -1,40 +1,47 @@
+#include "config.h"
 #include "ioloop.h"
 
 namespace paxos {
 
-IoLoop::IoLoop(Instance* instance) : instance(instance) {}
+IoLoop::IoLoop(Config * config, Instance * instance)
+    : config_(config), instance_(instance) {
+    is_ended_ = false;
+    is_started_ = false;
+
+    queue_size_ = 0;
+}
 
 IoLoop::~IoLoop() {}
 
 void IoLoop::AddNotify() {
-    message_queue.lock();
-    message_queue.add(nullptr);
-    message_queue.unlock();
+    message_queue_.lock();
+    message_queue_.add(nullptr);
+    message_queue_.unlock();
 }
 
 int IoLoop::AddRetryPaxosMsg(const PaxosMsg& paxos_msg) {
-    if (retry_queue.size() > RETRY_QUEUE_MAX_LEN) {
-        retry_queue.pop();
+    if (retry_queue_.size() > RETRY_QUEUE_MAX_LEN) {
+        retry_queue_.pop();
     }
 
-    retry_queue.push(paxos_msg);
+    retry_queue_.push(paxos_msg);
     return 0;
 }
 
 void IoLoop::ClearRetryQueue() {
-    while (!retry_queue.empty()) {
-        retry_queue.pop();
+    while (!retry_queue_.empty()) {
+        retry_queue_.pop();
     }
 }
 
 void IoLoop::Run() {
-    is_end_ = false;
-    is_start_ = true;
+    is_ended_ = false;
+    is_started_ = true;
     while (true) {
         int next_timeout = 1000;
         // Deal with time out
         Init(next_timeout);
-        if (is_end_) {
+        if (is_ended_) {
             break;
         }
     }    
@@ -43,18 +50,18 @@ void IoLoop::Run() {
 void IoLoop::Init(const int timeout_ms) {
     std::string* message = nullptr;
     
-    message_queue.lock();
-    bool is_succeeded = message_queue.peek(message, timeout_ms);
+    message_queue_.lock();
+    bool is_succeeded = message_queue_.peek(message, timeout_ms);
     if (!is_succeeded) {
-        message_queue.unlock();
+        message_queue_.unlock();
     }
     else {
-        message_queue.pop();
-        message_queue.unlock();
+        message_queue_.pop();
+        message_queue_.unlock();
 
         if (message != nullptr && message->size() > 0) {
             queue_size_ -= message->size();
-            instance->OnReceive(*message);
+            instance_->OnReceive(*message);
         }
         // Why not delete outside the if section
         delete message;
@@ -62,34 +69,34 @@ void IoLoop::Init(const int timeout_ms) {
 
     DealWithRetry();
 
-    instance->CheckNewValue();
+    instance_->CheckNewValue();
 }
 
 void IoLoop::DealWithRetry() {
-    if (retry_queue.empty()) {
+    if (retry_queue_.empty()) {
         return;
     }
 
     bool has_retried = false;
-    while (!retry_queue.empty()) {
-        PaxosMsg& paxos_msg = retry_queue.front();
-        if (paxos_msg.instanceid() > instance->GetCurrentInstanceId() + 1) {
+    while (!retry_queue_.empty()) {
+        PaxosMsg& paxos_msg = retry_queue_.front();
+        if (paxos_msg.instanceid() > instance_->GetCurrentInstanceId() + 1) {
             break;
         }
-        else if (paxos_msg.instanceid() == instance->GetCurrentInstanceId() + 1) {
+        else if (paxos_msg.instanceid() == instance_->GetCurrentInstanceId() + 1) {
             if (has_retried) {
-                instance->OnReceivePaxosMsg(paxos_msg, true);
+                instance_->OnReceivePaxosMsg(paxos_msg, true);
             }
             else {
                 break;
             }
         }
-        else if (paxos_msg.instanceid() == instance->GetCurrentInstanceId()) {
-            instance->OnReceivePaxosMsg(paxos_msg);
+        else if (paxos_msg.instanceid() == instance_->GetCurrentInstanceId()) {
+            instance_->OnReceivePaxosMsg(paxos_msg);
             has_retried = true;
         }
 
-        retry_queue.pop();
+        retry_queue_.pop();
     }
 }
 

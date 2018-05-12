@@ -12,7 +12,8 @@ class Instance;
 
 class IoLoop : public Thread {
 public:
-    IoLoop(Instance* instance);
+    IoLoop(Config * poConfig, Instance * poInstance);
+
     virtual ~IoLoop();
 
     void AddNotify();
@@ -23,14 +24,15 @@ public:
     void Run();
     void Stop();
 private:
-    bool is_end_;
-    bool is_start_;
+    bool is_ended_;
+    bool is_started_;
 
     int queue_size_;
 
-    Instance* instance;
-    Queue<std::string*> message_queue;
-    std::queue<PaxosMsg> retry_queue;
+    Config * config_;
+    Instance* instance_;
+    Queue<std::string*> message_queue_;
+    std::queue<PaxosMsg> retry_queue_;
 };
 
 }

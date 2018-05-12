@@ -6,8 +6,25 @@
 
 namespace paxos {
 
-Instance::Instance() : acceptor(this), learner(this, &acceptor), proposer(this) {
-
+Instance::Instance(
+        const Config * poConfig, 
+        const LogStorage * poLogStorage,
+        const Communicate * poMsgTransport,
+        const Options & oOptions)
+    : state_machine_fac_(poConfig->GetMyGroupIdx()),
+    ioloop_((Config *)poConfig, this),
+    acceptor_(poConfig, poMsgTransport, this, poLogStorage), 
+    learner_(poConfig, poMsgTransport, this, &acceptor_, poLogStorage, &ioloop_, &checkpoint_mgr_, &state_machine_fac_),
+    proposer_(poConfig, poMsgTransport, this, &learner_, &ioloop_),
+    paxos_log_(poLogStorage),
+    commit_ctx_((Config *)poConfig),
+    committer_((Config *)poConfig, &committer_, &ioloop_, &state_machine_fac_),
+    checkpoint_mgr_((Config *)poConfig, &state_machine_fac_, (LogStorage *)poLogStorage, oOptions.use_checkpoint_replayer_),
+    m_oOptions(oOptions), m_bStarted(false) {
+    config_ = (Config *)poConfig;
+    communicate_ = (Communicate *)poMsgTransport;
+    commit_timer_id_ = 0;
+    last_checksum_= 0;
 }
 
 Instance::~Instance() {}
@@ -20,29 +37,29 @@ int Instance::ForwardToAcceptor(const PaxosMsg& paxos_msg, const bool is_retry) 
     std::cout << "Instance::ForwardToAcceptor()" << std::endl;
     // Sth. related to IsImFollower
 
-    if (paxos_msg.instanceid() != acceptor.GetInstanceId()) {
+    if (paxos_msg.instanceid() != acceptor_.GetInstanceId()) {
     
     }
 
-    if (paxos_msg.instanceid() == acceptor.GetInstanceId() + 1) {
+    if (paxos_msg.instanceid() == acceptor_.GetInstanceId() + 1) {
         PaxosMsg send_paxos_msg = paxos_msg;
-        send_paxos_msg.set_instanceid(acceptor.GetInstanceId());
+        send_paxos_msg.set_instanceid(acceptor_.GetInstanceId());
         send_paxos_msg.set_msgtype(1);
 
         ForwardToLearner(send_paxos_msg);
     }
 
-    if (paxos_msg.instanceid() == acceptor.GetInstanceId()) {
+    if (paxos_msg.instanceid() == acceptor_.GetInstanceId()) {
         if (paxos_msg.msgtype() == 1) {
-            return acceptor.OnPrepare(paxos_msg);
+            return acceptor_.OnPrepare(paxos_msg);
         }
         else if (paxos_msg.msgtype() == 2) {
-            acceptor.OnAccept(paxos_msg);
+            acceptor_.OnAccept(paxos_msg);
         }
     }
-    else if (is_retry == false && paxos_msg.instanceid() > acceptor.GetInstanceId()) {
-        if (paxos_msg.instanceid() >= learner.GetLatestInstanceID()) {
-            if (paxos_msg.instanceid() < acceptor.GetInstanceId() + RETRY_QUEUE_MAX_LEN) {
+    else if (is_retry == false && paxos_msg.instanceid() > acceptor_.GetInstanceId()) {
+        if (paxos_msg.instanceid() >= learner_.GetLatestInstanceID()) {
+            if (paxos_msg.instanceid() < acceptor_.GetInstanceId() + RETRY_QUEUE_MAX_LEN) {
                 //ioloop.AddRetryPaxosMsg(paxos_msg);
             }
         }
@@ -63,13 +80,13 @@ int Instance::ForwardToProposer(const PaxosMsg& paxos_msg) {
     std::cout << "Instance::ForwardToProposer()" << std::endl;
     // Sth. related to IsImFollower
 
-    if (paxos_msg.instanceid() != proposer.GetInstanceId()) {
-        if (paxos_msg.instanceid() + 1 == proposer.GetInstanceId()) {
+    if (paxos_msg.instanceid() != proposer_.GetInstanceId()) {
+        if (paxos_msg.instanceid() + 1 == proposer_.GetInstanceId()) {
             if (paxos_msg.msgtype() == 1) {
-                proposer.OnPrepareRejected(paxos_msg);
+                proposer_.OnPrepareRejected(paxos_msg);
             }
             else if (paxos_msg.msgtype() == 2) {
-                proposer.OnAcceptRejected(paxos_msg);
+                proposer_.OnAcceptRejected(paxos_msg);
             }
         }
 
@@ -77,10 +94,10 @@ int Instance::ForwardToProposer(const PaxosMsg& paxos_msg) {
     }
 
     if (paxos_msg.msgtype() == 3) {
-        proposer.OnPrepare(paxos_msg);
+        proposer_.OnPrepare(paxos_msg);
     }
     else if (paxos_msg.msgtype() == 4) {
-        proposer.OnAccept(paxos_msg);
+        proposer_.OnAccept(paxos_msg);
     }
 
     return 0;
@@ -90,7 +107,7 @@ int Instance :: GetInstanceValue(const uint64_t llInstanceID, std::string & sVal
 {
     iSMID = 0;
 
-    if (llInstanceID >= acceptor.GetInstanceId())
+    if (llInstanceID >= acceptor_.GetInstanceId())
     {
         return Paxos_GetInstanceValue_Value_Not_Chosen_Yet;
     }
@@ -117,27 +134,27 @@ int Instance :: GetInstanceValue(const uint64_t llInstanceID, std::string & sVal
 
 int Instance::Init() {
     std::cout << "Instance::Init()" << std::endl;
-    int res = acceptor.Init();
+    int res = acceptor_.Init();
     if (res != 0) {
         return res;
     }
 
     // Sth. related to check point
     uint64_t CurrentInstanceId = 0;
-    if (CurrentInstanceId < acceptor.GetInstanceId()) {
-        CurrentInstanceId = acceptor.GetInstanceId();
+    if (CurrentInstanceId < acceptor_.GetInstanceId()) {
+        CurrentInstanceId = acceptor_.GetInstanceId();
     }
     else {
-        if (CurrentInstanceId > acceptor.GetInstanceId()) {
+        if (CurrentInstanceId > acceptor_.GetInstanceId()) {
             // Do sth.
-            acceptor.InitInstance();
+            acceptor_.InitInstance();
         }
 
-        acceptor.SetInstanceId(CurrentInstanceId);
+        acceptor_.SetInstanceId(CurrentInstanceId);
     }
 
-    learner.SetInstanceId(CurrentInstanceId);
-    proposer.SetInstanceId(CurrentInstanceId);
+    learner_.SetInstanceId(CurrentInstanceId);
+    proposer_.SetInstanceId(CurrentInstanceId);
 
     // Sth. I don't understand
     return 0;
@@ -172,7 +189,7 @@ int Instance::OnReceivePaxosMsg(const PaxosMsg& paxos_msg, const bool should_ret
 
 void Instance::Start() {
     std::cout << "Instance::Start()" << std::endl;
-    learner.InitLearnerSynchronizer();
+    learner_.InitLearnerSynchronizer();
     // Start ioloop ycheckpoint
     is_started_ = true;
 }
@@ -181,7 +198,7 @@ void Instance::Stop() {
     std::cout << "Instance::Stop()" << std::endl;
     if (is_started_) {
         // Stop ioloop and checkpoint
-        learner.Stop();
+        learner_.Stop();
     }
 }
 
