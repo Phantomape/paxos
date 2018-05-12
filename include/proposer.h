@@ -8,13 +8,12 @@ namespace paxos {
 
 class Proposer : public Base {
 public:
-    Proposer(const Instance* instance);
     Proposer(
             const Config* config, 
             const Communicate * communicate,
             const Instance * poInstance,
             const Learner * poLearner,
-            const IOLoop * poIOLoop
+            const IoLoop * poIOLoop
             );
 
     ~Proposer();

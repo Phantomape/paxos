@@ -16,7 +16,7 @@ class Committer
 {
 public:
     Committer(Config * poConfig, CommitCtx * poCommitCtx, IoLoop * poIOLoop, StateMachineFac * poStateMachineFac);
-    
+
     ~Committer();
 
 public:

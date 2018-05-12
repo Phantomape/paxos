@@ -2,6 +2,7 @@
 
 #include "concurrent.h"
 #include "instance.h"
+#include "timer.h"
 #include <queue>
 
 namespace paxos {
@@ -26,6 +27,8 @@ public:
 private:
     bool is_ended_;
     bool is_started_;
+    Timer timer_;
+    std::map<uint32_t, bool> m_mapTimerIDExist;
 
     int queue_size_;
 
