@@ -9,6 +9,15 @@ namespace paxos {
 class Proposer : public Base {
 public:
     Proposer(const Instance* instance);
+
+    Proposer(
+            const Config * poConfig, 
+            const Communicate * poMsgTransport,
+            const Instance * poInstance,
+            const Learner * poLearner,
+            const IoLoop * poIOLoop
+            );
+
     ~Proposer();
 
     void Accept();

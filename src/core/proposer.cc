@@ -5,6 +5,15 @@
 
 namespace paxos {
     
+Proposer::Proposer(
+        const Config * poConfig, 
+        const Communicate * poMsgTransport,
+        const Instance * poInstance,
+        const Learner * poLearner,
+        const IoLoop * poIOLoop)
+    : Base(poConfig, poMsgTransport, poInstance)
+{}
+
 Proposer::Proposer(const Instance* instance) : Base(instance) {
     std::cout << "Proposer::Proposer()" << std::endl;
     GOOGLE_PROTOBUF_VERIFY_VERSION;

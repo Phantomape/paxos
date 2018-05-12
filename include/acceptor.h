@@ -1,6 +1,8 @@
 #pragma once
 
 #include "base.h"
+#include "config.h"
+#include "paxos_log.h"
 
 namespace paxos {
 
@@ -34,7 +36,6 @@ private:
     Ballot accepted_ballot;
     std::string accepted_val_;
     uint32_t checksum_;
-
     Config* config_;
     PaxosLog paxos_log_;
 
