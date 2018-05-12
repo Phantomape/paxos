@@ -1,6 +1,9 @@
 #pragma once
 
 #include "ballot.h"
+#include "config.h"
+#include "communicate.h"
+#include "log_storage.h"
 #include "paxos_msg.pb.h"
 
 namespace paxos {
@@ -14,6 +17,7 @@ class Instance;
 class Base {
 public: 
     Base();
+    Base(const Config * config, const Communicate * communicate, const Instance * instance);
     Base(const Instance* instance);
     virtual ~Base();
 
@@ -27,7 +31,9 @@ public:
     int UnpackBaseMsg(const std::string& str, Header& header, size_t& body_start_pos, size_t& body_len);
 
 protected:
-    Instance* instance;
+    Instance* instance_;
+    Config* config_;
+    Communicate* communicate_;
 
 private:
     bool is_test_mode_;

@@ -5,9 +5,15 @@
 
 namespace paxos {
     
-Acceptor::Acceptor(const Instance* instance) : Base(instance){
-    std::cout << "Acceptor::Acceptor()" << std::endl;
+Acceptor::Acceptor(
+        const Config* config, 
+        const Communicate* communicate, 
+        const Instance* instance,
+        const LogStorage* log_storage)
+    : Base(config, communicate, instance), paxos_log_(log_storage) {
+    config_ = (Config*)config;
 }
+
 
 Acceptor::~Acceptor() {
     std::cout << "Acceptor::~Acceptor()" << std::endl;

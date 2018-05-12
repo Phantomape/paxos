@@ -6,7 +6,13 @@ namespace paxos {
 
 class Acceptor : public Base {
 public: 
-    Acceptor(const Instance* instance);
+    Acceptor(
+            const Config * config, 
+            const Communicate * communicate, 
+            const Instance * instance,
+            const LogStorage * log_storage
+            );
+
     ~Acceptor();
 
     int Init();
@@ -27,6 +33,12 @@ private:
     Ballot promised_ballot;
     Ballot accepted_ballot;
     std::string accepted_val_;
+    uint32_t checksum_;
+
+    Config* config_;
+    PaxosLog paxos_log_;
+
+    int sync_times_;
 };
 
 }

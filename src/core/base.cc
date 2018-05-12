@@ -9,9 +9,19 @@ Base::Base() {
     
 }
     
+Base::Base(const Config* config, const Communicate* communicate, const Instance* instance) {
+    config_ = (Config *)config;
+    communicate_ = (Communicate *)communicate;
+    instance_ = (Instance *)instance;
+
+    instance_id_ = 0;
+
+    is_test_mode_ = false;
+}
+
 Base::Base(const Instance* instance) {
     std::cout << "Base::Base()" << std::endl;
-    this->instance = (Instance*)instance;
+    instance_ = (Instance*)instance;
 }
 
 Base::~Base() {
@@ -24,7 +34,7 @@ int Base::BroadcastMessage(const PaxosMsg &paxos_msg, const int run_type, const 
         return 0;
     }
 
-    if (run_type == 0 && instance->OnReceivePaxosMsg(paxos_msg) != 0) {
+    if (run_type == 0 && instance_->OnReceivePaxosMsg(paxos_msg) != 0) {
         return -1;
     }
 
@@ -37,7 +47,7 @@ int Base::BroadcastMessage(const PaxosMsg &paxos_msg, const int run_type, const 
     // res = m_poMsgTransport->BroadcastMessage(m_poConfig->GetMyGroupIdx(), sBuffer, iSendType);
 
     if (run_type == 1) {
-        instance->OnReceivePaxosMsg(paxos_msg);
+        instance_->OnReceivePaxosMsg(paxos_msg);
     }
 
     return res;
