@@ -12,7 +12,7 @@ class Instance;
 
 class IoLoop : public Thread {
 public:
-    IoLoop(Config * poConfig, Instance * poInstance);
+    IoLoop(Config* config, Instance* instance);
 
     virtual ~IoLoop();
 

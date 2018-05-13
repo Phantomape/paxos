@@ -3,7 +3,7 @@
 
 namespace paxos {
 
-IoLoop::IoLoop(Config * config, Instance * instance)
+IoLoop::IoLoop(Config* config, Instance* instance)
     : config_(config), instance_(instance) {
     is_ended_ = false;
     is_started_ = false;

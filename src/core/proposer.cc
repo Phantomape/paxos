@@ -20,6 +20,35 @@ Proposer::Proposer(const Instance* instance) : Base(instance) {
     is_rejected_ = false;
 }
 
+Proposer :: Proposer(
+        const Config * config, 
+        const Communicate * communicate,
+        const Instance * poInstance,
+        const Learner * poLearner,
+        const IOLoop * poIOLoop)
+    : Base(config, communicate, poInstance), m_oMsgCounter(config)
+{
+    config_ = (Config*)config;
+    m_poLearner = (Learner *)poLearner;
+    m_poIOLoop = (IOLoop *)poIOLoop;
+    
+    m_bIsPreparing = false;
+    m_bIsAccepting = false;
+
+    m_bCanSkipPrepare = false;
+
+    InitForNewPaxosInstance();
+
+    m_iPrepareTimerID = 0;
+    m_iAcceptTimerID = 0;
+    m_llTimeoutInstanceID = 0;
+
+    m_iLastPrepareTimeoutMs = m_poConfig->GetPrepareTimeoutMs();
+    m_iLastAcceptTimeoutMs = m_poConfig->GetAcceptTimeoutMs();
+
+    m_bWasRejectBySomeone = false;
+}
+
 Proposer::~Proposer() {
     std::cout << "Proposer::~Proposer()" << std::endl;
 }

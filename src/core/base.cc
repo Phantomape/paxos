@@ -1,18 +1,19 @@
 #include "base.h"
-#include "instance.h"
 #include <iostream>
 #include <string>
 
 namespace paxos {
+
+class Instance;
 
 Base::Base() {
     
 }
     
 Base::Base(const Config* config, const Communicate* communicate, const Instance* instance) {
-    config_ = (Config *)config;
-    communicate_ = (Communicate *)communicate;
-    instance_ = (Instance *)instance;
+    config_ = (Config*)config;
+    communicate_ = (Communicate*)communicate;
+    instance_ = (Instance*)instance;
 
     instance_id_ = 0;
 

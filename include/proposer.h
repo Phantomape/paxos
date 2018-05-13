@@ -9,6 +9,14 @@ namespace paxos {
 class Proposer : public Base {
 public:
     Proposer(const Instance* instance);
+    Proposer(
+            const Config* config, 
+            const Communicate * communicate,
+            const Instance * poInstance,
+            const Learner * poLearner,
+            const IOLoop * poIOLoop
+            );
+
     ~Proposer();
 
     void Accept();
@@ -41,6 +49,8 @@ private:
     bool is_rejected_;
     bool can_skip_prepare_;
     bool rejected_;
+
+    Config* config_;
 
     std::string val_;
 
