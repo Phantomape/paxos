@@ -2,6 +2,9 @@
 
 #include "concurrent.h"
 #include "internal_options.h"
+#include "config.h"
+#include "paxos_log.h"
+#include "serial_lock.h"
 
 namespace paxos {
 
@@ -9,7 +12,8 @@ class Learner;
 
 class LearnerSynchronizer : public Thread{
 public:
-    LearnerSender(Config* config, Learner* learner, PaxosLog* paxos_log);
+    LearnerSynchronizer(Config * poConfig, Learner * poLearner, PaxosLog * poPaxosLog);
+    
     ~LearnerSynchronizer();
 
     void Ack();

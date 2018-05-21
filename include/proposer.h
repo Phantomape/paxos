@@ -6,6 +6,8 @@
 
 namespace paxos {
 
+class Learner;
+
 class Proposer : public Base {
 public:
     Proposer(

@@ -41,7 +41,9 @@ private:
 
     uint64_t highest_instance_id_;
 
-    std::string learned_value_;
+    IoLoop* ioloop_;
+
+    std::string learned_val_;
     bool is_learned_;
     uint32_t new_checksum_;
 
