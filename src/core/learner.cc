@@ -1,4 +1,6 @@
 #include "acceptor.h"
+#include "state_machine_base.h"
+#include "checkpoint_mgr.h"
 #include "learner.h"
 
 namespace paxos {
@@ -32,12 +34,6 @@ Learner::Learner(
     //m_llLastAckInstanceID = 0;
 
 
-}
-
-Learner::Learner(const Instance* instance, const Acceptor* acceptor) : Base(instance) {
-    acceptor_ = (Acceptor*)acceptor;
-
-    highest_instance_id_ = 0;
 }
 
 Learner::~Learner() {

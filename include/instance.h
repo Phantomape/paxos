@@ -2,6 +2,7 @@
 
 #include "acceptor.h"
 #include "base.h"
+#include "communicate.h"
 #include "checkpoint_mgr.h"
 #include "cleaner.h"
 #include "commit_ctx.h"

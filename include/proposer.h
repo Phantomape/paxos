@@ -2,6 +2,7 @@
 
 #include "base.h"
 #include "msg_counter.h"
+#include "ioloop.h"
 #include "ballot.h"
 
 namespace paxos {
@@ -58,6 +59,15 @@ private:
     uint64_t proposal_id_;
     uint64_t highest_proposal_id_by_others_;
     uint64_t timeout_instance_id_;
+
+    uint32_t m_iPrepareTimerID;
+    int m_iLastPrepareTimeoutMs;
+    uint32_t m_iAcceptTimerID;
+    int m_iLastAcceptTimeoutMs;
+    uint64_t m_llTimeoutInstanceID;
+
+    Learner* learner_;
+    IoLoop* ioloop_;
 
     Ballot highest_other_pre_accept_ballot_;
     MsgCounter msg_counter; // Fully defined before owner class???s

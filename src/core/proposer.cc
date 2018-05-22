@@ -1,65 +1,41 @@
 #include "instance.h"
 #include "proposer.h"
+#include "learner.h"
 #include <iostream>
 #include <string>
 
 namespace paxos {
-    
+
 Proposer::Proposer(
-        const Config * poConfig, 
-        const Communicate * poMsgTransport,
+        const Config * config, 
+        const Communicate * communicate,
         const Instance * poInstance,
         const Learner * poLearner,
         const IoLoop * poIOLoop)
-    : Base(poConfig, poMsgTransport, poInstance)
-{}
-
-Proposer::Proposer(const Instance* instance) : Base(instance) {
-    std::cout << "Proposer::Proposer()" << std::endl;
-    GOOGLE_PROTOBUF_VERIFY_VERSION;
-    is_accepting_ = false;
+    : Base(config, communicate, poInstance), msg_counter(config)
+{
+    config_ = (Config*)config;
+    learner_ = (Learner*)poLearner;
+    ioloop_ = (IoLoop *)poIOLoop;
+    
     is_preparing_ = false;
+    is_accepting_ = false;
 
     can_skip_prepare_ = false;
 
     InitInstance();
 
-    timeout_instance_id_ = 0;
-
-    is_rejected_ = false;
-}
-
-Proposer :: Proposer(
-        const Config * config, 
-        const Communicate * communicate,
-        const Instance * poInstance,
-        const Learner * poLearner,
-        const IOLoop * poIOLoop)
-    : Base(config, communicate, poInstance), m_oMsgCounter(config)
-{
-    config_ = (Config*)config;
-    m_poLearner = (Learner *)poLearner;
-    m_poIOLoop = (IOLoop *)poIOLoop;
-    
-    m_bIsPreparing = false;
-    m_bIsAccepting = false;
-
-    m_bCanSkipPrepare = false;
-
-    InitForNewPaxosInstance();
-
     m_iPrepareTimerID = 0;
     m_iAcceptTimerID = 0;
     m_llTimeoutInstanceID = 0;
 
-    m_iLastPrepareTimeoutMs = m_poConfig->GetPrepareTimeoutMs();
-    m_iLastAcceptTimeoutMs = m_poConfig->GetAcceptTimeoutMs();
+    m_iLastPrepareTimeoutMs = config_->GetPrepareTimeoutMs();
+    m_iLastAcceptTimeoutMs = config_->GetAcceptTimeoutMs();
 
-    m_bWasRejectBySomeone = false;
+    is_rejected_ = false;
 }
 
 Proposer::~Proposer() {
-    std::cout << "Proposer::~Proposer()" << std::endl;
 }
 
 void Proposer::Accept() {

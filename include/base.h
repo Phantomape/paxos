@@ -14,11 +14,16 @@ namespace paxos {
 
 class Instance;
 
+enum BroadcastMessage_Type
+{
+    BroadcastMessage_Type_RunSelf_First = 1,
+    BroadcastMessage_Type_RunSelf_Final = 2,
+    BroadcastMessage_Type_RunSelf_None = 3,
+};
+
 class Base {
 public: 
-    Base();
     Base(const Config * config, const Communicate * communicate, const Instance * instance);
-    Base(const Instance* instance);
     virtual ~Base();
 
     virtual int BroadcastMessage(const PaxosMsg &paxos_msg, const int run_type, const int send_type);

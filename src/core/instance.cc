@@ -18,7 +18,7 @@ Instance::Instance(
     proposer_(poConfig, poMsgTransport, this, &learner_, &ioloop_),
     paxos_log_(poLogStorage),
     commit_ctx_((Config *)poConfig),
-    committer_((Config *)poConfig, &committer_, &ioloop_, &state_machine_fac_),
+    committer_((Config *)poConfig, &commit_ctx_, &ioloop_, &state_machine_fac_),
     checkpoint_mgr_((Config *)poConfig, &state_machine_fac_, (LogStorage *)poLogStorage, oOptions.use_checkpoint_replayer_),
     m_oOptions(oOptions), m_bStarted(false) {
     config_ = (Config *)poConfig;

@@ -1,15 +1,14 @@
 #include "base.h"
+#include "communicate.h"
+#include "instance.h"
+#include "crc32.h"
 #include <iostream>
 #include <string>
 
 namespace paxos {
 
 class Instance;
-
-Base::Base() {
-    
-}
-    
+ 
 Base::Base(const Config* config, const Communicate* communicate, const Instance* instance) {
     config_ = (Config*)config;
     communicate_ = (Communicate*)communicate;
@@ -20,13 +19,7 @@ Base::Base(const Config* config, const Communicate* communicate, const Instance*
     is_test_mode_ = false;
 }
 
-Base::Base(const Instance* instance) {
-    std::cout << "Base::Base()" << std::endl;
-    instance_ = (Instance*)instance;
-}
-
 Base::~Base() {
-    std::cout << "Base::~Base()" << std::endl;
 }
 
 int Base::BroadcastMessage(const PaxosMsg &paxos_msg, const int run_type, const int send_type) {
@@ -55,7 +48,6 @@ int Base::BroadcastMessage(const PaxosMsg &paxos_msg, const int run_type, const 
 }
 
 uint64_t Base::GetInstanceId() {
-    std::cout << "Base::GetInstanceId()" << std::endl;
     return instance_id_;
 }
 

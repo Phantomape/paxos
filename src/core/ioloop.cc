@@ -1,5 +1,6 @@
 #include "config.h"
 #include "ioloop.h"
+#include "instance.h"
 
 namespace paxos {
 

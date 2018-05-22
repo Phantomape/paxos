@@ -51,7 +51,6 @@ private:
     PaxosLog paxos_log_;
 
     uint32_t ask_for_learn_noop_timer_id_;
-    IoLoop* ioloop_;
 
     uint64_t highest_seen_instance_id_;
     uint64_t highest_seen_instance_id_from_node_id_;
