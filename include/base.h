@@ -21,29 +21,62 @@ enum BroadcastMessage_Type
     BroadcastMessage_Type_RunSelf_None = 3,
 };
 
+
 class Base {
-public: 
-    Base(const Config * config, const Communicate * communicate, const Instance * instance);
+public:
+    Base(const Config * poConfig, const Communicate * poCommunicate, const Instance * poInstance);
+    
     virtual ~Base();
 
-    virtual int BroadcastMessage(const PaxosMsg &paxos_msg, const int run_type, const int send_type);
-    virtual void InitInstance() = 0;
     uint64_t GetInstanceId();
+
     void NewInstance();
-    void PackBaseMsg(const std::string& buf, const int cmd, std::string& str);
-    int PackMsg(const PaxosMsg& paxos_msg, std::string& str);
-    void SetInstanceId(const uint64_t instance_id);
-    int UnpackBaseMsg(const std::string& str, Header& header, size_t& body_start_pos, size_t& body_len);
+
+    virtual void InitForNewPaxosInstance() = 0;
+
+    void SetInstanceId(const uint64_t llInstanceId);
+
+    int PackMsg(const PaxosMsg & oPaxosMsg, std::string & sBuffer);
+    
+    int PackCheckpointMsg(const CheckpointMsg & oCheckpointMsg, std::string & sBuffer);
+
+public:
+    const uint32_t GetLastChecksum() const;
+    
+    void PackBaseMsg(const std::string & sBodyBuffer, const int iCmd, std::string & sBuffer);
+
+    static int UnPackBaseMsg(const std::string & sBuffer, Header & oHeader, size_t & iBodyStartPos, size_t & iBodyLen);
+
+    void SetAsTestMode();
 
 protected:
-    Instance* instance_;
-    Config* config_;
-    Communicate* communicate_;
+    virtual int SendMessage(const uint64_t iSendtoNodeId, const PaxosMsg & oPaxosMsg, const int iSendType = Message_SendType_UDP);
 
-private:
-    bool is_test_mode_;
+    virtual int BroadcastMessage(
+            const PaxosMsg & oPaxosMsg, 
+            const int bRunSelfFirst = BroadcastMessage_Type_RunSelf_First,
+            const int iSendType = Message_SendType_UDP);
+    
+    int BroadcastMessageToFollower(
+            const PaxosMsg & oPaxosMsg, 
+            const int iSendType = Message_SendType_TCP);
+    
+    int BroadcastMessageToTempNode(
+            const PaxosMsg & oPaxosMsg, 
+            const int iSendType = Message_SendType_UDP);
+
+protected:
+    int SendMessage(const uint64_t iSendtoNodeId, const CheckpointMsg & oCheckpointMsg, 
+            const int iSendType = Message_SendType_TCP);
+
+protected:
+    Config * config_;
+    Communicate * communicate_;
+    Instance * instance_;
 
     uint64_t instance_id_;
+
+    bool is_test_mode_;
 };
 
 }
