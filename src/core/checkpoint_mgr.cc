@@ -122,11 +122,13 @@ void CheckpointMgr::ExitCheckpointMode()
 
 const uint64_t CheckpointMgr::GetCheckpointInstanceID() const
 {
+    return 1;
     //return m_poStateMachineFac->GetCheckpointInstanceID(m_poConfig->GetMyGroupIdx());
 }
 
 const uint64_t CheckpointMgr::GetMinChosenInstanceId() const
 {
+    return 1;
     //return m_llMinChosenInstanceID;
 }
 

@@ -1,7 +1,10 @@
 #pragma once
 
+#include <dirent.h>
 #include <stdint.h>
 #include <string>
+#include <string.h>
+#include <sys/stat.h> 
 #include <vector>
 
 namespace paxos {
