@@ -1,6 +1,7 @@
 #pragma once
 
 #include "base.h"
+#include "checkpoint_mgr.h"
 #include "ioloop.h"
 #include "learner_synchronizer.h"
 #include "paxos_log.h"

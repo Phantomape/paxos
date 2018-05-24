@@ -1,6 +1,5 @@
 #include "config.h"
 #include "def.h"
-#include "ioloop.h"
 #include "instance.h"
 
 namespace paxos {
@@ -140,7 +139,7 @@ void IoLoop::DealWithRetry()
                 break;
             }
         }
-        else if (oPaxosMsg.instanceid() == m_poInstance->GetInstanceID())
+        else if (oPaxosMsg.instanceid() == m_poInstance->GetInstanceId())
         {
             //BP->GetIoLoopBP()->DealWithRetryMsg();
             //PLGDebug("retry msg. instanceid %lu", oPaxosMsg.instanceid());

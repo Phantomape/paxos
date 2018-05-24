@@ -78,7 +78,7 @@ void Cleaner::Run() {
             continue;
         }
 
-        uint64_t llInstanceID = m_poCheckpointMgr->GetMinChosenInstanceID();
+        uint64_t llInstanceID = m_poCheckpointMgr->GetMinChosenInstanceId();
         uint64_t llCPInstanceID = m_poStateMachineFac->GetCheckpointInstanceId(m_poConfig->GetMyGroupIdx()) + 1;
         uint64_t llMaxChosenInstanceID = m_poCheckpointMgr->GetMaxChosenInstanceID();
 

@@ -18,83 +18,111 @@
 
 namespace paxos {
 
-class Instance {
+class Instance
+{
 public:
     Instance(
             const Config * poConfig, 
             const LogStorage * poLogStorage,
-            const Communicate * poMsgTransport,
-            const Options & oOptions
-            );
-
+            const Communicate * poCommunicate,
+            const Options & oOptions);
     ~Instance();
 
-    void AddStateMachine(StateMachine * state_machine);
+    int Init();
 
-    void CheckNewValue();
+    void Start();
 
-    int ForwardToAcceptor(const PaxosMsg& paxos_msg, const bool is_retry);
-    
-    int ForwardToLearner(const PaxosMsg& paxos_msg);
+    void Stop();
 
-    int ForwardToProposer(const PaxosMsg& paxos_msg);
+    int InitLastCheckSum();
 
+    const uint64_t GetInstanceId();
+
+    const uint64_t GetMinChosenInstanceId();
+
+    const uint32_t GetLastChecksum();
+
+    int GetInstanceValue(const uint64_t llInstanceID, std::string & sValue, int & iSMID);
+
+public:
     Committer * GetCommitter();
 
     Cleaner * GetCheckpointCleaner();
 
     Replayer * GetCheckpointReplayer();
 
-    int GetInstanceValue(const uint64_t instance_id, std::string & val, int & state_machine_id);
+public:
+    void CheckNewValue();
 
-    int Init();
+    void OnNewValueCommitTimeout();
+
+public:
+    //this funciton only enqueue, do nothing.
+    int OnReceiveMessage(const char * pcMessage, const int iMessageLen);
+
+public:
+    void OnReceive(const std::string & sBuffer);
     
-    int OnReceiveMessage(const char * msg, const int msg_len);
+    void OnReceiveCheckpointMsg(const CheckpointMsg & oCheckpointMsg);
 
-    void Start();
-    void Stop();
-
-    const uint64_t GetCurrentInstanceId();
+    int OnReceivePaxosMsg(const PaxosMsg & oPaxosMsg, const bool bIsRetry = false);
     
-    const uint64_t GetMinInstanceId();
+    int ReceiveMsgForProposer(const PaxosMsg & oPaxosMsg);
+    
+    int ReceiveMsgForAcceptor(const PaxosMsg & oPaxosMsg, const bool bIsRetry);
+    
+    int ReceiveMsgForLearner(const PaxosMsg & oPaxosMsg);
 
-    void OnReceive(const std::string& str);
+public:
+    void OnTimeout(const uint32_t iTimerID, const int iType);
 
-    int OnReceivePaxosMsg(const PaxosMsg& paxos_msg, const bool should_retry = false);
+public:
+    void AddStateMachine(StateMachine * poSM);
+
+    bool SMExecute(
+        const uint64_t llInstanceID, 
+        const std::string & sValue, 
+        const bool bIsMyCommit,
+        StateMachineCtx * poStateMachineCtx);
+
 private:
-    Acceptor acceptor_;
+    void ChecksumLogic(const PaxosMsg & oPaxosMsg);
 
-    IoLoop ioloop_;
-    
-    Learner learner_;
-    
-    Proposer proposer_;
+    int PlayLog(const uint64_t llBeginInstanceID, const uint64_t llEndInstanceID);
 
-    Config * config_;
+    bool ReceiveMsgHeaderCheck(const Header & oHeader, const uint64_t iFromNodeID);
 
-    Communicate * communicate_;
+    int ProtectionLogic_IsCheckpointInstanceIDCorrect(const uint64_t llCPInstanceID, const uint64_t llLogMaxInstanceID);
 
-    StateMachineFac state_machine_fac_;
+    void NewInstance();
 
-    PaxosLog paxos_log_;
+private:
+    Config * m_poConfig;
+    Communicate * m_poCommunicate;
 
-    uint32_t last_checksum_;
+    StateMachineFac m_oSMFac;
 
-    CommitCtx commit_ctx_;
+    IoLoop m_oIOLoop;
 
-    uint32_t commit_timer_id_;
+    Acceptor m_oAcceptor;
+    Learner m_oLearner;
+    Proposer m_oProposer;
 
-    Committer committer_;
+    PaxosLog m_oPaxosLog;
 
-    CheckpointMgr checkpoint_mgr_;
+    uint32_t m_iLastChecksum;
+
+    CommitCtx m_oCommitCtx;
+    uint32_t m_iCommitTimerID;
+
+    Committer m_oCommitter;
+
+    CheckpointMgr m_oCheckpointMgr;
 
     TimeStat m_oTimeStat;
-    
     Options m_oOptions;
 
     bool m_bStarted;
-
-    bool is_started_;
 };
 
 }

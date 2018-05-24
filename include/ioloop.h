@@ -1,7 +1,6 @@
 #pragma once
 
 #include "concurrent.h"
-#include "instance.h"
 #include "timer.h"
 #include <queue>
 

@@ -36,7 +36,7 @@ public:
     void ExitCheckpointMode();
 
 public:
-    const uint64_t GetMinChosenInstanceID() const;
+    const uint64_t GetMinChosenInstanceId() const;
     
     int SetMinChosenInstanceID(const uint64_t llMinChosenInstanceID);
     
