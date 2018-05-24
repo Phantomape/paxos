@@ -10,6 +10,11 @@ MsgCounter::MsgCounter() {
     Init();
 }
 
+MsgCounter::MsgCounter(const Config* config) {
+    config_ = (Config*)config;
+    Init();
+}
+
 MsgCounter::~MsgCounter() {
     std::cout << "MsgCounter::~MsgCounter()" << std::endl;
 }

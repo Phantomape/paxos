@@ -1,102 +1,250 @@
 #include "config.h"
-#include "ioloop.h"
+#include "def.h"
+#include "instance.h"
 
 namespace paxos {
 
-IoLoop::IoLoop(Config * config, Instance * instance)
-    : config_(config), instance_(instance) {
-    is_ended_ = false;
-    is_started_ = false;
+IoLoop::IoLoop(Config * poConfig, Instance * poInstance)
+    : m_poConfig(poConfig), m_poInstance(poInstance)
+{
+    m_bIsEnd = false;
+    m_bIsStart = false;
 
-    queue_size_ = 0;
+    m_iQueueMemSize = 0;
 }
 
-IoLoop::~IoLoop() {}
-
-void IoLoop::AddNotify() {
-    message_queue_.lock();
-    message_queue_.add(nullptr);
-    message_queue_.unlock();
+IoLoop::~IoLoop()
+{
 }
 
-int IoLoop::AddRetryPaxosMsg(const PaxosMsg& paxos_msg) {
-    if (retry_queue_.size() > RETRY_QUEUE_MAX_LEN) {
-        retry_queue_.pop();
+void IoLoop::Run()
+{
+    m_bIsEnd = false;
+    m_bIsStart = true;
+    while(true)
+    {
+        //BP->GetIoLoopBP()->OneLoop();
+
+        int iNextTimeout = 1000;
+        
+        DealwithTimeout(iNextTimeout);
+
+        //PLGHead("nexttimeout %d", iNextTimeout);
+
+        Init(iNextTimeout);
+
+        if (m_bIsEnd)
+        {
+            //PLGHead("IoLoop [End]");
+            break;
+        }
+    }
+}
+
+void IoLoop::AddNotify()
+{
+    m_oMessageQueue.lock();
+    m_oMessageQueue.add(nullptr);
+    m_oMessageQueue.unlock();
+}
+
+int IoLoop::AddMessage(const char * pcMessage, const int iMessageLen)
+{
+    m_oMessageQueue.lock();
+
+    //BP->GetIoLoopBP()->EnqueueMsg();
+
+    if ((int)m_oMessageQueue.size() > QUEUE_MAXLENGTH)
+    {
+        //BP->GetIoLoopBP()->EnqueueMsgRejectByFullQueue();
+
+        //PLGErr("Queue full, skip msg");
+        m_oMessageQueue.unlock();
+        return -2;
     }
 
-    retry_queue_.push(paxos_msg);
+    if (m_iQueueMemSize > MAX_QUEUE_MEM_SIZE)
+    {
+        //PLErr("queue memsize %d too large, can't enqueue", m_iQueueMemSize);
+        m_oMessageQueue.unlock();
+        return -2;
+    }
+    
+    m_oMessageQueue.add(new std::string(pcMessage, iMessageLen));
+
+    m_iQueueMemSize += iMessageLen;
+
+    m_oMessageQueue.unlock();
+
     return 0;
 }
 
-void IoLoop::ClearRetryQueue() {
-    while (!retry_queue_.empty()) {
-        retry_queue_.pop();
+int IoLoop::AddRetryPaxosMsg(const PaxosMsg & oPaxosMsg)
+{
+    //BP->GetIoLoopBP()->EnqueueRetryMsg();
+
+    if (m_oRetryQueue.size() > RETRY_QUEUE_MAX_LEN)
+    {
+        //BP->GetIoLoopBP()->EnqueueRetryMsgRejectByFullQueue();
+        m_oRetryQueue.pop();
+    }
+    
+    m_oRetryQueue.push(oPaxosMsg);
+    return 0;
+}
+
+void IoLoop::Stop()
+{
+    m_bIsEnd = true;
+    if (m_bIsStart)
+    {
+        Join();
     }
 }
 
-void IoLoop::Run() {
-    is_ended_ = false;
-    is_started_ = true;
-    while (true) {
-        int next_timeout = 1000;
-        // Deal with time out
-        Init(next_timeout);
-        if (is_ended_) {
+void IoLoop::ClearRetryQueue()
+{
+    while (!m_oRetryQueue.empty())
+    {
+        m_oRetryQueue.pop();
+    }
+}
+
+void IoLoop::DealWithRetry()
+{
+    if (m_oRetryQueue.empty())
+    {
+        return;
+    }
+    
+    bool bHaveRetryOne = false;
+    while (!m_oRetryQueue.empty())
+    {
+        PaxosMsg & oPaxosMsg = m_oRetryQueue.front();
+        if (oPaxosMsg.instanceid() > m_poInstance->GetInstanceId() + 1)
+        {
             break;
         }
-    }    
+        else if (oPaxosMsg.instanceid() == m_poInstance->GetInstanceId() + 1)
+        {
+            //only after retry i == now_i, than we can retry i + 1.
+            if (bHaveRetryOne)
+            {
+                //BP->GetIoLoopBP()->DealWithRetryMsg();
+                //PLGDebug("retry msg (i+1). instanceid %lu", oPaxosMsg.instanceid());
+                m_poInstance->OnReceivePaxosMsg(oPaxosMsg, true);
+            }
+            else
+            {
+                break;
+            }
+        }
+        else if (oPaxosMsg.instanceid() == m_poInstance->GetInstanceId())
+        {
+            //BP->GetIoLoopBP()->DealWithRetryMsg();
+            //PLGDebug("retry msg. instanceid %lu", oPaxosMsg.instanceid());
+            m_poInstance->OnReceivePaxosMsg(oPaxosMsg);
+            bHaveRetryOne = true;
+        }
+
+        m_oRetryQueue.pop();
+    }
 }
 
-void IoLoop::Init(const int timeout_ms) {
-    std::string* message = nullptr;
-    
-    message_queue_.lock();
-    bool is_succeeded = message_queue_.peek(message, timeout_ms);
-    if (!is_succeeded) {
-        message_queue_.unlock();
-    }
-    else {
-        message_queue_.pop();
-        message_queue_.unlock();
+void IoLoop::Init(const int iTimeoutMs)
+{
+    std::string * psMessage = nullptr;
 
-        if (message != nullptr && message->size() > 0) {
-            queue_size_ -= message->size();
-            instance_->OnReceive(*message);
+    m_oMessageQueue.lock();
+    bool bSucc = m_oMessageQueue.peek(psMessage, iTimeoutMs);
+    
+    if (!bSucc)
+    {
+        m_oMessageQueue.unlock();
+    }
+    else
+    {
+        m_oMessageQueue.pop();
+        m_oMessageQueue.unlock();
+
+        if (psMessage != nullptr && psMessage->size() > 0)
+        {
+            m_iQueueMemSize -= psMessage->size();
+            m_poInstance->OnReceive(*psMessage);
         }
-        // Why not delete outside the if section
-        delete message;
+
+        delete psMessage;
+
+        //BP->GetIoLoopBP()->OutQueueMsg();
     }
 
     DealWithRetry();
 
-    instance_->CheckNewValue();
+    //must put on here
+    //because addtimer on this funciton
+    m_poInstance->CheckNewValue();
 }
 
-void IoLoop::DealWithRetry() {
-    if (retry_queue_.empty()) {
+bool IoLoop::AddTimer(const int iTimeout, const int iType, uint32_t & iTimerID)
+{
+    if (iTimeout == -1)
+    {
+        return true;
+    }
+    
+    uint64_t llAbsTime = Time::GetSteadyClockMS() + iTimeout;
+    m_oTimer.AddTimerWithType(llAbsTime, iType, iTimerID);
+
+    m_mapTimerIDExist[iTimerID] = true;
+
+    return true;
+}
+
+void IoLoop::RemoveTimer(uint32_t & iTimerID)
+{
+    auto it = m_mapTimerIDExist.find(iTimerID);
+    if (it != end(m_mapTimerIDExist))
+    {
+        m_mapTimerIDExist.erase(it);
+    }
+
+    iTimerID = 0;
+}
+
+void IoLoop::DealwithTimeoutOne(const uint32_t iTimerID, const int iType)
+{
+    auto it = m_mapTimerIDExist.find(iTimerID);
+    if (it == end(m_mapTimerIDExist))
+    {
+        //PLGErr("Timeout aready remove!, timerid %u iType %d", iTimerID, iType);
         return;
     }
 
-    bool has_retried = false;
-    while (!retry_queue_.empty()) {
-        PaxosMsg& paxos_msg = retry_queue_.front();
-        if (paxos_msg.instanceid() > instance_->GetCurrentInstanceId() + 1) {
-            break;
-        }
-        else if (paxos_msg.instanceid() == instance_->GetCurrentInstanceId() + 1) {
-            if (has_retried) {
-                instance_->OnReceivePaxosMsg(paxos_msg, true);
-            }
-            else {
+    m_mapTimerIDExist.erase(it);
+
+    m_poInstance->OnTimeout(iTimerID, iType);
+}
+
+void IoLoop::DealwithTimeout(int & iNextTimeout)
+{
+    bool bHasTimeout = true;
+
+    while(bHasTimeout)
+    {
+        uint32_t iTimerID = 0;
+        int iType = 0;
+        bHasTimeout = m_oTimer.PopTimeout(iTimerID, iType);
+
+        if (bHasTimeout)
+        {
+            DealwithTimeoutOne(iTimerID, iType);
+
+            iNextTimeout = m_oTimer.GetNextTimeout();
+            if (iNextTimeout != 0)
+            {
                 break;
             }
         }
-        else if (paxos_msg.instanceid() == instance_->GetCurrentInstanceId()) {
-            instance_->OnReceivePaxosMsg(paxos_msg);
-            has_retried = true;
-        }
-
-        retry_queue_.pop();
     }
 }
 

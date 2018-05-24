@@ -329,7 +329,7 @@ const uint64_t PNode::GetCurrentInstanceId(const int iGroupIdx)
         return (uint64_t)-1;
     }
 
-    return m_vecGroupList[iGroupIdx]->GetInstance()->GetCurrentInstanceId();
+    return m_vecGroupList[iGroupIdx]->GetInstance()->GetInstanceId();
 }
 
 const uint64_t PNode::GetMinChosenInstanceId(const int iGroupIdx)
@@ -339,7 +339,7 @@ const uint64_t PNode::GetMinChosenInstanceId(const int iGroupIdx)
         return (uint64_t)-1;
     }
 
-    return m_vecGroupList[iGroupIdx]->GetInstance()->GetMinInstanceId();
+    return m_vecGroupList[iGroupIdx]->GetInstance()->GetMinChosenInstanceId();
 }
 
 int PNode::OnReceiveMessage(const char * pcMessage, const int iMessageLen)

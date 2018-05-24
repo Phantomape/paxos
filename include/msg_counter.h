@@ -5,9 +5,13 @@
 
 namespace paxos {
 
+class Config;
+class PaxosLog;
+
 class MsgCounter {
 public:
     MsgCounter();
+    MsgCounter(const Config * poConfig);
     ~MsgCounter();
 
     void AddAcceptedMsg(const uint64_t node_id);
@@ -23,6 +27,8 @@ public:
     std::set<uint64_t> recv_msg_node_ids;
     std::set<uint64_t> rej_msg_node_ids;
     std::set<uint64_t> ac_msg_node_ids;
+
+    Config* config_;
 };
 
 }

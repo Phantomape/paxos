@@ -23,7 +23,7 @@ void EventLoop::ClearEvent() {
     
 }
 
-void EventLoop :: AddEvent(int fd, SocketAddress addr)
+void EventLoop::AddEvent(int fd, SocketAddress addr)
 {
     std::lock_guard<std::mutex> lck(mutex_);
     queue_socket_addr_.push(std::make_pair(fd, addr));
@@ -175,7 +175,7 @@ void EventLoop::RemoveTimer(const uint32_t timer_id) {
     }
 }
 
-void EventLoop :: SingleLoop(const int timeout) {
+void EventLoop::SingleLoop(const int timeout) {
     int n = epoll_wait(epoll_fd_, epoll_events, MAX_NUM_EVENTS, 1);
     if (n == -1) {
         if (errno != EINTR) {
@@ -239,6 +239,14 @@ void EventLoop::Start(){
 
 void EventLoop::Stop() {
     is_ended_ = true;
+}
+
+void EventLoop::SetTcpClient(TcpClient * poTcpClient) {
+    tcp_client_ = poTcpClient;
+}
+
+void EventLoop::JumpoutEpollWait() {
+    notify_->SendNotifyEvent();
 }
 
 }
