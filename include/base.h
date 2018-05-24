@@ -32,7 +32,7 @@ public:
 
     void NewInstance();
 
-    virtual void InitForNewPaxosInstance() = 0;
+    virtual void InitInstance() = 0;
 
     void SetInstanceId(const uint64_t llInstanceId);
 

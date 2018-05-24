@@ -36,7 +36,7 @@ void Base::SetInstanceId(const uint64_t llInstanceId)
 void Base::NewInstance()
 {
     instance_id_++;
-    InitForNewPaxosInstance();
+    InitInstance();
 }
 
 const uint32_t Base::GetLastChecksum() const
