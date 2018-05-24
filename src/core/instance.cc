@@ -651,15 +651,6 @@ int Instance::ReceiveMsgForLearner(const PaxosMsg & oPaxosMsg)
         //m_oLearner.OnAskforCheckpoint(oPaxosMsg);
     }
 
-    if (m_oLearner.IsLearned())
-    {
-        //BP->GetInstance//BP()->OnInstanceLearned();
-
-        StateMachineCtx * poStateMachineCtx = nullptr;
-
-        //BP->GetInstance//BP()->NewInstance();
-    }
-
     return 0;
 }
 

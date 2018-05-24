@@ -54,4 +54,10 @@ void Learner::Stop() {
     // Stop checkpoint if needed
 }
 
+void Learner::InitInstance() {
+    learned_val_ = "";
+    is_learned_ = false;
+    new_checksum_ = 0;
+}
+
 }

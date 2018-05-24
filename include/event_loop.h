@@ -1,6 +1,7 @@
 #pragma once
 
 #include "socket.h"
+#include "notify_event.h"
 #include <map>
 #include <mutex>
 #include <queue>
@@ -69,8 +70,8 @@ protected:
     epoll_event epoll_events[MAX_NUM_EVENTS];
     std::map<int, EventCtx_t> mapping_id_2_event_context_;
     Network * network;
-    //TcpClient * m_poTcpClient;
-    //Notify * m_poNotify;
+    TcpClient * tcp_client_;
+    NotifyEvent * notify_;
     //Timer m_oTimer;
     std::map<uint32_t, int> mapping_timer_id_2_fd_;
 
