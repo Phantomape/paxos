@@ -51,7 +51,7 @@ public:
 private:
     Config * m_poConfig;
     LogStorage * m_poLogStorage;
-    StateMachineFac * m_poSMFac;
+    StateMachineFac * m_poStateMachineFac;
     
     Replayer m_oReplayer;
     Cleaner m_oCleaner;
