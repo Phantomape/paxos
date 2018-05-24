@@ -1,5 +1,6 @@
 #include "def.h"
 #include "instance.h"
+#include "internal_options.h"
 #include "acceptor.h"
 #include "learner.h"
 #include "proposer.h"
