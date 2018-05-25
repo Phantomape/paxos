@@ -5,6 +5,7 @@ namespace paxos {
 class BytesBuffer {
 public:
     BytesBuffer();
+    
     ~BytesBuffer();
 
     char* GetPtr();

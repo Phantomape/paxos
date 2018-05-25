@@ -26,7 +26,7 @@ public:
 
 typedef std::vector<CheckpointFileInfo> CheckpointFileInfoList;
 
-const uint64_t NoCheckpoint = (uint64_t)-1; 
+const uint64_t NoCheckpoint = static_cast<uint64_t>(-1); 
 
 class StateMachine {
 public:

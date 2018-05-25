@@ -5,8 +5,7 @@
 #include "state_machine.h"
 #include <map>
 
-namespace paxos
-{
+namespace paxos {
 
 class Learner;
 class Config;

@@ -21,10 +21,9 @@ enum BroadcastMessage_Type
     BroadcastMessage_Type_RunSelf_None = 3,
 };
 
-
 class Base {
 public:
-    Base(const Config * poConfig, const Communicate * poCommunicate, const Instance * poInstance);
+    Base(const Config* config, const Communicate* communicate, const Instance* instance);
     
     virtual ~Base();
 
@@ -34,42 +33,43 @@ public:
 
     virtual void InitInstance() = 0;
 
-    void SetInstanceId(const uint64_t llInstanceId);
+    void SetInstanceId(const uint64_t instance_id);
 
-    int PackMsg(const PaxosMsg & oPaxosMsg, std::string & sBuffer);
+    int PackMsg(const PaxosMsg& paxos_msg, std::string& buffer);
     
-    int PackCheckpointMsg(const CheckpointMsg & oCheckpointMsg, std::string & sBuffer);
+    int PackCheckpointMsg(const CheckpointMsg& checkpoint_msg, std::string& buffer);
 
-public:
     const uint32_t GetLastChecksum() const;
     
-    void PackBaseMsg(const std::string & sBodyBuffer, const int iCmd, std::string & sBuffer);
+    void PackBaseMsg(const std::string& body_buffer, const int cmd, std::string & buffer);
 
-    static int UnPackBaseMsg(const std::string & sBuffer, Header & oHeader, size_t & iBodyStartPos, size_t & iBodyLen);
+    static int UnPackBaseMsg(const std::string & buffer, Header & header, size_t & body_start_pos, size_t & body_len);
 
     void SetAsTestMode();
 
 protected:
-    virtual int SendMessage(const uint64_t iSendtoNodeId, const PaxosMsg & oPaxosMsg, const int iSendType = Message_SendType_UDP);
+    virtual int SendMessage(const uint64_t recv_node_id, const PaxosMsg& paxos_msg, const int send_type = Message_SendType_UDP);
 
     virtual int BroadcastMessage(
-            const PaxosMsg & oPaxosMsg, 
+            const PaxosMsg& paxos_msg, 
             const int bRunSelfFirst = BroadcastMessage_Type_RunSelf_First,
-            const int iSendType = Message_SendType_UDP);
+            const int send_type = Message_SendType_UDP
+            );
     
     int BroadcastMessageToFollower(
-            const PaxosMsg & oPaxosMsg, 
-            const int iSendType = Message_SendType_TCP);
+            const PaxosMsg& paxos_msg, 
+            const int send_type = Message_SendType_TCP
+            );
     
     int BroadcastMessageToTempNode(
-            const PaxosMsg & oPaxosMsg, 
-            const int iSendType = Message_SendType_UDP);
+            const PaxosMsg& paxos_msg, 
+            const int send_type = Message_SendType_UDP
+            );
 
-protected:
-    int SendMessage(const uint64_t iSendtoNodeId, const CheckpointMsg & oCheckpointMsg, 
-            const int iSendType = Message_SendType_TCP);
+    int SendMessage(const uint64_t recv_node_id, const CheckpointMsg& checkpoint_msg, 
+            const int send_type = Message_SendType_TCP
+            );
 
-protected:
     Config * config_;
     Communicate * communicate_;
     Instance * instance_;

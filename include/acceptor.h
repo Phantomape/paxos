@@ -18,22 +18,28 @@ public:
     ~Acceptor();
 
     int Init();
+
     virtual void InitInstance();
 
     const Ballot& GetAcceptedBallot() const;
+
     const Ballot& GetPromiseBallot() const;
 
     const std::string& GetAcceptedValue();
+
     void SetAcceptedValue(const std::string& accepted_val);
 
     void SetAcceptedBallot(const Ballot& accepted_ballot);
+
     void SetPromiseBallot(const Ballot& promised_ballot);
 
     int OnPrepare(const PaxosMsg& recv_paxos_msg);
+    
     void OnAccept(const PaxosMsg& paxos_msg);
+
 private:
-    Ballot promised_ballot;
-    Ballot accepted_ballot;
+    Ballot promised_ballot_;
+    Ballot accepted_ballot_;
     std::string accepted_val_;
     uint32_t checksum_;
     Config* config_;
