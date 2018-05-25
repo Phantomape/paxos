@@ -39,3 +39,6 @@ build/*
 
 # Third party
 third_party/*
+
+# Log
+logpath_*
