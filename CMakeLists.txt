@@ -27,3 +27,6 @@ add_executable(Paxos test.cc ${DIR_ROOT_SRCS})
 
 # Link a target to given libraries, e.g. Paxos is linked to CoreLib
 target_link_libraries(Paxos core comm util conf)
+
+set(CMAKE_INSTALL_PREFIX "${CMAKE_SOURCE_DIR}/bin/")
+install(TARGETS Paxos RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX})
