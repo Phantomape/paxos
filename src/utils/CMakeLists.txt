@@ -6,4 +6,4 @@ aux_source_directory(. DIR_LIB_SRCS)
 
 add_library(util STATIC ${DIR_LIB_SRCS})
 
-target_link_libraries(util foo protobuf)
+target_link_libraries(util foo protobuf leveldb)
