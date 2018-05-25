@@ -5,22 +5,20 @@
 namespace paxos {
 
 IoLoop::IoLoop(Config * poConfig, Instance * poInstance)
-    : m_poConfig(poConfig), m_poInstance(poInstance)
+    : config_(poConfig), instance_(poInstance)
 {
-    m_bIsEnd = false;
-    m_bIsStart = false;
+    is_ended_ = false;
+    is_started_ = false;
 
     m_iQueueMemSize = 0;
 }
 
-IoLoop::~IoLoop()
-{
+IoLoop::~IoLoop() {
 }
 
-void IoLoop::Run()
-{
-    m_bIsEnd = false;
-    m_bIsStart = true;
+void IoLoop::Run() {
+    is_ended_ = false;
+    is_started_ = true;
     while(true)
     {
         //BP->GetIoLoopBP()->OneLoop();
@@ -33,215 +31,185 @@ void IoLoop::Run()
 
         Init(iNextTimeout);
 
-        if (m_bIsEnd)
-        {
+        if (is_ended_) {
             //PLGHead("IoLoop [End]");
             break;
         }
     }
 }
 
-void IoLoop::AddNotify()
-{
-    m_oMessageQueue.lock();
-    m_oMessageQueue.add(nullptr);
-    m_oMessageQueue.unlock();
+void IoLoop::AddNotify() {
+    message_queue_.lock();
+    message_queue_.add(nullptr);
+    message_queue_.unlock();
 }
 
-int IoLoop::AddMessage(const char * pcMessage, const int iMessageLen)
-{
-    m_oMessageQueue.lock();
+int IoLoop::AddMessage(const char * pcMessage, const int iMessageLen) {
+    message_queue_.lock();
 
     //BP->GetIoLoopBP()->EnqueueMsg();
 
-    if ((int)m_oMessageQueue.size() > QUEUE_MAXLENGTH)
+    if ((int)message_queue_.size() > QUEUE_MAXLENGTH)
     {
         //BP->GetIoLoopBP()->EnqueueMsgRejectByFullQueue();
 
         //PLGErr("Queue full, skip msg");
-        m_oMessageQueue.unlock();
+        message_queue_.unlock();
         return -2;
     }
 
     if (m_iQueueMemSize > MAX_QUEUE_MEM_SIZE)
     {
         //PLErr("queue memsize %d too large, can't enqueue", m_iQueueMemSize);
-        m_oMessageQueue.unlock();
+        message_queue_.unlock();
         return -2;
     }
     
-    m_oMessageQueue.add(new std::string(pcMessage, iMessageLen));
+    message_queue_.add(new std::string(pcMessage, iMessageLen));
 
     m_iQueueMemSize += iMessageLen;
 
-    m_oMessageQueue.unlock();
+    message_queue_.unlock();
 
     return 0;
 }
 
-int IoLoop::AddRetryPaxosMsg(const PaxosMsg & oPaxosMsg)
-{
+int IoLoop::AddRetryPaxosMsg(const PaxosMsg & oPaxosMsg) {
     //BP->GetIoLoopBP()->EnqueueRetryMsg();
 
-    if (m_oRetryQueue.size() > RETRY_QUEUE_MAX_LEN)
-    {
+    if (retry_queue_.size() > RETRY_QUEUE_MAX_LEN) {
         //BP->GetIoLoopBP()->EnqueueRetryMsgRejectByFullQueue();
-        m_oRetryQueue.pop();
+        retry_queue_.pop();
     }
     
-    m_oRetryQueue.push(oPaxosMsg);
+    retry_queue_.push(oPaxosMsg);
     return 0;
 }
 
-void IoLoop::Stop()
-{
-    m_bIsEnd = true;
-    if (m_bIsStart)
+void IoLoop::Stop() {
+    is_ended_ = true;
+    if (is_started_)
     {
         Join();
     }
 }
 
-void IoLoop::ClearRetryQueue()
-{
-    while (!m_oRetryQueue.empty())
+void IoLoop::ClearRetryQueue() {
+    while (!retry_queue_.empty())
     {
-        m_oRetryQueue.pop();
+        retry_queue_.pop();
     }
 }
 
-void IoLoop::DealWithRetry()
-{
-    if (m_oRetryQueue.empty())
-    {
+void IoLoop::DealWithRetry() {
+    if (retry_queue_.empty()) {
         return;
     }
     
     bool bHaveRetryOne = false;
-    while (!m_oRetryQueue.empty())
-    {
-        PaxosMsg & oPaxosMsg = m_oRetryQueue.front();
-        if (oPaxosMsg.instanceid() > m_poInstance->GetInstanceId() + 1)
-        {
+    while (!retry_queue_.empty()) {
+        PaxosMsg & oPaxosMsg = retry_queue_.front();
+        if (oPaxosMsg.instanceid() > instance_->GetInstanceId() + 1) {
             break;
         }
-        else if (oPaxosMsg.instanceid() == m_poInstance->GetInstanceId() + 1)
-        {
+        else if (oPaxosMsg.instanceid() == instance_->GetInstanceId() + 1) {
             //only after retry i == now_i, than we can retry i + 1.
-            if (bHaveRetryOne)
-            {
+            if (bHaveRetryOne) {
                 //BP->GetIoLoopBP()->DealWithRetryMsg();
                 //PLGDebug("retry msg (i+1). instanceid %lu", oPaxosMsg.instanceid());
-                m_poInstance->OnReceivePaxosMsg(oPaxosMsg, true);
+                instance_->OnReceivePaxosMsg(oPaxosMsg, true);
             }
-            else
-            {
+            else {
                 break;
             }
         }
-        else if (oPaxosMsg.instanceid() == m_poInstance->GetInstanceId())
-        {
+        else if (oPaxosMsg.instanceid() == instance_->GetInstanceId()) {
             //BP->GetIoLoopBP()->DealWithRetryMsg();
             //PLGDebug("retry msg. instanceid %lu", oPaxosMsg.instanceid());
-            m_poInstance->OnReceivePaxosMsg(oPaxosMsg);
+            instance_->OnReceivePaxosMsg(oPaxosMsg);
             bHaveRetryOne = true;
         }
 
-        m_oRetryQueue.pop();
+        retry_queue_.pop();
     }
 }
 
-void IoLoop::Init(const int iTimeoutMs)
-{
+// TODO(Xucheng): Change Init() to Loop()
+void IoLoop::Init(const int iTimeoutMs) {
     std::string * psMessage = nullptr;
 
-    m_oMessageQueue.lock();
-    bool bSucc = m_oMessageQueue.peek(psMessage, iTimeoutMs);
+    message_queue_.lock();
+    bool bSucc = message_queue_.peek(psMessage, iTimeoutMs);
     
-    if (!bSucc)
-    {
-        m_oMessageQueue.unlock();
+    if (!bSucc) {
+        message_queue_.unlock();
     }
-    else
-    {
-        m_oMessageQueue.pop();
-        m_oMessageQueue.unlock();
+    else {
+        message_queue_.pop();
+        message_queue_.unlock();
 
-        if (psMessage != nullptr && psMessage->size() > 0)
-        {
+        if (psMessage != nullptr && psMessage->size() > 0) {
             m_iQueueMemSize -= psMessage->size();
-            m_poInstance->OnReceive(*psMessage);
+            instance_->OnReceive(*psMessage);
         }
 
         delete psMessage;
-
-        //BP->GetIoLoopBP()->OutQueueMsg();
     }
 
     DealWithRetry();
 
     //must put on here
     //because addtimer on this funciton
-    m_poInstance->CheckNewValue();
+    instance_->CheckNewValue();
 }
 
-bool IoLoop::AddTimer(const int iTimeout, const int iType, uint32_t & iTimerID)
-{
-    if (iTimeout == -1)
-    {
+bool IoLoop::AddTimer(const int iTimeout, const int iType, uint32_t & iTimerID) {
+    if (iTimeout == -1) {
         return true;
     }
     
     uint64_t llAbsTime = Time::GetSteadyClockMS() + iTimeout;
-    m_oTimer.AddTimerWithType(llAbsTime, iType, iTimerID);
+    timer_.AddTimerWithType(llAbsTime, iType, iTimerID);
 
-    m_mapTimerIDExist[iTimerID] = true;
+    map_timer_id_exist_[iTimerID] = true;
 
     return true;
 }
 
-void IoLoop::RemoveTimer(uint32_t & iTimerID)
-{
-    auto it = m_mapTimerIDExist.find(iTimerID);
-    if (it != end(m_mapTimerIDExist))
-    {
-        m_mapTimerIDExist.erase(it);
+void IoLoop::RemoveTimer(uint32_t & iTimerID) {
+    auto it = map_timer_id_exist_.find(iTimerID);
+    if (it != end(map_timer_id_exist_)) {
+        map_timer_id_exist_.erase(it);
     }
 
     iTimerID = 0;
 }
 
-void IoLoop::DealwithTimeoutOne(const uint32_t iTimerID, const int iType)
-{
-    auto it = m_mapTimerIDExist.find(iTimerID);
-    if (it == end(m_mapTimerIDExist))
-    {
+void IoLoop::DealwithTimeoutOne(const uint32_t iTimerID, const int iType) {
+    auto it = map_timer_id_exist_.find(iTimerID);
+    if (it == end(map_timer_id_exist_)) {
         //PLGErr("Timeout aready remove!, timerid %u iType %d", iTimerID, iType);
         return;
     }
 
-    m_mapTimerIDExist.erase(it);
+    map_timer_id_exist_.erase(it);
 
-    m_poInstance->OnTimeout(iTimerID, iType);
+    instance_->OnTimeout(iTimerID, iType);
 }
 
-void IoLoop::DealwithTimeout(int & iNextTimeout)
-{
+void IoLoop::DealwithTimeout(int & iNextTimeout) {
     bool bHasTimeout = true;
 
-    while(bHasTimeout)
-    {
+    while(bHasTimeout) {
         uint32_t iTimerID = 0;
         int iType = 0;
-        bHasTimeout = m_oTimer.PopTimeout(iTimerID, iType);
+        bHasTimeout = timer_.PopTimeout(iTimerID, iType);
 
-        if (bHasTimeout)
-        {
+        if (bHasTimeout) {
             DealwithTimeoutOne(iTimerID, iType);
 
-            iNextTimeout = m_oTimer.GetNextTimeout();
-            if (iNextTimeout != 0)
-            {
+            iNextTimeout = timer_.GetNextTimeout();
+            if (iNextTimeout != 0) {
                 break;
             }
         }

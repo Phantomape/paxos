@@ -44,18 +44,19 @@ public:
     void DealwithTimeoutOne(const uint32_t iTimerID, const int iType);
 
 private:
-    bool m_bIsEnd;
-    bool m_bIsStart;
-    Timer m_oTimer;
-    std::map<uint32_t, bool> m_mapTimerIDExist;
+    bool is_ended_;
+    bool is_started_;
+    Timer timer_;
 
-    Queue<std::string *> m_oMessageQueue;
-    std::queue<PaxosMsg> m_oRetryQueue;
+    std::map<uint32_t, bool> map_timer_id_exist_;
+
+    Queue<std::string *> message_queue_;
+    std::queue<PaxosMsg> retry_queue_;
 
     int m_iQueueMemSize;
 
-    Config * m_poConfig;
-    Instance * m_poInstance;
+    Config * config_;
+    Instance * instance_;
 };
 
 }

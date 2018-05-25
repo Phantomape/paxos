@@ -18,44 +18,36 @@ Committer::~Committer()
 
 int Committer::NewValue(const std::string & sValue)
 {
-    uint64_t llInstanceID = 0;
-    return NewValueGetID(sValue, llInstanceID, nullptr);
+    uint64_t instance_id = 0;
+    return NewValueGetID(sValue, instance_id, nullptr);
 }
 
-int Committer::NewValueGetID(const std::string & sValue, uint64_t & llInstanceID)
+int Committer::NewValueGetID(const std::string & sValue, uint64_t & instance_id)
 {
-    return NewValueGetID(sValue, llInstanceID, nullptr);
+    return NewValueGetID(sValue, instance_id, nullptr);
 }
 
-int Committer::NewValueGetID(const std::string & sValue, uint64_t & llInstanceID, StateMachineCtx * poSMCtx)
-{
+int Committer::NewValueGetID(const std::string & sValue, uint64_t & instance_id, StateMachineCtx * state_machine_ctx) {
     //BP->GetCommiterBP()->NewValue();
 
     int iRetryCount = 3;
     int ret = PaxosTryCommitRet_OK;
-    while(iRetryCount--)
-    {
+    while(iRetryCount--) {
         TimeStat oTimeStat;
         oTimeStat.Point();
 
-        ret = NewValueGetIDNoRetry(sValue, llInstanceID, poSMCtx);
-        if (ret != PaxosTryCommitRet_Conflict)
-        {
-            if (ret == 0)
-            {
-                //BP->GetCommiterBP()->NewValueCommitOK(oTimeStat.Point());
+        ret = NewValueGetIDNoRetry(sValue, instance_id, state_machine_ctx);
+        if (ret != PaxosTryCommitRet_Conflict) {
+            if (ret == 0) {
+                std::cout << "NewValueCommitOK" << std::endl;
             }
-            else
-            {
-                //BP->GetCommiterBP()->NewValueCommitFail();
+            else {
+                std::cout << "NewValueCommitFail" << std::endl;
             }
             break;
         }
 
-        //BP->GetCommiterBP()->NewValueConflict();
-
-        if (poSMCtx != nullptr && poSMCtx->state_machine_id_ == MASTER_V_STATE_MACHINE_ID)
-        {
+        if (state_machine_ctx != nullptr && state_machine_ctx->state_machine_id_ == MASTER_V_STATE_MACHINE_ID) {
             //master sm not retry
             break;
         }
@@ -64,87 +56,68 @@ int Committer::NewValueGetID(const std::string & sValue, uint64_t & llInstanceID
     return ret;
 }
 
-int Committer::NewValueGetIDNoRetry(const std::string & sValue, uint64_t & llInstanceID, StateMachineCtx * poSMCtx)
-{
+int Committer::NewValueGetIDNoRetry(
+    const std::string & sValue, 
+    uint64_t & instance_id, 
+    StateMachineCtx * state_machine_ctx
+    ) {
     LogStatus();
 
-    int iLockUseTimeMs = 0;
-    bool bHasLock = m_oWaitLock.Lock(m_iTimeoutMs, iLockUseTimeMs);
-    if (!bHasLock)
-    {
-        if (iLockUseTimeMs > 0)
-        {
+    int get_lock_time_ms = 0;
+    bool has_lock = m_oWaitLock.Lock(m_iTimeoutMs, get_lock_time_ms);
+    if (!has_lock) {
+        if (get_lock_time_ms > 0) {
             //BP->GetCommiterBP()->NewValueGetLockTimeout();
-            //PLGErr("Try get lock, but timeout, lockusetime %dms", iLockUseTimeMs);
+            //PLGErr("Try get lock, but timeout, lockusetime %dms", get_lock_time_ms);
             return PaxosTryCommitRet_Timeout; 
         }
-        else
-        {
+        else { // wtf ??
             //BP->GetCommiterBP()->NewValueGetLockReject();
             //PLGErr("Try get lock, but too many thread waiting, reject");
             return PaxosTryCommitRet_TooManyThreadWaiting_Reject;
         }
     }
 
-    int iLeftTimeoutMs = -1;
-    if (m_iTimeoutMs > 0)
-    {
-        iLeftTimeoutMs = m_iTimeoutMs > iLockUseTimeMs ? m_iTimeoutMs - iLockUseTimeMs : 0;
-        if (iLeftTimeoutMs < 200)
-        {
-            //PLGErr("Get lock ok, but lockusetime %dms too long, lefttimeout %dms", iLockUseTimeMs, iLeftTimeoutMs);
-
-            //BP->GetCommiterBP()->NewValueGetLockTimeout();
-
+    int left_time_ms = -1;
+    if (m_iTimeoutMs > 0) {
+        left_time_ms = m_iTimeoutMs > get_lock_time_ms ? m_iTimeoutMs - get_lock_time_ms : 0;
+        if (left_time_ms < 200) {
+            //PLGErr("Get lock ok, but lockusetime %dms too long, lefttimeout %dms", get_lock_time_ms, left_time_ms);
             m_oWaitLock.UnLock();
             return PaxosTryCommitRet_Timeout;
         }
     }
 
-    //PLGImp("GetLock ok, use time %dms", iLockUseTimeMs);
-    
-    //BP->GetCommiterBP()->NewValueGetLockOK(iLockUseTimeMs);
-
-    //pack smid to value
-    int iSMID = poSMCtx != nullptr ? poSMCtx->state_machine_id_ : 0;
+    // Get lock successfully
+    int state_machine_id = state_machine_ctx != nullptr ? state_machine_ctx->state_machine_id_ : 0;
     
     std::string sPackSMIDValue = sValue;
-    m_poSMFac->PackPaxosValue(sPackSMIDValue, iSMID);
+    m_poSMFac->PackPaxosValue(sPackSMIDValue, state_machine_id);
 
-    m_poCommitCtx->NewCommit(&sPackSMIDValue, poSMCtx, iLeftTimeoutMs);
+    m_poCommitCtx->NewCommit(&sPackSMIDValue, state_machine_ctx, left_time_ms);
     m_poIOLoop->AddNotify();
 
-    int ret = m_poCommitCtx->GetResult(llInstanceID);
+    int ret = m_poCommitCtx->GetResult(instance_id);
 
     m_oWaitLock.UnLock();
     return ret;
 }
 
-////////////////////////////////////////////////////
-
-void Committer::SetTimeoutMs(const int iTimeoutMs)
-{
+void Committer::SetTimeoutMs(const int iTimeoutMs) {
     m_iTimeoutMs = iTimeoutMs;
 }
 
-void Committer::SetMaxHoldThreads(const int iMaxHoldThreads)
-{
+void Committer::SetMaxHoldThreads(const int iMaxHoldThreads) {
     m_oWaitLock.SetMaxWaitLogCount(iMaxHoldThreads);
 }
 
-void Committer::SetProposeWaitTimeThresholdMS(const int iWaitTimeThresholdMS)
-{
+void Committer::SetProposeWaitTimeThresholdMS(const int iWaitTimeThresholdMS) {
     m_oWaitLock.SetLockWaitTimeThreshold(iWaitTimeThresholdMS);
 }
 
-////////////////////////////////////////////////////
-
-void Committer::LogStatus()
-{
+void Committer::LogStatus() {
     uint64_t llNowTime = Time::GetSteadyClockMS();
-    if (llNowTime > m_llLastLogTime
-            && llNowTime - m_llLastLogTime > 1000)
-    {
+    if (llNowTime > m_llLastLogTime && llNowTime - m_llLastLogTime > 1000) {
         m_llLastLogTime = llNowTime;
     }
 }

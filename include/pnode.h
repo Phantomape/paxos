@@ -25,17 +25,17 @@ public:
     int Init(const Options & oOptions, Network *& poNetwork);
 
 public:
-    int Propose(const int iGroupIdx, const std::string & sValue, uint64_t & llInstanceID);
-    int Propose(const int iGroupIdx, const std::string & sValue, uint64_t & llInstanceID, StateMachineCtx * poStateMachineCtx);
+    int Propose(const int iGroupIdx, const std::string & sValue, uint64_t & instance_id);
+    int Propose(const int iGroupIdx, const std::string & sValue, uint64_t & instance_id, StateMachineCtx * poStateMachineCtx);
     const uint64_t GetCurrentInstanceId(const int iGroupIdx);
     const uint64_t GetMinChosenInstanceId(const int iGroupIdx);
 
 public:
     //batch
     int BatchPropose(const int iGroupIdx, const std::string & sValue, 
-            uint64_t & llInstanceID, uint32_t & iBatchIndex);
+            uint64_t & instance_id, uint32_t & iBatchIndex);
     int BatchPropose(const int iGroupIdx, const std::string & sValue, 
-            uint64_t & llInstanceID, uint32_t & iBatchIndex, StateMachineCtx * poStateMachineCtx);
+            uint64_t & instance_id, uint32_t & iBatchIndex, StateMachineCtx * poStateMachineCtx);
     void SetBatchCount(const int iGroupIdx, const int iBatchCount);
     void SetBatchDelayTimeMs(const int iGroupIdx, const int iBatchDelayTimeMs);
 
@@ -74,7 +74,7 @@ public:
     void SetLogSync(const int iGroupIdx, const bool bLogSync);
 
 public:
-    int GetInstanceValue(const int iGroupIdx, const uint64_t llInstanceID,
+    int GetInstanceValue(const int iGroupIdx, const uint64_t instance_id,
             std::vector<std::pair<std::string, int> > & vecValues);
 
 private:

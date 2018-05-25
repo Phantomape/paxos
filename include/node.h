@@ -13,6 +13,7 @@ class Network;
 class Node {
 public:
     Node() {}
+    
     virtual ~Node() {}
 
     static int Run(const Options& options, Node*& node);

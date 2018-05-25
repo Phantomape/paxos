@@ -4,20 +4,17 @@
 #include <string>
 #include <vector>
 
-class PhxEchoSMCtx
-{
+class PhxEchoSMCtx {
 public:
     int iExecuteRet;
     std::string sEchoRespValue;
 
-    PhxEchoSMCtx()
-    {
+    PhxEchoSMCtx() {
         iExecuteRet = -1;
     }
 };
 
-class PhxEchoSM : public paxos::StateMachine
-{
+class PhxEchoSM : public paxos::StateMachine {
 public:
     PhxEchoSM();
 
@@ -27,8 +24,7 @@ public:
     const int StateMachineId() const { return 1; }
 };
 
-class PhxEchoServer
-{
+class PhxEchoServer {
 public:
     PhxEchoServer(const paxos::NodeInfo & oMyNode, const paxos::NodeInfoList & vecNodeList);
 
@@ -41,14 +37,13 @@ public:
 private:
     int MakeLogStoragePath(std::string & sLogStoragePath);
 
-private:
-    paxos::NodeInfo m_oMyNode;
+    paxos::NodeInfo node_info_;
 
-    paxos::NodeInfoList m_vecNodeList;
+    paxos::NodeInfoList vec_node_list_;
 
-    paxos::Node * m_poPaxosNode;
+    paxos::Node* node_;
     
-    PhxEchoSM m_oEchoSM;
+    PhxEchoSM echo_state_machine_;
 };
     
 

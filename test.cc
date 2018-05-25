@@ -86,12 +86,12 @@ int main(int argc, char ** argv) {
 
     printf("echo server start, ip %s port %d\n", node.GetIp().c_str(), node.GetPort());
 
-    string sEchoReqValue;
+    string echo_send_val;
     while (true) {
         printf("\nplease input: <echo req value>\n");
-        getline(cin, sEchoReqValue);
+        getline(cin, echo_send_val);
         string sEchoRespValue;
-        ret = server.Echo(sEchoReqValue, sEchoRespValue);
+        ret = server.Echo(echo_send_val, sEchoRespValue);
         if (ret != 0) {
             printf("Echo fail, ret %d\n", ret);
         }

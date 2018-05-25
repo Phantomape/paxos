@@ -10,13 +10,15 @@
 using namespace std;
 using namespace paxos;
 
-PhxEchoSM::PhxEchoSM()
-{
+PhxEchoSM::PhxEchoSM() {
 }
 
-bool PhxEchoSM::Execute(const int iGroupIdx, const uint64_t llInstanceID, 
-        const std::string & sPaxosValue, paxos::StateMachineCtx * poSMCtx)
-{
+bool PhxEchoSM::Execute(
+    const int group_idx, 
+    const uint64_t instance_id, 
+    const std::string & sPaxosValue, 
+    paxos::StateMachineCtx * poSMCtx
+    ) {
     //only commiter node have SMCtx.
     if (poSMCtx != nullptr && poSMCtx->ctx_ != nullptr)
     {
@@ -29,18 +31,17 @@ bool PhxEchoSM::Execute(const int iGroupIdx, const uint64_t llInstanceID,
 }
 
 PhxEchoServer::PhxEchoServer(const paxos::NodeInfo & oMyNode, const paxos::NodeInfoList & vecNodeList)
-    : m_oMyNode(oMyNode), m_vecNodeList(vecNodeList), m_poPaxosNode(nullptr)
-{
+    : node_info_(oMyNode), vec_node_list_(vecNodeList), node_(nullptr) {
 }
 
 PhxEchoServer::~PhxEchoServer()
 {
-    delete m_poPaxosNode;
+    delete node_;
 }
 
 int PhxEchoServer::MakeLogStoragePath(std::string & sLogStoragePath) {
     char sTmp[128] = {0};
-    snprintf(sTmp, sizeof(sTmp), "./logpath_%s_%d", m_oMyNode.GetIp().c_str(), m_oMyNode.GetPort());
+    snprintf(sTmp, sizeof(sTmp), "./logpath_%s_%d", node_info_.GetIp().c_str(), node_info_.GetPort());
 
     sLogStoragePath = string(sTmp);
 
@@ -65,23 +66,20 @@ int PhxEchoServer::Run() {
     //this groupcount means run paxos group count.
     //every paxos group is independent, there are no any communicate between any 2 paxos group.
     options.group_count_ = 1;
+    options.node_ = node_info_;
+    options.vec_node_info_list_ = vec_node_list_;
 
-    options.node_ = m_oMyNode;
-    options.vec_node_info_list_ = m_vecNodeList;
-
-    GroupStateMachineInfo oSMInfo;
-    oSMInfo.group_idx_ = 0;
+    GroupStateMachineInfo state_machine_info;
+    state_machine_info.group_idx_ = 0;
     //one paxos group can have multi state machine.
-    oSMInfo.vec_state_machine_list_.push_back(&m_oEchoSM);
-    options.vec_group_state_machine_info_list_.push_back(oSMInfo);
+    state_machine_info.vec_state_machine_list_.push_back(&echo_state_machine_);
+    options.vec_group_state_machine_info_list_.push_back(state_machine_info);
 
     //use logger_google to print log
     LogFunc log_func;
-
-    //set logger
     options.log_func_ = log_func;
 
-    ret = Node::Run(options, m_poPaxosNode);
+    ret = Node::Run(options, node_);
     if (ret != 0) {
         printf("run paxos fail, ret %d\n", ret);
         return ret;
@@ -91,16 +89,15 @@ int PhxEchoServer::Run() {
     return 0;
 }
 
-int PhxEchoServer::Echo(const std::string & sEchoReqValue, std::string & sEchoRespValue)
-{
+int PhxEchoServer::Echo(const std::string& echo_send_val, std::string& sEchoRespValue) {
     StateMachineCtx oCtx;
     PhxEchoSMCtx oEchoSMCtx;
     //smid must same to PhxEchoSM.SMID().
     oCtx.state_machine_id_ = 1;
     oCtx.ctx_ = (void *)&oEchoSMCtx;
 
-    uint64_t llInstanceID = 0;
-    int ret = m_poPaxosNode->Propose(0, sEchoReqValue, llInstanceID, &oCtx);
+    uint64_t instance_id = 0;
+    int ret = node_->Propose(0, echo_send_val, instance_id, &oCtx);
     if (ret != 0)
     {
         printf("paxos propose fail, ret %d\n", ret);
