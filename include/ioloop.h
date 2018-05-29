@@ -21,7 +21,7 @@ public:
 
     void Stop();
 
-    void Init(const int iTimeoutMs);
+    void Loop(const int iTimeoutMs);
 
     void DealWithRetry();
 

@@ -29,7 +29,7 @@ void IoLoop::Run() {
 
         //PLGHead("nexttimeout %d", iNextTimeout);
 
-        Init(iNextTimeout);
+        Loop(iNextTimeout);
 
         if (is_ended_) {
             //PLGHead("IoLoop [End]");
@@ -134,14 +134,13 @@ void IoLoop::DealWithRetry() {
     }
 }
 
-// TODO(Xucheng): Change Init() to Loop()
-void IoLoop::Init(const int iTimeoutMs) {
+void IoLoop::Loop(const int iTimeoutMs) {
     std::string * psMessage = nullptr;
 
     message_queue_.lock();
-    bool bSucc = message_queue_.peek(psMessage, iTimeoutMs);
+    bool is_succeeded = message_queue_.peek(psMessage, iTimeoutMs);
     
-    if (!bSucc) {
+    if (!is_succeeded) {
         message_queue_.unlock();
     }
     else {
