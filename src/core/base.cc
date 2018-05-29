@@ -172,7 +172,7 @@ int Base::SendMessage(const uint64_t iSendtoNodeId, const CheckpointMsg & oCheck
 {
     if (iSendtoNodeId == config_->GetMyNodeID())
     {
-        return 0; 
+        return 0;
     }
     
     std::string sBuffer;
@@ -197,7 +197,7 @@ int Base::SendMessage(const uint64_t iSendtoNodeId, const PaxosMsg & oPaxosMsg, 
     if (iSendtoNodeId == config_->GetMyNodeID())
     {
         instance_->OnReceivePaxosMsg(oPaxosMsg);
-        return 0; 
+        return 0;
     }
     
     std::string sBuffer;

@@ -68,7 +68,7 @@ int ProposeBatch::Propose(const std::string & sValue, uint64_t & llInstanceID, u
 {
     if (m_bIsEnd)
     {
-        return Paxos_SystemError; 
+        return Paxos_SystemError;
     }
 
     //BP->GetCommiterBP()->BatchPropose();
@@ -296,7 +296,7 @@ void ProposeBatch::DoPropose(std::vector<PendingProposal> & vecRequest)
     {
         PendingProposal & oPendingProposal = vecRequest[i];
         *oPendingProposal.piBatchIndex = (uint32_t)i;
-        *oPendingProposal.pllInstanceID = llInstanceID; 
+        *oPendingProposal.pllInstanceID = llInstanceID;
         oPendingProposal.poNotifier->SendNotify(ret);
     }
 }

@@ -696,7 +696,7 @@ int LogStore::RebuildIndexForOneFile(const int iFileId, const int iOffset,
         //PLG1Imp("rebuild one index ok, fileid %d offset %d instanceid %lu checksum %u buffer size %zu", 
                 //iFileId, iNowOffset, llInstanceId, iFileCheckSum, iLen - sizeof(uint64_t));
 
-        iNowOffset += sizeof(int) + iLen; 
+        iNowOffset += sizeof(int) + iLen;
     }
     
     close(iFd);

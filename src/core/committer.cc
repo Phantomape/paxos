@@ -69,7 +69,7 @@ int Committer::NewValueGetIDNoRetry(
         if (get_lock_time_ms > 0) {
             //BP->GetCommiterBP()->NewValueGetLockTimeout();
             //PLGErr("Try get lock, but timeout, lockusetime %dms", get_lock_time_ms);
-            return PaxosTryCommitRet_Timeout; 
+            return PaxosTryCommitRet_Timeout;
         }
         else { // wtf ??
             //BP->GetCommiterBP()->NewValueGetLockReject();

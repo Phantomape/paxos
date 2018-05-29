@@ -8,29 +8,27 @@
 namespace paxos {
 
 Instance::Instance(
-        const Config * poConfig, 
+        const Config * poConfig,
         const LogStorage * poLogStorage,
         const Communicate * poCommunicate,
         const Options & oOptions)
     : m_oSMFac(poConfig->GetMyGroupIdx()),
     m_oIOLoop((Config *)poConfig, this),
-    m_oAcceptor(poConfig, poCommunicate, this, poLogStorage), 
+    m_oAcceptor(poConfig, poCommunicate, this, poLogStorage),
     m_oLearner(poConfig, poCommunicate, this, &m_oAcceptor, poLogStorage, &m_oIOLoop, &m_oCheckpointMgr, &m_oSMFac),
     m_oProposer(poConfig, poCommunicate, this, &m_oLearner, &m_oIOLoop),
     m_oPaxosLog(poLogStorage),
     m_oCommitCtx((Config *)poConfig),
     m_oCommitter((Config *)poConfig, &m_oCommitCtx, &m_oIOLoop, &m_oSMFac),
     m_oCheckpointMgr((Config *)poConfig, &m_oSMFac, (LogStorage *)poLogStorage, oOptions.use_checkpoint_replayer_),
-    m_oOptions(oOptions), m_bStarted(false)
-{
+    m_oOptions(oOptions), m_bStarted(false) {
     m_poConfig = (Config *)poConfig;
     m_poCommunicate = (Communicate *)poCommunicate;
     m_iCommitTimerID = 0;
     m_iLastChecksum = 0;
 }
 
-Instance::~Instance()
-{
+Instance::~Instance() {
     //PLGHead("Instance Deleted, GroupIdx %d.", m_poConfig->GetMyGroupIdx());
 }
 
@@ -38,53 +36,37 @@ int Instance::Init()
 {
     //Must init acceptor first, because the max instanceid is record in acceptor state.
     int ret = m_oAcceptor.Init();
-    if (ret != 0)
-    {
+    if (ret != 0) {
         //PLGErr("Acceptor.Init fail, ret %d", ret);
         return ret;
     }
 
     ret = m_oCheckpointMgr.Init();
-    if (ret != 0)
-    {
+    if (ret != 0) {
         //PLGErr("CheckpointMgr.Init fail, ret %d", ret);
         return ret;
     }
 
     uint64_t llCPInstanceID = m_oCheckpointMgr.GetCheckpointInstanceID() + 1;
 
-    //PLGImp("Acceptor.OK, Log.InstanceID %lu Checkpoint.InstanceID %lu", 
-    //        m_oAcceptor.GetInstanceId(), llCPInstanceID);
-
     uint64_t llNowInstanceID = llCPInstanceID;
-    if (llNowInstanceID < m_oAcceptor.GetInstanceId())
-    {
+    if (llNowInstanceID < m_oAcceptor.GetInstanceId()) {
         ret = PlayLog(llNowInstanceID, m_oAcceptor.GetInstanceId());
-        if (ret != 0)
-        {
+        if (ret != 0) {
             return ret;
         }
-
-        //PLGImp("PlayLog OK, begin instanceid %lu end instanceid %lu", llNowInstanceID, m_oAcceptor.GetInstanceId());
-
         llNowInstanceID = m_oAcceptor.GetInstanceId();
     }
-    else
-    {
-        if (llNowInstanceID > m_oAcceptor.GetInstanceId())
-        {
+    else {
+        if (llNowInstanceID > m_oAcceptor.GetInstanceId()) {
             ret = ProtectionLogic_IsCheckpointInstanceIDCorrect(llNowInstanceID, m_oAcceptor.GetInstanceId());
-            if (ret != 0)
-            {
+            if (ret != 0) {
                 return ret;
             }
             m_oAcceptor.InitInstance();
         }
-        
         m_oAcceptor.SetInstanceId(llNowInstanceID);
     }
-
-    //PLGImp("NowInstanceID %lu", llNowInstanceID);
 
     m_oLearner.SetInstanceId(llNowInstanceID);
     m_oProposer.SetInstanceId(llNowInstanceID);
@@ -93,8 +75,7 @@ int Instance::Init()
     m_oCheckpointMgr.SetMaxChosenInstanceID(llNowInstanceID);
 
     ret = InitLastCheckSum();
-    if (ret != 0)
-    {
+    if (ret != 0) {
         return ret;
     }
 
@@ -105,8 +86,7 @@ int Instance::Init()
     return 0;
 }
 
-void Instance::Start()
-{
+void Instance::Start() {
     //start learner sender
     //m_oLearner.StartLearnerSender();
     //start ioloop
@@ -117,24 +97,20 @@ void Instance::Start()
     m_bStarted = true;
 }
 
-void Instance::Stop()
-{
-    if (m_bStarted)
-    {
+void Instance::Stop() {
+    if (m_bStarted) {
         m_oIOLoop.Stop();
         m_oCheckpointMgr.Stop();
         m_oLearner.Stop();
     }
 }
 
-int Instance::ProtectionLogic_IsCheckpointInstanceIDCorrect(const uint64_t llCPInstanceID, const uint64_t llLogMaxInstanceID) 
-{
-    if (llCPInstanceID <= llLogMaxInstanceID + 1)
-    {
+int Instance::ProtectionLogic_IsCheckpointInstanceIDCorrect(const uint64_t llCPInstanceID, const uint64_t llLogMaxInstanceID) {
+    if (llCPInstanceID <= llLogMaxInstanceID + 1) {
         return 0;
     }
 
-    //checkpoint_instanceid larger than log_maxinstanceid+1 will appear in the following situations 
+    //checkpoint_instanceid larger than log_maxinstanceid+1 will appear in the following situations
     //1. Pull checkpoint from other node automatically and restart. (normal case)
     //2. Paxos log was manually all deleted. (may be normal case)
     //3. Paxos log is lost because Options::bSync set as false. (bad case)
@@ -146,7 +122,7 @@ int Instance::ProtectionLogic_IsCheckpointInstanceIDCorrect(const uint64_t llCPI
     if (llLogMaxInstanceID == 0)
     {
         //case 1. Automatically pull checkpoint will delete all paxos log first.
-        //case 2. No paxos log. 
+        //case 2. No paxos log.
         //If minchosen instanceid < checkpoint instanceid.
         //Then Fix minchosen instanceid to avoid that paxos log between [log_maxinstanceid, checkpoint_instanceid) not exist.
         //if minchosen isntanceid > checkpoint.instanceid.
@@ -215,21 +191,17 @@ int Instance::InitLastCheckSum()
     return 0;
 }
 
-int Instance::PlayLog(const uint64_t llBeginInstanceID, const uint64_t llEndInstanceID)
-{
-    if (llBeginInstanceID < m_oCheckpointMgr.GetMinChosenInstanceId())
-    {
-        //PLGErr("now instanceid %lu small than min chosen instanceid %lu", 
+int Instance::PlayLog(const uint64_t llBeginInstanceID, const uint64_t llEndInstanceID) {
+    if (llBeginInstanceID < m_oCheckpointMgr.GetMinChosenInstanceId()) {
+        //PLGErr("now instanceid %lu small than min chosen instanceid %lu",
         //        llBeginInstanceID, m_oCheckpointMgr.GetMinChosenInstanceId());
         return -2;
     }
 
-    for (uint64_t llInstanceID = llBeginInstanceID; llInstanceID < llEndInstanceID; llInstanceID++)
-    {
-        AcceptorStateData oState; 
+    for (uint64_t llInstanceID = llBeginInstanceID; llInstanceID < llEndInstanceID; llInstanceID++) {
+        AcceptorStateData oState;
         int ret = m_oPaxosLog.ReadState(m_poConfig->GetMyGroupIdx(), llInstanceID, oState);
-        if (ret != 0)
-        {
+        if (ret != 0) {
             //PLGErr("log read fail, instanceid %lu ret %d", llInstanceID, ret);
             return ret;
         }
@@ -300,18 +272,15 @@ void Instance::CheckNewValue()
 
     m_oCommitCtx.StartCommit(m_oProposer.GetInstanceId());
 
-    if (m_oCommitCtx.GetTimeoutMs() != -1)
-    {
+    if (m_oCommitCtx.GetTimeoutMs() != -1) {
         m_oIOLoop.AddTimer(m_oCommitCtx.GetTimeoutMs(), Timer_Instance_Commit_Timeout, m_iCommitTimerID);
     }
-    
+
     m_oTimeStat.Point();
 
-    if (m_poConfig->GetIsUseMembership()
-            && (m_oProposer.GetInstanceId() == 0 || m_poConfig->GetGid() == 0))
-    {
+    if (m_poConfig->GetIsUseMembership() && (m_oProposer.GetInstanceId() == 0 || m_poConfig->GetGid() == 0)) {
         //Init system variables.
-        //PLGHead("Need to init system variables, Now.InstanceID %lu Now.Gid %lu", 
+        //PLGHead("Need to init system variables, Now.InstanceID %lu Now.Gid %lu",
         //        m_oProposer.GetInstanceId(), m_poConfig->GetGid());
 
         uint64_t llGid = Util::GenGid(m_poConfig->GetMyNodeID());
@@ -322,8 +291,7 @@ void Instance::CheckNewValue()
         m_oSMFac.PackPaxosValue(sValue, m_poConfig->GetSystemVSM()->StateMachineId());
         //m_oProposer.Propose(sValue);
     }
-    else
-    {
+    else {
         if (m_oOptions.open_change_value_before_propose_) {
             m_oSMFac.BeforePropose(m_poConfig->GetMyGroupIdx(), m_oCommitCtx.GetCommitValue());
         }
@@ -655,20 +623,17 @@ int Instance::ReceiveMsgForLearner(const PaxosMsg & oPaxosMsg)
     return 0;
 }
 
-void Instance::NewInstance()
-{
+void Instance::NewInstance() {
     m_oAcceptor.NewInstance();
     m_oLearner.NewInstance();
     m_oProposer.NewInstance();
 }
 
-const uint64_t Instance::GetInstanceId()
-{
+const uint64_t Instance::GetInstanceId() {
     return m_oAcceptor.GetInstanceId();
 }
 
-const uint64_t Instance::GetMinChosenInstanceId()
-{
+const uint64_t Instance::GetMinChosenInstanceId() {
     //return m_oCheckpointMgr.GetMinChosenInstanceId();
 }
 
@@ -696,49 +661,32 @@ void Instance::OnTimeout(const uint32_t iTimerID, const int iType)
     }
 }
 
-////////////////////////////////
-
-void Instance::AddStateMachine(StateMachine * poSM)
-{
-
+void Instance::AddStateMachine(StateMachine * poSM) {
 }
 
 bool Instance::SMExecute(
-        const uint64_t llInstanceID, 
-        const std::string & sValue, 
+        const uint64_t llInstanceID,
+        const std::string & sValue,
         const bool bIsMyCommit,
-        StateMachineCtx * poStateMachineCtx)
-{
+        StateMachineCtx * poStateMachineCtx
+        ) {
     return m_oSMFac.Execute(m_poConfig->GetMyGroupIdx(), llInstanceID, sValue, poStateMachineCtx);
 }
 
-////////////////////////////////
-
-void Instance::ChecksumLogic(const PaxosMsg & oPaxosMsg)
-{
-
-
-    if (oPaxosMsg.instanceid() != m_oAcceptor.GetInstanceId())
-    {
+void Instance::ChecksumLogic(const PaxosMsg & oPaxosMsg) {
+    if (oPaxosMsg.instanceid() != m_oAcceptor.GetInstanceId()) {
         return;
     }
 
-    if (m_oAcceptor.GetInstanceId() > 0 && GetLastChecksum() == 0)
-    {
+    if (m_oAcceptor.GetInstanceId() > 0 && GetLastChecksum() == 0) {
         //PLGErr("I have no last checksum, other last checksum %u", oPaxosMsg.lastchecksum());
         m_iLastChecksum = oPaxosMsg.lastchecksum();
         return;
     }
-    
-    //PLGHead("my last checksum %u other last checksum %u", GetLastChecksum(), oPaxosMsg.lastchecksum());
-
     assert(oPaxosMsg.lastchecksum() == GetLastChecksum());
 }
 
-//////////////////////////////////////////
-
-int Instance::GetInstanceValue(const uint64_t llInstanceID, std::string & sValue, int & iSMID)
-{
+int Instance::GetInstanceValue(const uint64_t llInstanceID, std::string & sValue, int & iSMID) {
     iSMID = 0;
 
     if (llInstanceID >= m_oAcceptor.GetInstanceId())
@@ -746,7 +694,7 @@ int Instance::GetInstanceValue(const uint64_t llInstanceID, std::string & sValue
         return Paxos_GetInstanceValue_Value_Not_Chosen_Yet;
     }
 
-    AcceptorStateData oState; 
+    AcceptorStateData oState;
     int ret = m_oPaxosLog.ReadState(m_poConfig->GetMyGroupIdx(), llInstanceID, oState);
     if (ret != 0 && ret != 1)
     {

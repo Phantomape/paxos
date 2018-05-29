@@ -104,7 +104,7 @@ void Proposer::Prepare() {
 
     // Calculate votes
     PaxosMsg send_paxos_msg;
-    send_paxos_msg.set_msgtype(1);   // Replace 1 with some enum
+    send_paxos_msg.set_msgtype(1);  // Replace 1 with some enum
     send_paxos_msg.set_instanceid(GetInstanceId());
     send_paxos_msg.set_proposalid(GetProposalId());
 

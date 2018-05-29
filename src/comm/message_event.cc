@@ -167,7 +167,7 @@ int MessageEvent::OnRead()
     if (iLen < 0 || iLen > MAX_VALUE_SIZE)
     {
         PLErr("need to read len wrong %d", iLen);
-        return -2; 
+        return -2;
     }
 
     m_oReadCacheBuffer.Ready(iLen);
@@ -239,7 +239,7 @@ int MessageEvent::WriteLeft()
     //PLImp("writelen %d", iWriteLen);
     if (iWriteLen < 0)
     {
-        return -1; 
+        return -1;
     }
 
     if (iWriteLen == 0)

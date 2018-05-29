@@ -47,7 +47,7 @@ const Ballot& Acceptor::GetAcceptedBallot() const {
 
 const std::string& Acceptor::GetAcceptedValue() {
     std::cout << "Acceptor::GetAcceptredValue()" << std::endl;
-    return accepted_val_;   
+    return accepted_val_;
 }
 
 const Ballot& Acceptor::GetPromiseBallot() const {

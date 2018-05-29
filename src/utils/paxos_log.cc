@@ -43,7 +43,7 @@ int PaxosLog::ReadLog(const int iGroupIdx, const uint64_t llInstanceID, std::str
     const int m_iMyGroupIdx = iGroupIdx;
 
     AcceptorStateData oState;
-    int ret = ReadState(iGroupIdx, llInstanceID, oState); 
+    int ret = ReadState(iGroupIdx, llInstanceID, oState);
     if (ret != 0)
     {
         //PLG1Err("ReadState from db fail, groupidx %d instanceid %lu ret %d", 

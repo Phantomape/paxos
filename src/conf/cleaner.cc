@@ -62,7 +62,7 @@ void Cleaner::Run() {
     //control delete speed to avoid affecting the io too much.
     int iDeleteQps = CLEANER_DELETE_QPS;
     int iSleepMs = iDeleteQps > 1000 ? 1 : 1000 / iDeleteQps;
-    int iDeleteInterval = iDeleteQps > 1000 ? iDeleteQps / 1000 + 1 : 1; 
+    int iDeleteInterval = iDeleteQps > 1000 ? iDeleteQps / 1000 + 1 : 1;
 
     while (true)
     {

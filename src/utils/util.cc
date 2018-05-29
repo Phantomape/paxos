@@ -35,7 +35,7 @@ static __thread FastRandomSeed seed_thread_safe = { false, 0 };
 
 static void ResetFastRandomSeed() {
     seed_thread_safe.seed = rdtsc();
-    seed_thread_safe.init = true; 
+    seed_thread_safe.init = true;
 }
 
 static void InitFastRandomSeedAtFork() {

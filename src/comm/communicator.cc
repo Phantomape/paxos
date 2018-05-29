@@ -65,7 +65,7 @@ int Communicator::BroadcastMessage(const int iGroupIdx, const std::string & sMes
 
 int Communicator::BroadcastMessageFollower(const int iGroupIdx, const std::string & sMessage, const int iSendType)
 {
-    const std::map<uint64_t, uint64_t> & mapFollowerNodeInfo = config_->GetMyFollowerMap(); 
+    const std::map<uint64_t, uint64_t> & mapFollowerNodeInfo = config_->GetMyFollowerMap();
     
     for (auto & it : mapFollowerNodeInfo)
     {
@@ -82,7 +82,7 @@ int Communicator::BroadcastMessageFollower(const int iGroupIdx, const std::strin
 
 int Communicator::BroadcastMessageTempNode(const int iGroupIdx, const std::string & sMessage, const int iSendType)
 {
-    const std::map<uint64_t, uint64_t> & mapTempNode = config_->GetTmpNodeMap(); 
+    const std::map<uint64_t, uint64_t> & mapTempNode = config_->GetTmpNodeMap();
     
     for (auto & it : mapTempNode)
     {

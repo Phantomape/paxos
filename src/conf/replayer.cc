@@ -87,7 +87,7 @@ void Replayer::Run() {
 
 bool Replayer::PlayOne(const uint64_t llInstanceID)
 {
-    AcceptorStateData oState; 
+    AcceptorStateData oState;
     int ret = m_oPaxosLog.ReadState(m_poConfig->GetMyGroupIdx(), llInstanceID, oState);
     if (ret != 0)
     {

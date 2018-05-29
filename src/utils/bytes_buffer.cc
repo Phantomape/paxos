@@ -31,7 +31,7 @@ void BytesBuffer::Ready(const int buffer_len) {
         buffer_ = nullptr;
 
         while (len_ < buffer_len) {
-            len_ *= 2; 
+            len_ *= 2;
         }
 
         buffer_ = new char[len_];

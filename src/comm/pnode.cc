@@ -254,7 +254,7 @@ int PNode::Init(const Options & oOptions, Network *& poNetwork)
     }
 
     //step6 init statemachine
-    InitStateMachine(oOptions);    
+    InitStateMachine(oOptions);
 
     //step7 parallel init group
     for (auto & poGroup : m_vecGroupList)

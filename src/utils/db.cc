@@ -140,7 +140,7 @@ int Database::Init(const std::string & sDBPath, const int iMyGroupIdx)
         return -1;
     }
 
-    value_store_ = new LogStore(); 
+    value_store_ = new LogStore();
     assert(value_store_ != nullptr);
 
     int ret = value_store_->Init(sDBPath, iMyGroupIdx, (Database *)this);

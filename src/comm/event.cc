@@ -25,7 +25,7 @@ void Event::JumpoutEpollWait() {
 
 void Event :: AddEvent(const int event) {
     int previous_event = event;
-    event_ |= event; 
+    event_ |= event;
     if (event_ == previous_event) {
         return;
     }

@@ -126,7 +126,7 @@ void MasterMgr::TryBeMaster(const int iLeaseTime)
 
     const int iMasterLeaseTimeout = iLeaseTime - 100;
     
-    uint64_t llAbsMasterTimeout = Time::GetSteadyClockMS() + iMasterLeaseTimeout; 
+    uint64_t llAbsMasterTimeout = Time::GetSteadyClockMS() + iMasterLeaseTimeout;
     uint64_t llCommitInstanceID = 0;
 
     StateMachineCtx oCtx;
