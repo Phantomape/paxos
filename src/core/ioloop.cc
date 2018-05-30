@@ -8,7 +8,7 @@ IoLoop::IoLoop(Config* config, Instance* instance)
     : config_(config), instance_(instance) {
     is_ended_ = false;
     is_started_ = false;
-    m_iQueueMemSize = 0;
+    queue_mem_size_ = 0;
 }
 
 IoLoop::~IoLoop() {
@@ -49,22 +49,22 @@ int IoLoop::AddMessage(const char * pcMessage, const int iMessageLen) {
         return -2;
     }
 
-    if (m_iQueueMemSize > MAX_QUEUE_MEM_SIZE) {
-        //PLErr("queue memsize %d too large, can't enqueue", m_iQueueMemSize);
+    if (queue_mem_size_ > MAX_QUEUE_MEM_SIZE) {
+        //PLErr("queue memsize %d too large, can't enqueue", queue_mem_size_);
         message_queue_.unlock();
         return -2;
     }
     
     message_queue_.add(new std::string(pcMessage, iMessageLen));
 
-    m_iQueueMemSize += iMessageLen;
+    queue_mem_size_ += iMessageLen;
 
     message_queue_.unlock();
 
     return 0;
 }
 
-int IoLoop::AddRetryPaxosMsg(const PaxosMsg & oPaxosMsg) {
+int IoLoop::AddRetryPaxosMsg(const PaxosMsg & paxos_msg) {
     //BP->GetIoLoopBP()->EnqueueRetryMsg();
 
     if (retry_queue_.size() > RETRY_QUEUE_MAX_LEN) {
@@ -72,21 +72,19 @@ int IoLoop::AddRetryPaxosMsg(const PaxosMsg & oPaxosMsg) {
         retry_queue_.pop();
     }
     
-    retry_queue_.push(oPaxosMsg);
+    retry_queue_.push(paxos_msg);
     return 0;
 }
 
 void IoLoop::Stop() {
     is_ended_ = true;
-    if (is_started_)
-    {
+    if (is_started_) {
         Join();
     }
 }
 
 void IoLoop::ClearRetryQueue() {
-    while (!retry_queue_.empty())
-    {
+    while (!retry_queue_.empty()) {
         retry_queue_.pop();
     }
 }
@@ -98,25 +96,25 @@ void IoLoop::DealWithRetry() {
     
     bool bHaveRetryOne = false;
     while (!retry_queue_.empty()) {
-        PaxosMsg & oPaxosMsg = retry_queue_.front();
-        if (oPaxosMsg.instanceid() > instance_->GetInstanceId() + 1) {
+        PaxosMsg & paxos_msg = retry_queue_.front();
+        if (paxos_msg.instanceid() > instance_->GetInstanceId() + 1) {
             break;
         }
-        else if (oPaxosMsg.instanceid() == instance_->GetInstanceId() + 1) {
+        else if (paxos_msg.instanceid() == instance_->GetInstanceId() + 1) {
             //only after retry i == now_i, than we can retry i + 1.
             if (bHaveRetryOne) {
                 //BP->GetIoLoopBP()->DealWithRetryMsg();
-                //PLGDebug("retry msg (i+1). instanceid %lu", oPaxosMsg.instanceid());
-                instance_->OnReceivePaxosMsg(oPaxosMsg, true);
+                //PLGDebug("retry msg (i+1). instanceid %lu", paxos_msg.instanceid());
+                instance_->OnReceivePaxosMsg(paxos_msg, true);
             }
             else {
                 break;
             }
         }
-        else if (oPaxosMsg.instanceid() == instance_->GetInstanceId()) {
+        else if (paxos_msg.instanceid() == instance_->GetInstanceId()) {
             //BP->GetIoLoopBP()->DealWithRetryMsg();
-            //PLGDebug("retry msg. instanceid %lu", oPaxosMsg.instanceid());
-            instance_->OnReceivePaxosMsg(oPaxosMsg);
+            //PLGDebug("retry msg. instanceid %lu", paxos_msg.instanceid());
+            instance_->OnReceivePaxosMsg(paxos_msg);
             bHaveRetryOne = true;
         }
 
@@ -124,11 +122,11 @@ void IoLoop::DealWithRetry() {
     }
 }
 
-void IoLoop::Loop(const int iTimeoutMs) {
-    std::string * psMessage = nullptr;
+void IoLoop::Loop(const int timeout_ms) {
+    std::string* msg = nullptr;
 
     message_queue_.lock();
-    bool is_succeeded = message_queue_.peek(psMessage, iTimeoutMs);
+    bool is_succeeded = message_queue_.peek(msg, timeout_ms);
     
     if (!is_succeeded) {
         message_queue_.unlock();
@@ -137,12 +135,13 @@ void IoLoop::Loop(const int iTimeoutMs) {
         message_queue_.pop();
         message_queue_.unlock();
 
-        if (psMessage != nullptr && psMessage->size() > 0) {
-            m_iQueueMemSize -= psMessage->size();
-            instance_->OnReceive(*psMessage);
+        // Fuck, how can you get into here!!!
+        if (msg != nullptr && msg->size() > 0) {
+            queue_mem_size_ -= msg->size();
+            instance_->OnReceive(*msg);
         }
 
-        delete psMessage;
+        delete msg;
     }
 
     DealWithRetry();
