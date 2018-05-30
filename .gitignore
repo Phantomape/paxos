@@ -42,3 +42,6 @@ third_party/*
 
 # Log
 logpath_*
+
+# Jepsen
+jepsen*
