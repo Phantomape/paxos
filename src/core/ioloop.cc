@@ -4,12 +4,10 @@
 
 namespace paxos {
 
-IoLoop::IoLoop(Config * poConfig, Instance * poInstance)
-    : config_(poConfig), instance_(poInstance)
-{
+IoLoop::IoLoop(Config* config, Instance* instance)
+    : config_(config), instance_(instance) {
     is_ended_ = false;
     is_started_ = false;
-
     m_iQueueMemSize = 0;
 }
 
@@ -19,20 +17,14 @@ IoLoop::~IoLoop() {
 void IoLoop::Run() {
     is_ended_ = false;
     is_started_ = true;
-    while(true)
-    {
+    while(true) {
         //BP->GetIoLoopBP()->OneLoop();
 
         int iNextTimeout = 1000;
-        
         DealwithTimeout(iNextTimeout);
-
-        //PLGHead("nexttimeout %d", iNextTimeout);
-
         Loop(iNextTimeout);
 
         if (is_ended_) {
-            //PLGHead("IoLoop [End]");
             break;
         }
     }
@@ -49,8 +41,7 @@ int IoLoop::AddMessage(const char * pcMessage, const int iMessageLen) {
 
     //BP->GetIoLoopBP()->EnqueueMsg();
 
-    if ((int)message_queue_.size() > QUEUE_MAXLENGTH)
-    {
+    if ((int)message_queue_.size() > QUEUE_MAXLENGTH) {
         //BP->GetIoLoopBP()->EnqueueMsgRejectByFullQueue();
 
         //PLGErr("Queue full, skip msg");
@@ -58,8 +49,7 @@ int IoLoop::AddMessage(const char * pcMessage, const int iMessageLen) {
         return -2;
     }
 
-    if (m_iQueueMemSize > MAX_QUEUE_MEM_SIZE)
-    {
+    if (m_iQueueMemSize > MAX_QUEUE_MEM_SIZE) {
         //PLErr("queue memsize %d too large, can't enqueue", m_iQueueMemSize);
         message_queue_.unlock();
         return -2;

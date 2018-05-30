@@ -10,10 +10,9 @@ namespace paxos {
 
 class Instance;
 
-class IoLoop : public Thread
-{
+class IoLoop : public Thread {
 public:
-    IoLoop(Config * poConfig, Instance * poInstance);
+    IoLoop(Config* config, Instance* instance);
 
     virtual ~IoLoop();
 
@@ -21,27 +20,27 @@ public:
 
     void Stop();
 
-    void Loop(const int iTimeoutMs);
+    void Loop(const int timeout_ms);
 
     void DealWithRetry();
 
     void ClearRetryQueue();
 
 public:
-    int AddMessage(const char * pcMessage, const int iMessageLen);
+    int AddMessage(const char* msg, const int msg_len);
 
-    int AddRetryPaxosMsg(const PaxosMsg & oPaxosMsg);
+    int AddRetryPaxosMsg(const PaxosMsg& paxos_msg);
 
     void AddNotify();
 
 public:
-    virtual bool AddTimer(const int iTimeout, const int iType, uint32_t & iTimerID);
+    virtual bool AddTimer(const int timeout, const int type, uint32_t& timer_id);
 
-    virtual void RemoveTimer(uint32_t & iTimerID);
+    virtual void RemoveTimer(uint32_t& timer_id);
 
-    void DealwithTimeout(int & iNextTimeout);
+    void DealwithTimeout(int& next_timeout);
 
-    void DealwithTimeoutOne(const uint32_t iTimerID, const int iType);
+    void DealwithTimeoutOne(const uint32_t timer_id, const int type);
 
 private:
     bool is_ended_;
@@ -50,13 +49,13 @@ private:
 
     std::map<uint32_t, bool> map_timer_id_exist_;
 
-    Queue<std::string *> message_queue_;
+    Queue<std::string*> message_queue_;
     std::queue<PaxosMsg> retry_queue_;
 
-    int m_iQueueMemSize;
+    int queue_mem_size_;
 
-    Config * config_;
-    Instance * instance_;
+    Config* config_;
+    Instance* instance_;
 };
 
 }
