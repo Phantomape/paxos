@@ -25,12 +25,12 @@ Proposer::Proposer(
 
     InitInstance();
 
-    m_iPrepareTimerID = 0;
-    m_iAcceptTimerID = 0;
-    m_llTimeoutInstanceID = 0;
+    prepare_timer_id_ = 0;
+    accept_timer_id_ = 0;
+    timeout_instance_id_ = 0;
 
-    m_iLastPrepareTimeoutMs = config_->GetPrepareTimeoutMs();
-    m_iLastAcceptTimeoutMs = config_->GetAcceptTimeoutMs();
+    last_prepare_timeout_ms_ = config_->GetPrepareTimeoutMs();
+    last_accept_timeout_ms_ = config_->GetAcceptTimeoutMs();
 
     is_rejected_ = false;
 }
@@ -53,6 +53,59 @@ void Proposer::Accept() {
 
     BroadcastMessage(paxos_msg, 1, 1);
 }
+
+void Proposer::AddPrepareTimer(const int timeout_ms) {
+    if (prepare_timer_id_ > 0) {
+        ioloop_->RemoveTimer(prepare_timer_id_);
+    }
+
+    if (timeout_ms > 0) {
+        ioloop_->AddTimer(
+                timeout_ms,
+                Timer_Proposer_Prepare_Timeout,
+                prepare_timer_id_);
+        return;
+    }
+
+    ioloop_->AddTimer(
+            last_prepare_timeout_ms_,
+            Timer_Proposer_Prepare_Timeout,
+            prepare_timer_id_);
+
+    timeout_instance_id_ = GetInstanceId();
+
+    last_prepare_timeout_ms_ *= 2;
+    if (last_prepare_timeout_ms_ > MAX_PREPARE_TIMEOUTMS) {
+        last_prepare_timeout_ms_ = MAX_PREPARE_TIMEOUTMS;
+    }
+}
+
+void Proposer::AddAcceptTimer(const int timeout_ms) {
+    if (accept_timer_id_ > 0) {
+        ioloop_->RemoveTimer(accept_timer_id_);
+    }
+
+    if (timeout_ms > 0) {
+        ioloop_->AddTimer(
+                timeout_ms,
+                Timer_Proposer_Accept_Timeout,
+                accept_timer_id_);
+        return;
+    }
+
+    ioloop_->AddTimer(
+            last_accept_timeout_ms_,
+            Timer_Proposer_Accept_Timeout,
+            accept_timer_id_);
+
+    timeout_instance_id_ = GetInstanceId();
+    
+    last_accept_timeout_ms_ *= 2;
+    if (last_accept_timeout_ms_ > MAX_ACCEPT_TIMEOUTMS) {
+        last_accept_timeout_ms_ = MAX_ACCEPT_TIMEOUTMS;
+    }
+}
+
 
 void Proposer::ExitAccept() {
     if (is_accepting_) {
@@ -85,10 +138,10 @@ void Proposer::InitInstance() {
     ExitAccept();
 }
 
-// This method is where proposer would learn what value to propose, if
-// not value is chosen in this stage, they can propose their own value
-void Proposer::Prepare() {
+void Proposer::Prepare(const bool need_new_ballot) {
     std::cout << "Proposer::Prepare()" << std::endl;
+
+    time_stat_.Point();
 
     ExitAccept();
     is_preparing_ = true;
@@ -96,7 +149,6 @@ void Proposer::Prepare() {
     rejected_ = false;
 
     highest_other_pre_accept_ballot_.reset();
-    bool need_new_ballot = false;
     if (need_new_ballot) {
         // Init new proposer state
         proposal_id_ = std::max(proposal_id_, highest_proposal_id_by_others_) + 1;
@@ -104,11 +156,14 @@ void Proposer::Prepare() {
 
     // Calculate votes
     PaxosMsg send_paxos_msg;
-    send_paxos_msg.set_msgtype(1);  // Replace 1 with some enum
+    send_paxos_msg.set_msgtype(MsgType_PaxosPrepare);
     send_paxos_msg.set_instanceid(GetInstanceId());
     send_paxos_msg.set_proposalid(GetProposalId());
+    send_paxos_msg.set_nodeid(config_->GetMyNodeID());
 
     msg_counter.Init();
+
+    AddPrepareTimer();
 
     BroadcastMessage(send_paxos_msg, 1, 1);
 }
@@ -153,7 +208,7 @@ void Proposer::OnAcceptTimeout() {
     if (GetInstanceId() != timeout_instance_id_) {
         return;
     }
-    Prepare();
+    Prepare(is_rejected_);
 }
 
 void Proposer::OnPrepare(const PaxosMsg &recv_paxos_msg) {
@@ -199,19 +254,26 @@ void Proposer::OnPrepareTimeout() {
     if (GetInstanceId() != timeout_instance_id_) {
         return;
     }
-    Prepare();
+    Prepare(is_rejected_);
 }
 
-void Proposer::Propose() {
-    // set the value
-    
+void Proposer::Propose(const std::string& val) {
+    std::cout << "Proposer::Propose()" << std::endl;
+
+    if (val_.size() == 0) {
+        val_ = val;
+    }
+        
+    last_prepare_timeout_ms_ = START_PREPARE_TIMEOUTMS;
+    last_accept_timeout_ms_ = START_ACCEPT_TIMEOUTMS;
+
     // check whether it can skip prepare without rejection
     // else goes into Prepare()
     if (can_skip_prepare_) {
         Accept();
     }
     else {
-        Prepare();
+        Prepare(is_rejected_);
     }
 }
 

@@ -135,7 +135,6 @@ void IoLoop::Loop(const int timeout_ms) {
         message_queue_.pop();
         message_queue_.unlock();
 
-        // Fuck, how can you get into here!!!
         if (msg != nullptr && msg->size() > 0) {
             queue_mem_size_ -= msg->size();
             instance_->OnReceive(*msg);
