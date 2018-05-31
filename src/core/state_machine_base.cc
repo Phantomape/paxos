@@ -146,13 +146,17 @@ bool StateMachineFac::DoExecuteForCheckpoint(const int group_idx, const uint64_t
 
 
 void StateMachineFac::PackPaxosValue(std::string & val, const int state_machine_id) {
+    /*
     char sStateMachineID[sizeof(int)] = {0};
-    if (state_machine_id != 0)
-    {
+    if (state_machine_id != 0) {
         memcpy(sStateMachineID, &state_machine_id, sizeof(sStateMachineID));
     }
 
     val = std::string(sStateMachineID, sizeof(sStateMachineID)) + val;
+    */
+   
+    // Use to_string to pack this id and the msg
+    val = std::to_string(state_machine_id) + val;
 }
 
 void StateMachineFac::AddStateMachine(StateMachine * state_machine) {
