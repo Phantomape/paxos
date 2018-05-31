@@ -18,14 +18,15 @@
 
 namespace paxos {
 
-class Instance
-{
+class Instance {
 public:
     Instance(
-            const Config * poConfig, 
-            const LogStorage * poLogStorage,
-            const Communicate * poCommunicate,
-            const Options & oOptions);
+            const Config* poConfig, 
+            const LogStorage* poLogStorage,
+            const Communicate* poCommunicate,
+            const Options& oOptions
+            );
+
     ~Instance();
 
     int Init();
@@ -34,7 +35,7 @@ public:
 
     void Stop();
 
-    int InitLastCheckSum();
+    int InitLastChecksum();
 
     const uint64_t GetInstanceId();
 
@@ -42,87 +43,81 @@ public:
 
     const uint32_t GetLastChecksum();
 
-    int GetInstanceValue(const uint64_t llInstanceID, std::string & sValue, int & iSMID);
+    int GetInstanceValue(const uint64_t instance_id, std::string& sValue, int& iSMID);
 
-public:
-    Committer * GetCommitter();
+    Committer* GetCommitter();
 
-    Cleaner * GetCheckpointCleaner();
+    Cleaner* GetCheckpointCleaner();
 
-    Replayer * GetCheckpointReplayer();
+    Replayer* GetCheckpointReplayer();
 
-public:
     void CheckNewValue();
 
     void OnNewValueCommitTimeout();
 
-public:
-    //this funciton only enqueue, do nothing.
-    int OnReceiveMessage(const char * pcMessage, const int iMessageLen);
+    int OnReceiveMessage(const char* pcMessage, const int iMessageLen);
 
-public:
-    void OnReceive(const std::string & sBuffer);
+    void OnReceive(const std::string& sBuffer);
     
-    void OnReceiveCheckpointMsg(const CheckpointMsg & oCheckpointMsg);
+    void OnReceiveCheckpointMsg(const CheckpointMsg& oCheckpointMsg);
 
-    int OnReceivePaxosMsg(const PaxosMsg & oPaxosMsg, const bool bIsRetry = false);
+    int OnReceivePaxosMsg(const PaxosMsg& paxos_msg, const bool bIsRetry = false);
     
-    int ReceiveMsgForProposer(const PaxosMsg & oPaxosMsg);
+    int ReceiveMsgForProposer(const PaxosMsg& paxos_msg);
     
-    int ReceiveMsgForAcceptor(const PaxosMsg & oPaxosMsg, const bool bIsRetry);
+    int ReceiveMsgForAcceptor(const PaxosMsg& paxos_msg, const bool bIsRetry);
     
-    int ReceiveMsgForLearner(const PaxosMsg & oPaxosMsg);
+    int ReceiveMsgForLearner(const PaxosMsg& paxos_msg);
 
-public:
     void OnTimeout(const uint32_t iTimerID, const int iType);
 
-public:
-    void AddStateMachine(StateMachine * poSM);
+    void AddStateMachine(StateMachine* poSM);
 
     bool SMExecute(
-        const uint64_t llInstanceID, 
-        const std::string & sValue, 
+        const uint64_t instance_id, 
+        const std::string& sValue, 
         const bool bIsMyCommit,
-        StateMachineCtx * poStateMachineCtx);
+        StateMachineCtx* poStateMachineCtx);
 
 private:
-    void ChecksumLogic(const PaxosMsg & oPaxosMsg);
+    void ChecksumLogic(const PaxosMsg& paxos_msg);
 
     int PlayLog(const uint64_t llBeginInstanceID, const uint64_t llEndInstanceID);
 
-    bool ReceiveMsgHeaderCheck(const Header & oHeader, const uint64_t iFromNodeID);
+    bool ReceiveMsgHeaderCheck(const Header& oHeader, const uint64_t iFromNodeID);
 
     int ProtectionLogic_IsCheckpointInstanceIDCorrect(const uint64_t llCPInstanceID, const uint64_t llLogMaxInstanceID);
 
     void NewInstance();
 
 private:
-    Config * m_poConfig;
-    Communicate * m_poCommunicate;
+    Config* config_;
 
-    StateMachineFac m_oSMFac;
+    Communicate* communicate_;
 
-    IoLoop m_oIOLoop;
+    StateMachineFac state_machine_fac_;
 
-    Acceptor m_oAcceptor;
-    Learner m_oLearner;
-    Proposer m_oProposer;
+    IoLoop ioloop_;
 
-    PaxosLog m_oPaxosLog;
+    Acceptor acceptor_;
+    Learner learner_;
+    Proposer proposer_;
 
-    uint32_t m_iLastChecksum;
+    PaxosLog paxos_log_;
 
-    CommitCtx m_oCommitCtx;
-    uint32_t m_iCommitTimerID;
+    uint32_t last_checksum_;
 
-    Committer m_oCommitter;
+    CommitCtx commit_ctx_;
+    uint32_t commit_timer_id_;
 
-    CheckpointMgr m_oCheckpointMgr;
+    Committer commiter_;
 
-    TimeStat m_oTimeStat;
-    Options m_oOptions;
+    CheckpointMgr checkpoint_mgr_;
 
-    bool m_bStarted;
+    TimeStat time_stat_;
+    Options options_;
+
+    bool is_started_;
 };
 
 }
