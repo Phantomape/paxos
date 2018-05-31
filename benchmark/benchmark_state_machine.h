@@ -6,7 +6,7 @@
 #include <stdio.h>
 #include <unistd.h>
 
-namespace BenchmarkStateMachine {
+namespace benchmark {
 
 class BenchmarkStateMachine : public paxos::StateMachine {
 public:
