@@ -298,17 +298,12 @@ void Instance::CheckNewValue()
     }
 }
 
-void Instance::OnNewValueCommitTimeout()
-{
-    ////BP->GetInstance//BP()->OnProposeCommitTimeout();
+void Instance::OnNewValueCommitTimeout() {
+    proposer_.ExitPrepare();
+    proposer_.ExitAccept();
 
-    //proposer_.ExitPrepare();
-    //proposer_.ExitAccept();
-
-    //commit_ctx_.SetResult(PaxosTryCommitRet_Timeout, proposer_.GetInstanceId(), "");
+    commit_ctx_.SetResult(PaxosTryCommitRet_Timeout, proposer_.GetInstanceId(), "");
 }
-
-//////////////////////////////////////////////////////////////////////
 
 int Instance::OnReceiveMessage(const char* pcMessage, const int iMessageLen)
 {
