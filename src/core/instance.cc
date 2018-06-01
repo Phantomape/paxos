@@ -483,7 +483,7 @@ int Instance::ReceiveMsgForAcceptor(const PaxosMsg & oPaxosMsg, const bool bIsRe
     if (oPaxosMsg.instanceid() != acceptor_.GetInstanceId()) {
         ////BP->GetInstance//BP()->OnReceivePaxosAcceptorMsgInotsame();
     }
-    
+
     if (oPaxosMsg.instanceid() == acceptor_.GetInstanceId() + 1) {
         //skip success message
         PaxosMsg oNewPaxosMsg = oPaxosMsg;
