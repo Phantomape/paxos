@@ -342,7 +342,7 @@ void Instance::OnReceive(const std::string & sBuffer) {
         if (checkpoint_mgr_.InAskforcheckpointMode()) {
             return;
         }
-        
+
         PaxosMsg oPaxosMsg;
         bool is_succeeded = oPaxosMsg.ParseFromArray(sBuffer.data() + iBodyStartPos, iBodyLen);
         if (!is_succeeded) {
@@ -352,7 +352,6 @@ void Instance::OnReceive(const std::string & sBuffer) {
         if (!ReceiveMsgHeaderCheck(oHeader, oPaxosMsg.nodeid())) {
             return;
         }
-        
         OnReceivePaxosMsg(oPaxosMsg);
     }
     else if (iCmd == MsgCmd_CheckpointMsg) {
@@ -365,7 +364,6 @@ void Instance::OnReceive(const std::string & sBuffer) {
         if (!ReceiveMsgHeaderCheck(oHeader, oCheckpointMsg.nodeid())) {
             return;
         }
-        
         OnReceiveCheckpointMsg(oCheckpointMsg);
     }
 }
@@ -384,32 +382,26 @@ void Instance::OnReceiveCheckpointMsg(const CheckpointMsg & oCheckpointMsg) {
     }
 }
 
-int Instance::OnReceivePaxosMsg(const PaxosMsg & oPaxosMsg, const bool bIsRetry)
-{
+int Instance::OnReceivePaxosMsg(const PaxosMsg & oPaxosMsg, const bool bIsRetry) {
     if (oPaxosMsg.msgtype() == MsgType_PaxosPrepareReply
             || oPaxosMsg.msgtype() == MsgType_PaxosAcceptReply
-            || oPaxosMsg.msgtype() == MsgType_PaxosProposal_SendNewValue)
-    {
-        if (!config_->IsValidNodeID(oPaxosMsg.nodeid()))
-        {
+            || oPaxosMsg.msgtype() == MsgType_PaxosProposal_SendNewValue) {
+        if (!config_->IsValidNodeID(oPaxosMsg.nodeid())) {
             ////BP->GetInstance//BP()->OnReceivePaxosMsgNodeIDNotValid();
             //PLGErr("acceptor reply type msg, from nodeid not in my membership, skip this message");
             return 0;
         }
-        
+
         return ReceiveMsgForProposer(oPaxosMsg);
     }
     else if (oPaxosMsg.msgtype() == MsgType_PaxosPrepare
-            || oPaxosMsg.msgtype() == MsgType_PaxosAccept)
-    {
+            || oPaxosMsg.msgtype() == MsgType_PaxosAccept) {
         //if my gid is zero, then this is a unknown node.
-        if (config_->GetGid() == 0)
-        {
+        if (config_->GetGid() == 0) {
             config_->AddTmpNodeOnlyForLearn(oPaxosMsg.nodeid());
         }
-        
-        if ((!config_->IsValidNodeID(oPaxosMsg.nodeid())))
-        {
+
+        if ((!config_->IsValidNodeID(oPaxosMsg.nodeid()))) {
             config_->AddTmpNodeOnlyForLearn(oPaxosMsg.nodeid());
 
             return 0;
@@ -424,13 +416,11 @@ int Instance::OnReceivePaxosMsg(const PaxosMsg & oPaxosMsg, const bool bIsRetry)
             || oPaxosMsg.msgtype() == MsgType_PaxosLearner_ComfirmAskforLearn
             || oPaxosMsg.msgtype() == MsgType_PaxosLearner_SendNowInstanceID
             || oPaxosMsg.msgtype() == MsgType_PaxosLearner_SendLearnValue_Ack
-            || oPaxosMsg.msgtype() == MsgType_PaxosLearner_AskforCheckpoint)
-    {
+            || oPaxosMsg.msgtype() == MsgType_PaxosLearner_AskforCheckpoint) {
         ChecksumLogic(oPaxosMsg);
         return ReceiveMsgForLearner(oPaxosMsg);
     }
-    else
-    {
+    else {
         ////BP->GetInstance//BP()->OnReceivePaxosMsgTypeNotValid();
         //PLGErr("Invaid msgtype %d", oPaxosMsg.msgtype());
     }
@@ -438,34 +428,26 @@ int Instance::OnReceivePaxosMsg(const PaxosMsg & oPaxosMsg, const bool bIsRetry)
     return 0;
 }
 
-int Instance::ReceiveMsgForProposer(const PaxosMsg & oPaxosMsg)
-{
-    if (config_->IsIMFollower())
-    {
+int Instance::ReceiveMsgForProposer(const PaxosMsg & oPaxosMsg) {
+    if (config_->IsIMFollower()) {
         //PLGErr("I'm follower, skip this message");
         return 0;
     }
 
-    ///////////////////////////////////////////////////////////////
-    
-    if (oPaxosMsg.instanceid() != proposer_.GetInstanceId())
-    {
-        if (oPaxosMsg.instanceid() + 1 == proposer_.GetInstanceId())
-        {
+    if (oPaxosMsg.instanceid() != proposer_.GetInstanceId()) {
+        if (oPaxosMsg.instanceid() + 1 == proposer_.GetInstanceId()) {
             //Exipred reply msg on last instance.
-            //If the response of a node is always slower than the majority node, 
+            //If the response of a node is always slower than the majority node,
             //then the message of the node is always ignored even if it is a reject reply.
-            //In this case, if we do not deal with these reject reply, the node that 
-            //gave reject reply will always give reject reply. 
+            //In this case, if we do not deal with these reject reply, the node that
+            //gave reject reply will always give reject reply.
             //This causes the node to remain in catch-up state.
             //
             //To avoid this problem, we need to deal with the expired reply.
-            if (oPaxosMsg.msgtype() == MsgType_PaxosPrepareReply)
-            {
+            if (oPaxosMsg.msgtype() == MsgType_PaxosPrepareReply) {
                 //proposer_.OnExpiredPrepareReply(oPaxosMsg);
             }
-            else if (oPaxosMsg.msgtype() == MsgType_PaxosAcceptReply)
-            {
+            else if (oPaxosMsg.msgtype() == MsgType_PaxosAcceptReply) {
                 //proposer_.OnExpiredAcceptReply(oPaxosMsg);
             }
         }
@@ -475,35 +457,27 @@ int Instance::ReceiveMsgForProposer(const PaxosMsg & oPaxosMsg)
         return 0;
     }
 
-    if (oPaxosMsg.msgtype() == MsgType_PaxosPrepareReply)
-    {
+    if (oPaxosMsg.msgtype() == MsgType_PaxosPrepareReply) {
         //proposer_.OnPrepareReply(oPaxosMsg);
     }
-    else if (oPaxosMsg.msgtype() == MsgType_PaxosAcceptReply)
-    {
+    else if (oPaxosMsg.msgtype() == MsgType_PaxosAcceptReply) {
         //proposer_.OnAcceptReply(oPaxosMsg);
     }
 
     return 0;
 }
 
-int Instance::ReceiveMsgForAcceptor(const PaxosMsg & oPaxosMsg, const bool bIsRetry)
-{
-    if (config_->IsIMFollower())
-    {
+int Instance::ReceiveMsgForAcceptor(const PaxosMsg & oPaxosMsg, const bool bIsRetry) {
+    if (config_->IsIMFollower()) {
         //PLGErr("I'm follower, skip this message");
         return 0;
     }
-    
-    //////////////////////////////////////////////////////////////
-    
-    if (oPaxosMsg.instanceid() != acceptor_.GetInstanceId())
-    {
+
+    if (oPaxosMsg.instanceid() != acceptor_.GetInstanceId()) {
         ////BP->GetInstance//BP()->OnReceivePaxosAcceptorMsgInotsame();
     }
     
-    if (oPaxosMsg.instanceid() == acceptor_.GetInstanceId() + 1)
-    {
+    if (oPaxosMsg.instanceid() == acceptor_.GetInstanceId() + 1) {
         //skip success message
         PaxosMsg oNewPaxosMsg = oPaxosMsg;
         oNewPaxosMsg.set_instanceid(acceptor_.GetInstanceId());
@@ -511,40 +485,29 @@ int Instance::ReceiveMsgForAcceptor(const PaxosMsg & oPaxosMsg, const bool bIsRe
 
         ReceiveMsgForLearner(oNewPaxosMsg);
     }
-            
-    if (oPaxosMsg.instanceid() == acceptor_.GetInstanceId())
-    {
-        if (oPaxosMsg.msgtype() == MsgType_PaxosPrepare)
-        {
+
+    if (oPaxosMsg.instanceid() == acceptor_.GetInstanceId()) {
+        if (oPaxosMsg.msgtype() == MsgType_PaxosPrepare) {
             return acceptor_.OnPrepare(oPaxosMsg);
         }
-        else if (oPaxosMsg.msgtype() == MsgType_PaxosAccept)
-        {
+        else if (oPaxosMsg.msgtype() == MsgType_PaxosAccept) {
             acceptor_.OnAccept(oPaxosMsg);
         }
     }
-    else if ((!bIsRetry) && (oPaxosMsg.instanceid() > acceptor_.GetInstanceId()))
-    {
+    else if ((!bIsRetry) && (oPaxosMsg.instanceid() > acceptor_.GetInstanceId())) {
         //retry msg can't retry again.
-        if (oPaxosMsg.instanceid() >= learner_.GetLatestInstanceID())
-        {
-            if (oPaxosMsg.instanceid() < acceptor_.GetInstanceId() + RETRY_QUEUE_MAX_LEN)
-            {
+        if (oPaxosMsg.instanceid() >= learner_.GetLatestInstanceID()) {
+            if (oPaxosMsg.instanceid() < acceptor_.GetInstanceId() + RETRY_QUEUE_MAX_LEN) {
                 //need retry msg precondition
                 //1. prepare or accept msg
-                //2. msg.instanceid > nowinstanceid. 
+                //2. msg.instanceid > nowinstanceid.
                 //    (if < nowinstanceid, this msg is expire)
-                //3. msg.instanceid >= seen latestinstanceid. 
+                //3. msg.instanceid >= seen latestinstanceid.
                 //    (if < seen latestinstanceid, proposer don't need reply with this instanceid anymore.)
                 //4. msg.instanceid close to nowinstanceid.
                 ioloop_.AddRetryPaxosMsg(oPaxosMsg);
-                
-                ////BP->GetInstance//BP()->OnReceivePaxosAcceptorMsgAddRetry();
-
-                //PLGErr("InstanceID not same, get in to retry logic");
             }
-            else
-            {
+            else {
                 //retry msg not series, no use.
                 ioloop_.ClearRetryQueue();
             }
