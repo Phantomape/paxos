@@ -7,7 +7,7 @@
 namespace paxos {
 
 Proposer::Proposer(
-        const Config * config, 
+        const Config * config,
         const Communicate * communicate,
         const Instance * poInstance,
         const Learner * poLearner,
@@ -17,10 +17,8 @@ Proposer::Proposer(
     config_ = (Config*)config;
     learner_ = (Learner*)poLearner;
     ioloop_ = (IoLoop *)poIOLoop;
-    
     is_preparing_ = false;
     is_accepting_ = false;
-
     can_skip_prepare_ = false;
 
     InitInstance();
@@ -99,7 +97,7 @@ void Proposer::AddAcceptTimer(const int timeout_ms) {
             accept_timer_id_);
 
     timeout_instance_id_ = GetInstanceId();
-    
+
     last_accept_timeout_ms_ *= 2;
     if (last_accept_timeout_ms_ > MAX_ACCEPT_TIMEOUTMS) {
         last_accept_timeout_ms_ = MAX_ACCEPT_TIMEOUTMS;
@@ -224,10 +222,10 @@ void Proposer::OnPrepare(const PaxosMsg &recv_paxos_msg) {
 
     // Received a message
     msg_counter.AddReceivedMsg(recv_paxos_msg.nodeid());
-    
+
     if (true) {// Accepted
         msg_counter.AddAcceptedMsg(recv_paxos_msg.nodeid());
-    } 
+    }
     else {
         is_rejected_ = true;
         msg_counter.AddRejectedMsg(recv_paxos_msg.nodeid());
@@ -237,9 +235,8 @@ void Proposer::OnPrepare(const PaxosMsg &recv_paxos_msg) {
         can_skip_prepare_ = true;
 
         Accept();
-    } 
+    }
     else if (msg_counter.IsRejected()) {
-
     }
 }
 
@@ -263,7 +260,7 @@ void Proposer::Propose(const std::string& val) {
     if (val_.size() == 0) {
         val_ = val;
     }
-        
+
     last_prepare_timeout_ms_ = START_PREPARE_TIMEOUTMS;
     last_accept_timeout_ms_ = START_ACCEPT_TIMEOUTMS;
 
