@@ -424,13 +424,12 @@ int Instance::OnReceivePaxosMsg(const PaxosMsg & oPaxosMsg, const bool bIsRetry)
 
         ChecksumLogic(oPaxosMsg);
         return ReceiveMsgForAcceptor(oPaxosMsg, bIsRetry);
-    } 
+    }
     else if (std::find(learner_related_msgs.begin(), learner_related_msgs.end(), msg_type) != learner_related_msgs.end()) {
         ChecksumLogic(oPaxosMsg);
         return ReceiveMsgForLearner(oPaxosMsg);
-    } 
+    }
     else {
-
     }
 
     return 0;
