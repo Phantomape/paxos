@@ -52,7 +52,7 @@ int LogStore::Init(const std::string & sPath, const int iMyGroupIdx, Database * 
     file_logger_.Init(path_);
 
     std::string sMetaFilePath = path_ + "/meta";
-    
+
     meta_fd_ = open(sMetaFilePath.c_str(), O_CREAT | O_RDWR, S_IREAD | S_IWRITE);
     if (meta_fd_ == -1)
     {
@@ -119,10 +119,10 @@ int LogStore::Init(const std::string & sPath, const int iMyGroupIdx, Database * 
         return -1;
     }
 
-    file_logger_.Log("init write fileid %d now_w_offset %d filesize %d", 
+    file_logger_.Log("init write fileid %d now_w_offset %d filesize %d",
             file_id_, current_file_offset_, current_file_size_);
 
-    //PLG1Head("ok, path %s fileid %d meta checksum %u nowfilesize %d nowfilewriteoffset %d", 
+    //PLG1Head("ok, path %s fileid %d meta checksum %u nowfilesize %d nowfilewriteoffset %d",
             //path_.c_str(), file_id_, iMetaChecksum, current_file_size_, current_file_offset_);
 
     return 0;
@@ -231,7 +231,7 @@ int LogStore::DeleteFile(const int iFileId)
         //PLG1Debug("file already deleted, fileid %d deletedmaxfileid %d", iFileId, deleted_max_file_id_);
         return 0;
     }
-    
+
     int ret = 0;
     for (int iDeleteFileId = deleted_max_file_id_ + 1; iDeleteFileId <= iFileId; iDeleteFileId++)
     {
@@ -253,7 +253,7 @@ int LogStore::DeleteFile(const int iFileId)
             //PLG1Err("remove fail, filepath %s ret %d", sFilePath, ret);
             break;
         }
-        
+
         deleted_max_file_id_ = iDeleteFileId;
         file_logger_.Log("delete fileid %d", iDeleteFileId);
     }
@@ -296,7 +296,7 @@ int LogStore::GetFileFD(const int iNeedWriteSize, int & iFd, int & iFileId, int 
         {
             assert(iOffset != -1);
 
-            file_logger_.Log("new file but file aready exist, now fileid %d exist filesize %d", 
+            file_logger_.Log("new file but file aready exist, now fileid %d exist filesize %d",
                     file_id_, iOffset);
 
             //PLG1Err("IncreaseFileId success, but file exist, data wrong, file size %d", iOffset);
@@ -351,11 +351,7 @@ int LogStore::Append(const WriteOptions & oWriteOptions, const uint64_t llInstan
 
     size_t iWriteLen = write(iFd, tmp_append_buffer_.GetPtr(), iTmpBufferLen);
 
-    if (iWriteLen != (size_t)iTmpBufferLen)
-    {
-        //BP->GetLogStorageBP()->AppendDataFail();
-        //PLG1Err("writelen %d not equal to %d, buffersize %zu errno %d", 
-        //        iWriteLen, iTmpBufferLen, sBuffer.size(), errno);
+    if (iWriteLen != (size_t)iTmpBufferLen) {
         return -1;
     }
 
@@ -373,7 +369,7 @@ int LogStore::Append(const WriteOptions & oWriteOptions, const uint64_t llInstan
 
     int iUseTimeMs = time_stat_.Point();
     //BP->GetLogStorageBP()->AppendDataOK(iWriteLen, iUseTimeMs);
-    
+
     uint32_t iCheckSum = crc32(0, (const uint8_t*)(tmp_append_buffer_.GetPtr() + sizeof(int)), iTmpBufferLen - sizeof(int), CRC32SKIP);
 
     GenFileId(iFileId, iOffset, iCheckSum, sFileId);
@@ -384,43 +380,37 @@ int LogStore::Append(const WriteOptions & oWriteOptions, const uint64_t llInstan
     return 0;
 }
 
-int LogStore::Read(const std::string & sFileId, uint64_t & llInstanceId, std::string & sBuffer)
-{
+int LogStore::Read(const std::string & sFileId, uint64_t & llInstanceId, std::string & sBuffer) {
     int iFileId = -1;
     int iOffset = -1;
     uint32_t iCheckSum = 0;
     ParseFileId(sFileId, iFileId, iOffset, iCheckSum);
-    
+
     int iFd = -1;
     int ret = OpenFile(iFileId, iFd);
-    if (ret != 0)
-    {
+    if (ret != 0) {
         return ret;
     }
-    
+
     off_t iSeekPos = lseek(iFd, iOffset, SEEK_SET);
-    if (iSeekPos == -1)
-    {
+    if (iSeekPos == -1) {
         return -1;
     }
-    
+
     int iLen = 0;
     ssize_t iReadLen = read(iFd, (char *)&iLen, sizeof(int));
-    if (iReadLen != (ssize_t)sizeof(int))
-    {
+    if (iReadLen != (ssize_t)sizeof(int)) {
         close(iFd);
         //PLG1Err("readlen %zd not qual to %zu", iReadLen, sizeof(int));
         return -1;
     }
-    
+
     std::lock_guard<std::mutex> oLock(read_mutex_);
 
     tmp_buffer_.Ready(iLen);
     iReadLen = read(iFd, tmp_buffer_.GetPtr(), iLen);
-    if (iReadLen != iLen)
-    {
+    if (iReadLen != iLen) {
         close(iFd);
-        //PLG1Err("readlen %zd not qual to %zu", iReadLen, iLen);
         return -1;
     }
 
@@ -438,27 +428,21 @@ int LogStore::Read(const std::string & sFileId, uint64_t & llInstanceId, std::st
     memcpy(&llInstanceId, tmp_buffer_.GetPtr(), sizeof(uint64_t));
     sBuffer = std::string(tmp_buffer_.GetPtr() + sizeof(uint64_t), iLen - sizeof(uint64_t));
 
-    //PLG1Imp("ok, fileid %d offset %d instanceid %lu buffer size %zu", 
-            //iFileId, iOffset, llInstanceId, sBuffer.size());
-
     return 0;
 }
 
-int LogStore::Del(const std::string & sFileId, const uint64_t llInstanceId)
-{
+int LogStore::Del(const std::string & sFileId, const uint64_t llInstanceId) {
     int iFileId = -1;
     int iOffset = -1;
     uint32_t iCheckSum = 0;
     ParseFileId(sFileId, iFileId, iOffset, iCheckSum);
 
-    if (iFileId > file_id_)
-    {
+    if (iFileId > file_id_) {
         //PLG1Err("del fileid %d large than useing fileid %d", iFileId, file_id_);
         return -2;
     }
 
-    if (iFileId > 0)
-    {
+    if (iFileId > 0) {
         return DeleteFile(iFileId - 1);
     }
 
@@ -521,8 +505,6 @@ const bool LogStore::IsValidFileId(const std::string & sFileId)
     return true;
 }
 
-//////////////////////////////////////////////////////////////////
-
 int LogStore::RebuildIndex(Database * poDatabase, int & iNowFileWriteOffset)
 {
     std::string sLastFileId;
@@ -574,19 +556,17 @@ int LogStore::RebuildIndex(Database * poDatabase, int & iNowFileWriteOffset)
 
         iOffset = 0;
     }
-    
+
     return ret;
 }
 
-int LogStore::RebuildIndexForOneFile(const int iFileId, const int iOffset, 
-        Database * poDatabase, int & iNowFileWriteOffset, uint64_t & llNowInstanceId)
-{
+int LogStore::RebuildIndexForOneFile(const int iFileId, const int iOffset,
+        Database * poDatabase, int & iNowFileWriteOffset, uint64_t & llNowInstanceId) {
     char sFilePath[512] = {0};
     snprintf(sFilePath, sizeof(sFilePath), "%s/%d.f", path_.c_str(), iFileId);
 
     int ret = access(sFilePath, F_OK);
-    if (ret == -1)
-    {
+    if (ret == -1) {
         //PLG1Debug("file not exist, filepath %s", sFilePath);
         return 1;
     }
@@ -604,7 +584,7 @@ int LogStore::RebuildIndexForOneFile(const int iFileId, const int iOffset,
         close(iFd);
         return -1;
     }
-    
+
     off_t iSeekPos = lseek(iFd, iOffset, SEEK_SET);
     if (iSeekPos == -1)
     {
@@ -625,7 +605,7 @@ int LogStore::RebuildIndexForOneFile(const int iFileId, const int iOffset,
             iNowFileWriteOffset = iNowOffset;
             break;
         }
-        
+
         if (iReadLen != (ssize_t)sizeof(int))
         {
             bNeedTruncate = true;
@@ -693,21 +673,21 @@ int LogStore::RebuildIndexForOneFile(const int iFileId, const int iOffset,
             break;
         }
 
-        //PLG1Imp("rebuild one index ok, fileid %d offset %d instanceid %lu checksum %u buffer size %zu", 
+        //PLG1Imp("rebuild one index ok, fileid %d offset %d instanceid %lu checksum %u buffer size %zu",
                 //iFileId, iNowOffset, llInstanceId, iFileCheckSum, iLen - sizeof(uint64_t));
 
         iNowOffset += sizeof(int) + iLen;
     }
-    
+
     close(iFd);
 
     if (bNeedTruncate)
     {
-        file_logger_.Log("truncate fileid %d offset %d filesize %d", 
+        file_logger_.Log("truncate fileid %d offset %d filesize %d",
                 iFileId, iNowOffset, iFileLen);
         if (truncate(sFilePath, iNowOffset) != 0)
         {
-            //PLG1Err("truncate fail, file path %s truncate to length %d errno %d", 
+            //PLG1Err("truncate fail, file path %s truncate to length %d errno %d",
                     //sFilePath, iNowOffset, errno);
             return -1;
         }
@@ -738,16 +718,16 @@ void LogStoreLogger::Init(const std::string & sPath)
     log_fd_ = open(sFilePath, O_CREAT | O_RDWR | O_APPEND, S_IWRITE | S_IREAD);
 }
 
-void LogStoreLogger::Log(const char * pcFormat, ...)
-{
-    if (log_fd_ == -1)
-    {
+void LogStoreLogger::Log(const char * pcFormat, ...) {
+    if (log_fd_ == -1) {
         return;
     }
 
     uint64_t llNowTime = Time::GetTimestampMS();
     time_t tNowTimeSeconds = (time_t)(llNowTime / 1000);
-    tm * local_time = localtime(&tNowTimeSeconds);
+    //tm * local_time = localtime(&tNowTimeSeconds);
+    tm * local_time = nullptr;
+    local_time = localtime_r(&tNowTimeSeconds, local_time);
     char sTimePrefix[64] = {0};
     strftime(sTimePrefix, sizeof(sTimePrefix), "%Y-%m-%d %H:%M:%S", local_time);
 
@@ -767,8 +747,5 @@ void LogStoreLogger::Log(const char * pcFormat, ...)
     {
         //PLErr("fail, len %d writelen %d", iLen, iWriteLen);
     }
+}   
 }
-    
-}
-
-
