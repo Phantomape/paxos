@@ -19,7 +19,7 @@ int PaxosComparator::PCompare(const leveldb::Slice & a, const leveldb::Slice & b
         //NLErr("assert a.size %zu b.size %zu", a.size(), b.size());
         assert(b.size() == sizeof(uint64_t));
     }
-    
+
     uint64_t lla = 0;
     uint64_t llb = 0;
 
@@ -125,7 +125,7 @@ int Database::Init(const std::string & sDBPath, const int iMyGroupIdx)
     group_idx_ = iMyGroupIdx;
 
     db_path_ = sDBPath;
-    
+
     leveldb::Options oOptions;
     oOptions.create_if_missing = true;
     oOptions.comparator = &paxos_cmp_;
@@ -177,7 +177,7 @@ int Database::GetMaxInstanceIDFileID(std::string & sFileID, uint64_t & llInstanc
     }
 
     std::string sKey = GenKey(llMaxInstanceID);
-    
+
     leveldb::Status oStatus = leveldb_->Get(leveldb::ReadOptions(), sKey, &sFileID);
     if (!oStatus.ok())
     {
@@ -187,7 +187,7 @@ int Database::GetMaxInstanceIDFileID(std::string & sFileID, uint64_t & llInstanc
             ////PLG1Err("LevelDB.Get not found %s", sKey.c_str());
             return 1;
         }
-        
+
         //BP->GetLogStorageBP()->LevelDBGetFail();
         //PLG1Err("LevelDB.Get fail");
         return -1;
@@ -221,7 +221,7 @@ int Database::RebuildOneIndex(const uint64_t llInstanceID, const std::string & s
 int Database::GetFromLevelDb(const uint64_t llInstanceID, std::string & sValue)
 {
     std::string sKey = GenKey(llInstanceID);
-    
+
     leveldb::Status oStatus = leveldb_->Get(leveldb::ReadOptions(), sKey, &sValue);
     if (!oStatus.ok())
     {
@@ -231,7 +231,7 @@ int Database::GetFromLevelDb(const uint64_t llInstanceID, std::string & sValue)
             //PLG1Debug("LevelDB.Get not found, instanceid %lu", llInstanceID);
             return 1;
         }
-        
+
         //BP->GetLogStorageBP()->LevelDBGetFail();
         //PLG1Err("LevelDB.Get fail, instanceid %lu", llInstanceID);
         return -1;
@@ -335,7 +335,7 @@ int Database::Put(const WriteOptions & oWriteOptions, const uint64_t llInstanceI
     }
 
     ret = PutToLevelDb(false, llInstanceID, sFileID);
-    
+
     return ret;
 }
 
@@ -349,7 +349,7 @@ int Database::ForceDel(const WriteOptions & oWriteOptions, const uint64_t llInst
 
     std::string sKey = GenKey(llInstanceID);
     std::string sFileID;
-    
+
     leveldb::Status oStatus = leveldb_->Get(leveldb::ReadOptions(), sKey, &sFileID);
     if (!oStatus.ok())
     {
@@ -358,7 +358,7 @@ int Database::ForceDel(const WriteOptions & oWriteOptions, const uint64_t llInst
             //PLG1Debug("LevelDB.Get not found, instanceid %lu", llInstanceID);
             return 0;
         }
-        
+
         //PLG1Err("LevelDB.Get fail, instanceid %lu", llInstanceID);
         return -1;
     }
@@ -371,7 +371,7 @@ int Database::ForceDel(const WriteOptions & oWriteOptions, const uint64_t llInst
 
     leveldb::WriteOptions oLevelDBWriteOptions;
     oLevelDBWriteOptions.sync = oWriteOptions.sync;
-    
+
     oStatus = leveldb_->Delete(oLevelDBWriteOptions, sKey);
     if (!oStatus.ok())
     {
@@ -404,7 +404,7 @@ int Database::Del(const WriteOptions & oWriteOptions, const uint64_t llInstanceI
                 //PLG1Debug("LevelDB.Get not found, instanceid %lu", llInstanceID);
                 return 0;
             }
-            
+
             //PLG1Err("LevelDB.Get fail, instanceid %lu", llInstanceID);
             return -1;
         }
@@ -418,7 +418,7 @@ int Database::Del(const WriteOptions & oWriteOptions, const uint64_t llInstanceI
 
     leveldb::WriteOptions oLevelDBWriteOptions;
     oLevelDBWriteOptions.sync = oWriteOptions.sync;
-    
+
     leveldb::Status oStatus = leveldb_->Delete(oLevelDBWriteOptions, sKey);
     if (!oStatus.ok())
     {
@@ -434,7 +434,7 @@ int Database::GetMaxInstanceID(uint64_t & llInstanceID)
     llInstanceID = MINCHOSEN_KEY;
 
     leveldb::Iterator * it = leveldb_->NewIterator(leveldb::ReadOptions());
-    
+
     it->SeekToLast();
 
     while (it->Valid())
@@ -643,7 +643,7 @@ int MultiDatabase::Put(const WriteOptions & oWriteOptions, const int iGroupIdx, 
     {
         return -2;
     }
-    
+
     return vec_db_list_[iGroupIdx]->Put(oWriteOptions, llInstanceID, sValue);
 }
 
@@ -653,7 +653,7 @@ int MultiDatabase::Del(const WriteOptions & oWriteOptions, const int iGroupIdx, 
     {
         return -2;
     }
-    
+
     return vec_db_list_[iGroupIdx]->Del(oWriteOptions, llInstanceID);
 }
 
@@ -663,7 +663,7 @@ int MultiDatabase::ForceDel(const WriteOptions & oWriteOptions, const int iGroup
     {
         return -2;
     }
-    
+
     return vec_db_list_[iGroupIdx]->ForceDel(oWriteOptions, llInstanceID);
 }
 
@@ -673,10 +673,10 @@ int MultiDatabase::GetMaxInstanceID(const int iGroupIdx, uint64_t & llInstanceID
     {
         return -2;
     }
-    
+
     return vec_db_list_[iGroupIdx]->GetMaxInstanceID(llInstanceID);
 }
-    
+
 int MultiDatabase::SetMinChosenInstanceID(const WriteOptions & oWriteOptions, const int iGroupIdx, const uint64_t llMinInstanceID)
 {
     if (iGroupIdx >= (int)vec_db_list_.size())
