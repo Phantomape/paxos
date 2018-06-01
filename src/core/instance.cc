@@ -384,17 +384,17 @@ void Instance::OnReceiveCheckpointMsg(const CheckpointMsg & oCheckpointMsg) {
 
 int Instance::OnReceivePaxosMsg(const PaxosMsg & oPaxosMsg, const bool bIsRetry) {
     std::vector<PaxosMsgType> prepare_related_msgs{
-        MsgType_PaxosPrepareReply, 
-        MsgType_PaxosAcceptReply, 
+        MsgType_PaxosPrepareReply,
+        MsgType_PaxosAcceptReply,
         MsgType_PaxosProposal_SendNewValue
     };
     std::vector<PaxosMsgType> normal_msgs{
-        MsgType_PaxosAccept, 
+        MsgType_PaxosAccept,
         MsgType_PaxosPrepare
     };
     std::vector<PaxosMsgType> learner_related_msgs{
-        MsgType_PaxosLearner_AskforLearn, 
-        MsgType_PaxosLearner_SendLearnValue, 
+        MsgType_PaxosLearner_AskforLearn,
+        MsgType_PaxosLearner_SendLearnValue,
         MsgType_PaxosLearner_ProposerSendSuccess,
         MsgType_PaxosLearner_ComfirmAskforLearn,
         MsgType_PaxosLearner_SendNowInstanceID,
