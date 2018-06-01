@@ -709,7 +709,7 @@ void PNode::SetBatchDelayTimeMs(const int group_idx, const int iBatchDelayTimeMs
     }
 
     m_vecProposeBatch[group_idx]->SetBatchDelayTimeMs(iBatchDelayTimeMs);
-}    
+}
 }
 
 
