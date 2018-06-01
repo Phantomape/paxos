@@ -383,20 +383,35 @@ void Instance::OnReceiveCheckpointMsg(const CheckpointMsg & oCheckpointMsg) {
 }
 
 int Instance::OnReceivePaxosMsg(const PaxosMsg & oPaxosMsg, const bool bIsRetry) {
-    if (oPaxosMsg.msgtype() == MsgType_PaxosPrepareReply
-            || oPaxosMsg.msgtype() == MsgType_PaxosAcceptReply
-            || oPaxosMsg.msgtype() == MsgType_PaxosProposal_SendNewValue) {
+    std::vector<PaxosMsgType> prepare_related_msgs{
+        MsgType_PaxosPrepareReply, 
+        MsgType_PaxosAcceptReply, 
+        MsgType_PaxosProposal_SendNewValue
+    };
+    std::vector<PaxosMsgType> normal_msgs{
+        MsgType_PaxosAccept, 
+        MsgType_PaxosPrepare
+    };
+    std::vector<PaxosMsgType> learner_related_msgs{
+        MsgType_PaxosLearner_AskforLearn, 
+        MsgType_PaxosLearner_SendLearnValue, 
+        MsgType_PaxosLearner_ProposerSendSuccess,
+        MsgType_PaxosLearner_ComfirmAskforLearn,
+        MsgType_PaxosLearner_SendNowInstanceID,
+        MsgType_PaxosLearner_SendLearnValue_Ack,
+        MsgType_PaxosLearner_AskforCheckpoint
+    };
+
+    auto msg_type = oPaxosMsg.msgtype();
+    if (std::find(prepare_related_msgs.begin(), prepare_related_msgs.end(), msg_type) != prepare_related_msgs.end()) {
         if (!config_->IsValidNodeID(oPaxosMsg.nodeid())) {
             ////BP->GetInstance//BP()->OnReceivePaxosMsgNodeIDNotValid();
             //PLGErr("acceptor reply type msg, from nodeid not in my membership, skip this message");
             return 0;
         }
-
         return ReceiveMsgForProposer(oPaxosMsg);
     }
-    else if (oPaxosMsg.msgtype() == MsgType_PaxosPrepare
-            || oPaxosMsg.msgtype() == MsgType_PaxosAccept) {
-        //if my gid is zero, then this is a unknown node.
+    else if (std::find(normal_msgs.begin(), normal_msgs.end(), msg_type) != normal_msgs.end()) {
         if (config_->GetGid() == 0) {
             config_->AddTmpNodeOnlyForLearn(oPaxosMsg.nodeid());
         }
@@ -409,20 +424,13 @@ int Instance::OnReceivePaxosMsg(const PaxosMsg & oPaxosMsg, const bool bIsRetry)
 
         ChecksumLogic(oPaxosMsg);
         return ReceiveMsgForAcceptor(oPaxosMsg, bIsRetry);
-    }
-    else if (oPaxosMsg.msgtype() == MsgType_PaxosLearner_AskforLearn
-            || oPaxosMsg.msgtype() == MsgType_PaxosLearner_SendLearnValue
-            || oPaxosMsg.msgtype() == MsgType_PaxosLearner_ProposerSendSuccess
-            || oPaxosMsg.msgtype() == MsgType_PaxosLearner_ComfirmAskforLearn
-            || oPaxosMsg.msgtype() == MsgType_PaxosLearner_SendNowInstanceID
-            || oPaxosMsg.msgtype() == MsgType_PaxosLearner_SendLearnValue_Ack
-            || oPaxosMsg.msgtype() == MsgType_PaxosLearner_AskforCheckpoint) {
+    } 
+    else if (std::find(learner_related_msgs.begin(), learner_related_msgs.end(), msg_type) != learner_related_msgs.end()) {
         ChecksumLogic(oPaxosMsg);
         return ReceiveMsgForLearner(oPaxosMsg);
-    }
+    } 
     else {
-        ////BP->GetInstance//BP()->OnReceivePaxosMsgTypeNotValid();
-        //PLGErr("Invaid msgtype %d", oPaxosMsg.msgtype());
+
     }
 
     return 0;
