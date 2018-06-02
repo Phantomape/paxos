@@ -9,7 +9,7 @@
 namespace paxos {
 
 template <class T>
-std::string str(const T& t) { 
+std::string str(const T& t) {
     std::ostringstream os;
     os << t;
     return os.str();
@@ -303,7 +303,7 @@ int Socket::GetReceiveTimeout() const {
     GetOption(SOL_SOCKET, SO_RCVTIMEO, &tv, sizeof(timeval));
     return tv.tv_sec * 1000 + tv.tv_usec / 1000;
 }
-    
+
 void Socket::SetReceiveTimeout(int timeout) {
     if (timeout >= 0) {
         timeval tv;
@@ -336,7 +336,7 @@ void Socket::SetNoDelay(bool on) {
 SocketAddress Socket::GetRemoteAddress() const {
     return GetRemoteAddress(handle_);
 }
-    
+
 SocketAddress Socket::GetRemoteAddress(int fd) {
     SocketAddress::Addr addr;
     socklen_t len = sizeof(addr);
@@ -402,7 +402,7 @@ int Socket::Send(const char* data, int dataSize, bool* again) {
         if (n > 0) {
             p += n;
             dataSize -= n;
-        } else if (errno == EAGAIN) { 
+        } else if (errno == EAGAIN) {
             if (again) {
                 *again = true;
             }
@@ -412,7 +412,7 @@ int Socket::Send(const char* data, int dataSize, bool* again) {
             }
 
             break;
-        } else if (errno == EINTR) { 
+        } else if (errno == EINTR) {
             continue;
         } else {
             throw SocketException("send error");
@@ -440,9 +440,9 @@ int Socket::Receive(char* buffer, int bufferSize, bool* again) {
             }
 
             bufferSize -= n;
-        } else if (n == 0) { 
+        } else if (n == 0) {
             break;
-        } else if (errno == EAGAIN) { 
+        } else if (errno == EAGAIN) {
             if (again) {
                 *again = true;
             }
