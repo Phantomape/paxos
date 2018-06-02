@@ -54,7 +54,7 @@ int IoLoop::AddMessage(const char * pcMessage, const int iMessageLen) {
         message_queue_.unlock();
         return -2;
     }
-    
+
     message_queue_.add(new std::string(pcMessage, iMessageLen));
 
     queue_mem_size_ += iMessageLen;
@@ -71,7 +71,7 @@ int IoLoop::AddRetryPaxosMsg(const PaxosMsg & paxos_msg) {
         //BP->GetIoLoopBP()->EnqueueRetryMsgRejectByFullQueue();
         retry_queue_.pop();
     }
-    
+
     retry_queue_.push(paxos_msg);
     return 0;
 }
@@ -93,7 +93,7 @@ void IoLoop::DealWithRetry() {
     if (retry_queue_.empty()) {
         return;
     }
-    
+
     bool bHaveRetryOne = false;
     while (!retry_queue_.empty()) {
         PaxosMsg & paxos_msg = retry_queue_.front();
@@ -127,7 +127,7 @@ void IoLoop::Loop(const int timeout_ms) {
 
     message_queue_.lock();
     bool is_succeeded = message_queue_.peek(msg, timeout_ms);
-    
+
     if (!is_succeeded) {
         message_queue_.unlock();
     }
@@ -154,7 +154,7 @@ bool IoLoop::AddTimer(const int iTimeout, const int iType, uint32_t & iTimerID) 
     if (iTimeout == -1) {
         return true;
     }
-    
+
     uint64_t llAbsTime = Time::GetSteadyClockMS() + iTimeout;
     timer_.AddTimerWithType(llAbsTime, iType, iTimerID);
 
