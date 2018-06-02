@@ -12,7 +12,7 @@ class Learner;
 class Proposer : public Base {
 public:
     Proposer(
-            const Config* config, 
+            const Config* config,
             const Communicate * communicate,
             const Instance * poInstance,
             const Learner * poLearner,
@@ -24,7 +24,7 @@ public:
     void Accept();
 
     void AddPrepareTimer(const int timeout_ms = 0);
-    
+
     void AddAcceptTimer(const int timeout_ms = 0);
 
     void Prepare(const bool need_new_ballot);
@@ -53,7 +53,6 @@ public:
     void UpdateOtherProposalId(const uint64_t other_proposal_id);
 
 private:
-
     bool is_preparing_;
     bool is_accepting_;
     bool is_rejected_;
