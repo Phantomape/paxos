@@ -65,7 +65,7 @@ bool StateMachineFac::BatchExecute(const int group_idx, const uint64_t instance_
     return true;
 }
 
-bool StateMachineFac::DoExecute(const int group_idx, const uint64_t instance_id, 
+bool StateMachineFac::DoExecute(const int group_idx, const uint64_t instance_id,
         const std::string & sBodyValue, const int state_machine_id, StateMachineCtx * state_machine_ctx) {
     if (state_machine_id == 0) {
         return true;
@@ -106,11 +106,11 @@ bool StateMachineFac::ExecuteForCheckpoint(const int group_idx, const uint64_t i
     }
 }
 
-bool StateMachineFac::BatchExecuteForCheckpoint(const int group_idx, const uint64_t instance_id, 
+bool StateMachineFac::BatchExecuteForCheckpoint(const int group_idx, const uint64_t instance_id,
         const std::string & sBodyValue) {
     BatchPaxosValues oBatchValues;
     bool is_succeeded = oBatchValues.ParseFromArray(sBodyValue.data(), sBodyValue.size());
-    if (!is_succeeded) {   
+    if (!is_succeeded) {
         return false;
     }
 
@@ -125,7 +125,7 @@ bool StateMachineFac::BatchExecuteForCheckpoint(const int group_idx, const uint6
     return true;
 }
 
-bool StateMachineFac::DoExecuteForCheckpoint(const int group_idx, const uint64_t instance_id, 
+bool StateMachineFac::DoExecuteForCheckpoint(const int group_idx, const uint64_t instance_id,
         const std::string & sBodyValue, const int state_machine_id) {
     if (state_machine_id == 0) {
         return true;
@@ -177,14 +177,14 @@ const uint64_t StateMachineFac::GetCheckpointInstanceId(const int group_idx) con
         uint64_t checkpoint_instance_id = state_machine->GetCheckpointInstanceId(group_idx);
         if (state_machine->StateMachineId() == SYSTEM_V_STATE_MACHINE_ID
                 || state_machine->StateMachineId() == MASTER_V_STATE_MACHINE_ID) {
-            //system variables 
+            //system variables
             //master variables
             //if no user state machine, system and master's can use.
             //if have user state machine, use user'state machine's checkpointinstanceid.
             if (checkpoint_instance_id == uint64_t(-1)) {
                 continue;
             }
-            
+
             if (checkpoint_instance_id > checkpoint_instance_id_Insize
                     || checkpoint_instance_id_Insize == (uint64_t)-1) {
                 checkpoint_instance_id_Insize = checkpoint_instance_id;
@@ -198,13 +198,13 @@ const uint64_t StateMachineFac::GetCheckpointInstanceId(const int group_idx) con
         if (checkpoint_instance_id == uint64_t(-1)) {
             continue;
         }
-        
+
         if (checkpoint_instance_id > checkpoint_instance_id
                 || checkpoint_instance_id == (uint64_t)-1) {
             checkpoint_instance_id = checkpoint_instance_id;
         }
     }
-    
+
     return use_state_machine ? checkpoint_instance_id : checkpoint_instance_id_Insize;
 }
 
