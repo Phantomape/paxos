@@ -21,7 +21,7 @@ namespace paxos {
 class Instance {
 public:
     Instance(
-            const Config* poConfig, 
+            const Config* poConfig,
             const LogStorage* poLogStorage,
             const Communicate* poCommunicate,
             const Options& oOptions
@@ -58,15 +58,15 @@ public:
     int OnReceiveMessage(const char* pcMessage, const int iMessageLen);
 
     void OnReceive(const std::string& sBuffer);
-    
+
     void OnReceiveCheckpointMsg(const CheckpointMsg& oCheckpointMsg);
 
     int OnReceivePaxosMsg(const PaxosMsg& paxos_msg, const bool bIsRetry = false);
-    
+
     int ReceiveMsgForProposer(const PaxosMsg& paxos_msg);
-    
+
     int ReceiveMsgForAcceptor(const PaxosMsg& paxos_msg, const bool bIsRetry);
-    
+
     int ReceiveMsgForLearner(const PaxosMsg& paxos_msg);
 
     void OnTimeout(const uint32_t iTimerID, const int iType);
@@ -74,8 +74,8 @@ public:
     void AddStateMachine(StateMachine* poSM);
 
     bool SMExecute(
-        const uint64_t instance_id, 
-        const std::string& sValue, 
+        const uint64_t instance_id,
+        const std::string& sValue,
         const bool bIsMyCommit,
         StateMachineCtx* poStateMachineCtx);
 
