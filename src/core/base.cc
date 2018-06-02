@@ -132,7 +132,7 @@ int Base::UnPackBaseMsg(const std::string & sBuffer, Header & oHeader, size_t & 
         return -1;
     }
 
-    //NLDebug("buffer_size %zu header len %d cmdid %d gid %lu rid %lu version %d body_startpos %zu", 
+    //NLDebug("buffer_size %zu header len %d cmdid %d gid %lu rid %lu version %d body_startpos %zu",
     //        sBuffer.size(), iHeaderLen, oHeader.cmdid(), oHeader.gid(), oHeader.rid(), oHeader.version(), iBodyStartPos);
 
     if (oHeader.version() >= 1)
@@ -147,7 +147,7 @@ int Base::UnPackBaseMsg(const std::string & sBuffer, Header & oHeader, size_t & 
 
         uint32_t iBufferChecksum = 0;
         memcpy(&iBufferChecksum, sBuffer.data() + sBuffer.size() - CHECKSUM_LEN, CHECKSUM_LEN);
-        
+
         uint32_t iNewCalBufferChecksum = crc32(0, (const uint8_t *)sBuffer.data(), sBuffer.size() - CHECKSUM_LEN, NET_CRC32SKIP);
         if (iNewCalBufferChecksum != iBufferChecksum)
         {
@@ -168,13 +168,10 @@ int Base::UnPackBaseMsg(const std::string & sBuffer, Header & oHeader, size_t & 
     return 0;
 }
 
-int Base::SendMessage(const uint64_t iSendtoNodeId, const CheckpointMsg & oCheckpointMsg, const int iSendType)
-{
-    if (iSendtoNodeId == config_->GetMyNodeID())
-    {
+int Base::SendMessage(const uint64_t iSendtoNodeId, const CheckpointMsg & oCheckpointMsg, const int iSendType) {
+    if (iSendtoNodeId == config_->GetMyNodeID()) {
         return 0;
     }
-    
     std::string sBuffer;
     int ret = PackCheckpointMsg(oCheckpointMsg, sBuffer);
     if (ret != 0)
@@ -199,7 +196,7 @@ int Base::SendMessage(const uint64_t iSendtoNodeId, const PaxosMsg & oPaxosMsg, 
         instance_->OnReceivePaxosMsg(oPaxosMsg);
         return 0;
     }
-    
+
     std::string sBuffer;
     int ret = PackMsg(oPaxosMsg, sBuffer);
     if (ret != 0)
@@ -226,7 +223,7 @@ int Base::BroadcastMessage(const PaxosMsg & oPaxosMsg, const int iRunType, const
             return -1;
         }
     }
-    
+
     std::string sBuffer;
     int ret = PackMsg(oPaxosMsg, sBuffer);
     if (ret != 0)
