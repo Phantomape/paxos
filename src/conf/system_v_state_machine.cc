@@ -5,11 +5,11 @@
 namespace paxos {
 
 SystemVSM::SystemVSM(
-        const int iGroupIdx, 
+        const int group_idx,
         const uint64_t iMyNodeID,
         const LogStorage * poLogStorage,
-        MembershipChangeCallback pMembershipChangeCallback) 
-    : m_iMyGroupIdx(iGroupIdx), m_oSystemVStore(poLogStorage), 
+        MembershipChangeCallback pMembershipChangeCallback)
+    : m_iMyGroupIdx(group_idx), m_oSystemVStore(poLogStorage),
     m_iMyNodeID(iMyNodeID), m_pMembershipChangeCallback(pMembershipChangeCallback)
 {
 }
@@ -57,7 +57,7 @@ int SystemVSM::UpdateSystemVariables(const SystemVariables & oVariables)
     return 0;
 }
 
-bool SystemVSM::Execute(const int iGroupIdx, const uint64_t llInstanceID, const std::string & sValue, StateMachineCtx * poSMCtx) {
+bool SystemVSM::Execute(const int group_idx, const uint64_t llInstanceID, const std::string & sValue, StateMachineCtx * poSMCtx) {
     SystemVariables oVariables;
     bool bSucc = oVariables.ParseFromArray(sValue.data(), sValue.size());
     if (!bSucc) {
@@ -70,25 +70,26 @@ bool SystemVSM::Execute(const int iGroupIdx, const uint64_t llInstanceID, const 
     }
 
     if (m_oSystemVariables.gid() != 0 && oVariables.gid() != m_oSystemVariables.gid()) {
-        if (smret != nullptr) 
+        if (smret != nullptr) {
             *smret = Paxos_MembershipOp_GidNotSame;
+        }
         return true;
     }
 
     if (oVariables.version() != m_oSystemVariables.version()) {
-        if (smret != nullptr) 
+        if (smret != nullptr) {
             *smret = Paxos_MembershipOp_VersionConflit;
+        }
         return true;
     }
 
     oVariables.set_version(llInstanceID);
     int ret = UpdateSystemVariables(oVariables);
-    if (ret != 0)
-    {
+    if (ret != 0) {
         return false;
     }
 
-    if (smret != nullptr) 
+    if (smret != nullptr)
         *smret = 0;
 
     return true;
@@ -134,7 +135,6 @@ int SystemVSM::Membership_OPValue(const NodeInfoList & vecNodeInfoList, const ui
 int SystemVSM::CreateGid_OPValue(const uint64_t llGid, std::string & sOpValue) {
     SystemVariables oVariables = m_oSystemVariables;
     oVariables.set_gid(llGid);
-
     /*
     ** only founder need to check this. but now all is founder.
     if (oVariables.membership_size() == 0)
@@ -143,7 +143,7 @@ int SystemVSM::CreateGid_OPValue(const uint64_t llGid, std::string & sOpValue) {
         return -1;
     }
     */
-    
+
     bool is_succeeded = oVariables.SerializeToString(&sOpValue);
     if (!is_succeeded) {
         return -1;
@@ -176,7 +176,7 @@ void SystemVSM::RefleshNodeID() {
     m_setNodeID.clear();
 
     NodeInfoList vecNodeInfoList;
-    
+
     for (int i = 0; i < m_oSystemVariables.membership_size(); i++) {
         PaxosNodeInfo oNodeInfo = m_oSystemVariables.membership(i);
         NodeInfo tTmpNode(oNodeInfo.nodeid());
@@ -203,7 +203,7 @@ const bool SystemVSM::IsValidNodeID(const uint64_t iNodeID) {
     if (m_oSystemVariables.gid() == 0) {
         return true;
     }
-        
+
     return m_setNodeID.find(iNodeID) != end(m_setNodeID);
 }
 
@@ -216,7 +216,7 @@ int SystemVSM::GetCheckpointBuffer(std::string & sCPBuffer) {
             || m_oSystemVariables.gid() == 0) {
         return 0;
     }
-    
+
     bool is_succeeded = m_oSystemVariables.SerializeToString(&sCPBuffer);
     if (!is_succeeded) {
         return -1;
@@ -231,9 +231,9 @@ int SystemVSM::UpdateByCheckpoint(const std::string & sCPBuffer, bool & bChange)
     {
         return 0;
     }
-    
+
     bChange = false;
-    
+
     SystemVariables oVariables;
     bool bSucc = oVariables.ParseFromArray(sCPBuffer.data(), sCPBuffer.size());
     if (!bSucc) {
@@ -244,12 +244,12 @@ int SystemVSM::UpdateByCheckpoint(const std::string & sCPBuffer, bool & bChange)
         return -2;
     }
 
-    if (m_oSystemVariables.gid() != 0 
+    if (m_oSystemVariables.gid() != 0
             && oVariables.gid() != m_oSystemVariables.gid()) {
         return -2;
     }
 
-    if (m_oSystemVariables.version() != (uint64_t)-1 
+    if (m_oSystemVariables.version() != (uint64_t)-1
             && oVariables.version() <= m_oSystemVariables.version()) {
         return 0;
     }
