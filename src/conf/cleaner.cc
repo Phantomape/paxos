@@ -9,13 +9,13 @@
 namespace paxos {
 
 Cleaner::Cleaner(
-    Config * poConfig, 
-    StateMachineFac * poSMFac, 
-    LogStorage * poLogStorage, 
+    Config * poConfig,
+    StateMachineFac * poSMFac,
+    LogStorage * poLogStorage,
     CheckpointMgr * poCheckpointMgr)
-    : m_poConfig(poConfig), 
-    m_poStateMachineFac(poSMFac), 
-    m_poLogStorage(poLogStorage), 
+    : m_poConfig(poConfig),
+    m_poStateMachineFac(poSMFac),
+    m_poLogStorage(poLogStorage),
     m_poCheckpointMgr(poCheckpointMgr),
     m_llLastSave(0),
     m_bCanrun(false),
@@ -66,11 +66,9 @@ void Cleaner::Run() {
 
     while (true)
     {
-        if (m_bIsEnd)
-        {
+        if (m_bIsEnd) {
             return;
         }
-        
         if (!m_bCanrun)
         {
             m_bIsPaused = true;
@@ -105,13 +103,9 @@ void Cleaner::Run() {
             }
         }
 
-        if (llCPInstanceID == 0)
-        {
-            
+        if (llCPInstanceID == 0) {
         }
-        else
-        {
-            
+        else { 
         }
 
         Time::MsSleep(Util::FastRand() % 500 + 500);
@@ -131,7 +125,7 @@ int Cleaner::FixMinChosenInstanceID(const uint64_t llOldMinChosenInstanceID)
         {
             break;
         }
-        
+
         std::string sValue;
         ret = m_poLogStorage->Get(m_poConfig->GetMyGroupIdx(), llInstanceID, sValue);
         if (ret != 0 && ret != 1)
@@ -147,7 +141,7 @@ int Cleaner::FixMinChosenInstanceID(const uint64_t llOldMinChosenInstanceID)
             break;
         }
     }
-    
+
     if (llFixMinChosenInstanceID > llOldMinChosenInstanceID)
     {
         ret = m_poCheckpointMgr->SetMinChosenInstanceID(llFixMinChosenInstanceID);
@@ -173,8 +167,7 @@ bool Cleaner::DeleteOne(const uint64_t llInstanceID)
 
     m_poCheckpointMgr->SetMinChosenInstanceIDCache(llInstanceID);
 
-    if (llInstanceID >= m_llLastSave + DELETE_SAVE_INTERVAL)
-    {
+    if (llInstanceID >= m_llLastSave + DELETE_SAVE_INTERVAL) {
         int ret = m_poCheckpointMgr->SetMinChosenInstanceID(llInstanceID + 1);
         if (ret != 0)
         {
@@ -182,7 +175,6 @@ bool Cleaner::DeleteOne(const uint64_t llInstanceID)
         }
 
         m_llLastSave = llInstanceID;
-
     }
 
     return true;
