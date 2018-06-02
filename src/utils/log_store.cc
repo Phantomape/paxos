@@ -107,8 +107,7 @@ int LogStore::Init(const std::string & sPath, const int iMyGroupIdx, Database * 
     }
 
     ret = ExpandFile(fd_, current_file_size_);
-    if (ret != 0)
-    {
+    if (ret != 0) {
         return ret;
     }
 
@@ -696,8 +695,6 @@ int LogStore::RebuildIndexForOneFile(const int iFileId, const int iOffset,
     return ret;
 }
 
-//////////////////////////////////////////////////////////
-
 LogStoreLogger::LogStoreLogger()
     : log_fd_(-1)
 {
@@ -743,9 +740,7 @@ void LogStoreLogger::Log(const char * pcFormat, ...) {
 
     int iLen = strnlen(sBuf, sizeof(sBuf));
     ssize_t iWriteLen = write(log_fd_, sBuf, iLen);
-    if (iWriteLen != iLen)
-    {
-        //PLErr("fail, len %d writelen %d", iLen, iWriteLen);
+    if (iWriteLen != iLen) {
     }
-}   
+}
 }
