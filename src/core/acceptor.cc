@@ -4,10 +4,10 @@
 #include <string>
 
 namespace paxos {
-    
+
 Acceptor::Acceptor(
-        const Config* config, 
-        const Communicate* communicate, 
+        const Config* config,
+        const Communicate* communicate,
         const Instance* instance,
         const LogStorage* log_storage)
     : Base(config, communicate, instance), paxos_log_(log_storage) {
@@ -23,11 +23,11 @@ int Acceptor::Init() {
     uint64_t instance_id = 0;
     int res = 1;
     if (res != 0) {
-
+        return res;
     }
 
     if (instance_id == 0) {
-
+        std::cout << "Empty";
     }
 
     SetInstanceId(instance_id);
