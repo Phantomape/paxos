@@ -312,56 +312,58 @@ int Instance::OnReceiveMessage(const char* pcMessage, const int iMessageLen)
     return 0;
 }
 
-bool Instance::ReceiveMsgHeaderCheck(const Header & oHeader, const uint64_t iFromNodeID) {
-    if (config_->GetGid() == 0 || oHeader.gid() == 0) {
+bool Instance::ReceiveMsgHeaderCheck(const Header & header, const uint64_t iFromNodeID) {
+    if (config_->GetGid() == 0 || header.gid() == 0) {
         return true;
     }
 
-    if (config_->GetGid() != oHeader.gid()) {
+    if (config_->GetGid() != header.gid()) {
         return false;
     }
 
     return true;
 }
 
-void Instance::OnReceive(const std::string & sBuffer) {
-    if (sBuffer.size() <= 6) {
+/* Entry point for every msg */
+void Instance::OnReceive(const std::string & buffer) {
+    // Why 6
+    if (buffer.size() <= 6) {
         return;
     }
 
-    Header oHeader;
-    size_t iBodyStartPos = 0;
-    size_t iBodyLen = 0;
-    int ret = Base::UnPackBaseMsg(sBuffer, oHeader, iBodyStartPos, iBodyLen);
+    Header header;
+    size_t body_start_pos = 0;
+    size_t body_len = 0;
+    int ret = Base::UnPackBaseMsg(buffer, header, body_start_pos, body_len);
     if (ret != 0) {
         return;
     }
 
-    int iCmd = oHeader.cmdid();
+    int iCmd = header.cmdid();
     if (iCmd == MsgCmd_PaxosMsg) {
         if (checkpoint_mgr_.InAskforcheckpointMode()) {
             return;
         }
 
         PaxosMsg oPaxosMsg;
-        bool is_succeeded = oPaxosMsg.ParseFromArray(sBuffer.data() + iBodyStartPos, iBodyLen);
+        bool is_succeeded = oPaxosMsg.ParseFromArray(buffer.data() + body_start_pos, body_len);
         if (!is_succeeded) {
             return;
         }
 
-        if (!ReceiveMsgHeaderCheck(oHeader, oPaxosMsg.nodeid())) {
+        if (!ReceiveMsgHeaderCheck(header, oPaxosMsg.nodeid())) {
             return;
         }
         OnReceivePaxosMsg(oPaxosMsg);
     }
     else if (iCmd == MsgCmd_CheckpointMsg) {
         CheckpointMsg oCheckpointMsg;
-        bool is_succeeded = oCheckpointMsg.ParseFromArray(sBuffer.data() + iBodyStartPos, iBodyLen);
+        bool is_succeeded = oCheckpointMsg.ParseFromArray(buffer.data() + body_start_pos, body_len);
         if (!is_succeeded) {
             return;
         }
 
-        if (!ReceiveMsgHeaderCheck(oHeader, oCheckpointMsg.nodeid())) {
+        if (!ReceiveMsgHeaderCheck(header, oCheckpointMsg.nodeid())) {
             return;
         }
         OnReceiveCheckpointMsg(oCheckpointMsg);

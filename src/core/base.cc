@@ -47,8 +47,8 @@ const uint32_t Base::GetLastChecksum() const
 int Base::PackMsg(const PaxosMsg & oPaxosMsg, std::string & sBuffer)
 {
     std::string sBodyBuffer;
-    bool bSucc = oPaxosMsg.SerializeToString(&sBodyBuffer);
-    if (!bSucc)
+    bool is_succeeded = oPaxosMsg.SerializeToString(&sBodyBuffer);
+    if (!is_succeeded)
     {
         //PLGErr("PaxosMsg.SerializeToString fail, skip this msg");
         return -1;
@@ -63,8 +63,8 @@ int Base::PackMsg(const PaxosMsg & oPaxosMsg, std::string & sBuffer)
 int Base::PackCheckpointMsg(const CheckpointMsg & oCheckpointMsg, std::string & sBuffer)
 {
     std::string sBodyBuffer;
-    bool bSucc = oCheckpointMsg.SerializeToString(&sBodyBuffer);
-    if (!bSucc)
+    bool is_succeeded = oCheckpointMsg.SerializeToString(&sBodyBuffer);
+    if (!is_succeeded)
     {
         //PLGErr("CheckpointMsg.SerializeToString fail, skip this msg");
         return -1;
@@ -82,18 +82,17 @@ void Base::PackBaseMsg(const std::string & sBodyBuffer, const int iCmd, std::str
     int iGroupIdx = config_->GetMyGroupIdx();
     memcpy(sGroupIdx, &iGroupIdx, sizeof(sGroupIdx));
 
-    Header oHeader;
-    oHeader.set_gid(config_->GetGid());
-    oHeader.set_rid(0);
-    oHeader.set_cmdid(iCmd);
-    oHeader.set_version(1);
+    Header header;
+    header.set_gid(config_->GetGid());
+    header.set_rid(0);
+    header.set_cmdid(iCmd);
+    header.set_version(1);
 
     std::string sHeaderBuffer;
-    bool bSucc = oHeader.SerializeToString(&sHeaderBuffer);
-    if (!bSucc)
-    {
+    bool is_succeeded = header.SerializeToString(&sHeaderBuffer);
+    if (!is_succeeded) {
         //PLGErr("Header.SerializeToString fail, skip this msg");
-        assert(bSucc == true);
+        assert(is_succeeded == true);
     }
 
     char sHeaderLen[HEADLEN_LEN] = {0};
@@ -110,8 +109,7 @@ void Base::PackBaseMsg(const std::string & sBodyBuffer, const int iCmd, std::str
     sBuffer += std::string(sBufferChecksum, sizeof(sBufferChecksum));
 }
 
-int Base::UnPackBaseMsg(const std::string & sBuffer, Header & oHeader, size_t & iBodyStartPos, size_t & iBodyLen)
-{
+int Base::UnPackBaseMsg(const std::string & sBuffer, Header & header, size_t & iBodyStartPos, size_t & iBodyLen) {
     uint16_t iHeaderLen = 0;
     memcpy(&iHeaderLen, sBuffer.data() + GROUPIDXLEN, HEADLEN_LEN);
 
@@ -125,17 +123,17 @@ int Base::UnPackBaseMsg(const std::string & sBuffer, Header & oHeader, size_t & 
         return -1;
     }
 
-    bool bSucc = oHeader.ParseFromArray(sBuffer.data() + iHeaderStartPos, iHeaderLen);
-    if (!bSucc)
+    bool is_succeeded = header.ParseFromArray(sBuffer.data() + iHeaderStartPos, iHeaderLen);
+    if (!is_succeeded)
     {
         //NLErr("Header.ParseFromArray fail, skip this msg");
         return -1;
     }
 
     //NLDebug("buffer_size %zu header len %d cmdid %d gid %lu rid %lu version %d body_startpos %zu",
-    //        sBuffer.size(), iHeaderLen, oHeader.cmdid(), oHeader.gid(), oHeader.rid(), oHeader.version(), iBodyStartPos);
+    //        sBuffer.size(), iHeaderLen, header.cmdid(), header.gid(), header.rid(), header.version(), iBodyStartPos);
 
-    if (oHeader.version() >= 1)
+    if (header.version() >= 1)
     {
         if (iBodyStartPos + CHECKSUM_LEN > sBuffer.size())
         {
@@ -160,8 +158,7 @@ int Base::UnPackBaseMsg(const std::string & sBuffer, Header & oHeader, size_t & 
                 iBufferChecksum, iNewCalBufferChecksum) 
         */
     }
-    else
-    {
+    else {
         iBodyLen = sBuffer.size() - iBodyStartPos;
     }
 
