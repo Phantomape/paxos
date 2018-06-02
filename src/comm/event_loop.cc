@@ -20,7 +20,6 @@ EventLoop::~EventLoop() {
 }
 
 void EventLoop::ClearEvent() {
-    
 }
 
 void EventLoop::AddEvent(int fd, SocketAddress addr)
@@ -66,7 +65,7 @@ void EventLoop::DealwithTimeout(int& timeout) {
     while (has_timeout) {
         uint32_t timer_id = 0;
         int type = 0;
-    
+
         if (has_timeout) {
             DealwithTimeoutOne(timer_id, type);
 
@@ -131,7 +130,7 @@ void EventLoop::ModEvent(const Event* event, const int event_id) {
     EventCtx ctx;
     ctx.event = (Event *)event;
     ctx.event_ = event_id;
-    
+
     mapping_id_2_event_context_[event->GetSocketFd()] = ctx;
 }
 
@@ -198,7 +197,7 @@ void EventLoop::SingleLoop(const int timeout) {
             OnError(event_id, event);
             continue;
         }
-        
+
         try
         {
             if (event_id & EPOLLIN) {
@@ -222,15 +221,10 @@ void EventLoop::SingleLoop(const int timeout) {
 void EventLoop::Start(){
     is_ended_ = false;
     while(true) {
-        
         int timeout = 1000;
-        
         DealwithTimeout(timeout);
-
         SingleLoop(timeout);
-
         CreateEvent();
-
         if (is_ended_) {
             break;
         }
