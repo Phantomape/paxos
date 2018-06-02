@@ -16,18 +16,17 @@ Acceptor::Acceptor(
 
 
 Acceptor::~Acceptor() {
-    std::cout << "Acceptor::~Acceptor()" << std::endl;
 }
 
 int Acceptor::Init() {
     uint64_t instance_id = 0;
-    int res = 1;
+    int res = Load(instance_id);
     if (res != 0) {
         return res;
     }
 
     if (instance_id == 0) {
-        std::cout << "Empty";
+        std::cout << "Empty database" << std::endl;
     }
 
     SetInstanceId(instance_id);
@@ -53,6 +52,33 @@ const std::string& Acceptor::GetAcceptedValue() {
 const Ballot& Acceptor::GetPromiseBallot() const {
     std::cout << "Acceptor::GetPromiseBallot()" << std::endl;
     return promised_ballot_;
+}
+
+int Acceptor::Load(uint64_t & instance_id) {
+    int ret = paxos_log_.GetMaxInstanceIDFromLog(config_->GetMyGroupIdx(), instance_id);
+    if (ret != 0 && ret != 1) {
+        return ret;
+    }
+
+    if (ret == 1) {
+        instance_id = 0;
+        return 0;
+    }
+
+    AcceptorStateData state;
+    ret = paxos_log_.ReadState(config_->GetMyGroupIdx(), instance_id, state);
+    if (ret != 0) {
+        return ret;
+    }
+
+    promised_ballot_.proposal_id_ = state.promiseid();
+    promised_ballot_.node_id_ = state.promisenodeid();
+    accepted_ballot_.proposal_id_ = state.acceptedid();
+    accepted_ballot_.node_id_ = state.acceptednodeid();
+    accepted_val_ = state.acceptedvalue();
+    checksum_ = state.checksum();
+
+    return 0;
 }
 
 void Acceptor::SetAcceptedBallot(const Ballot& accepted_ballot) {

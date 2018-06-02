@@ -27,6 +27,8 @@ public:
 
     const std::string& GetAcceptedValue();
 
+    int Load(uint64_t & instance_id);
+
     void SetAcceptedValue(const std::string& accepted_val);
 
     void SetAcceptedBallot(const Ballot& accepted_ballot);
