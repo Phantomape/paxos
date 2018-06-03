@@ -16,18 +16,18 @@ static const uint64_t nullnode = 0;
 class NodeInfo
 {
 public:
-    NodeInfo(); 
+    NodeInfo();
 
     NodeInfo(const uint64_t node_id);
 
-    NodeInfo(const std::string & sIP, const int iPort); 
-    
+    NodeInfo(const std::string & sIP, const int port);
+
     virtual ~NodeInfo() { }
 
     const uint64_t GetNodeId() const;
 
     const std::string& GetIp() const;
-    
+
     const int GetPort() const;
 
     void SetIpPort(const std::string& ip, const int port);
@@ -58,7 +58,7 @@ public:
     GroupStateMachineInfo();
 
     //required
-    //GroupIdx interval is [0, group_count_) 
+    //GroupIdx interval is [0, group_count_)
     int group_idx_;
 
     //optional
@@ -66,7 +66,7 @@ public:
     std::vector<StateMachine*> vec_state_machine_list_;
 
     //optional
-    //Master election is a internal state machine. 
+    //Master election is a internal state machine.
     //Set use_master_ as true to open master election feature.
     //Default is false.
     bool use_master_;
@@ -87,7 +87,7 @@ public:
     LogStorage* log_storage_;
 
     //optional
-    //If log_storage_ == nullptr, log_storage_path_ is required. 
+    //If log_storage_ == nullptr, log_storage_path_ is required.
     std::string log_storage_path_;
 
     //optional
@@ -98,9 +98,8 @@ public:
     //If this flag is false, and the machine crashes, some recent
     //writes may be lost. Note that if it is just the process that
     //crashes (i.e., the machine does not reboot), no writes will be
-    //lost even if sync==false. Because of the data lost, we do not 
+    //lost even if sync==false. Because of the data lost, we do not
     //guarantee consistence.
-    //
     //Default is true.
     bool sync_;
 
@@ -124,7 +123,7 @@ public:
     //Our default network io thread count.
     //Default is 1.
     int io_thread_count_;
-    
+
     //optional
     //We support to run multi phxpaxos on one process.
     //One paxos group here means one independent phxpaxos. Any two phxpaxos(paxos group) only share network, no other.
@@ -139,20 +138,20 @@ public:
     //required
     //All nodes's ip/port with a paxos set(usually three or five nodes).
     NodeInfoList vec_node_info_list_;
-    
+
     //optional
-    //Only use_member_ship_ == true, we use option's nodeinfolist to init paxos 
-    //membership, after that, paxos will remember all nodeinfos, so second time 
-    //you can run paxos without vecNodeList, and you can only change membership 
-    //by using function in node.h. 
+    //Only use_member_ship_ == true, we use option's nodeinfolist to init paxos
+    //membership, after that, paxos will remember all nodeinfos, so second time
+    //you can run paxos without vecNodeList, and you can only change membership
+    //by using function in node.h.
     //
     //Default is false.
-    //if use_member_ship_ == false, that means every time you run paxos will use 
-    //vecNodeList to build a new membership.when you change membership by a new 
+    //if use_member_ship_ == false, that means every time you run paxos will use
+    //vecNodeList to build a new membership.when you change membership by a new
     //vecNodeList, we don't guarantee consistence.
     //
     //For test, you can set false.
-    //But when you use it to real services, remember to set true. 
+    //But when you use it to real services, remember to set true.
     bool use_membership_;
 
     //While membership change, phxpaxos will call this function.
@@ -172,8 +171,8 @@ public:
     //Breakpoint * poBreakpoint;
 
     //optional
-    //If use this mode, that means you propose large value(maybe large than 5M 
-    //means large) much more. Large value means long latency, long timeout, this 
+    //If use this mode, that means you propose large value(maybe large than 5M
+    //means large) much more. Large value means long latency, long timeout, this
     //mode will fit it.
     //Default is false
     bool is_large_value_mode_;
@@ -210,5 +209,4 @@ public:
     //Default is false;
     bool open_change_value_before_propose_;
 };
-    
 }
