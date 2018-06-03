@@ -26,7 +26,7 @@ public:
 
 typedef std::vector<CheckpointFileInfo> CheckpointFileInfoList;
 
-const uint64_t NoCheckpoint = static_cast<uint64_t>(-1); 
+const uint64_t NoCheckpoint = static_cast<uint64_t>(-1);
 
 class StateMachine {
 public:
@@ -35,24 +35,24 @@ public:
     //Different state machine return different StateMachineId().
     virtual const int StateMachineId() const = 0;
 
-    //Return true means execute success. 
+    //Return true means execute success.
     //This 'success' means this execute don't need to retry.
-    //Sometimes you will have some logical failure in your execute logic, 
-    //and this failure will definite occur on all node, that means this failure 
+    //Sometimes you will have some logical failure in your execute logic,
+    //and this failure will definite occur on all node, that means this failure
     //is acceptable, for this case, return true is the best choice.
     //Some system failure will let different node's execute result inconsistent,
-    //for this case, you must return false to retry this execute to avoid this 
+    //for this case, you must return false to retry this execute to avoid this
     //system failure. 
     virtual bool Execute(
-        const int group_idx, 
-        const uint64_t instance_id, 
+        const int group_idx,
+        const uint64_t instance_id,
         const std::string& val, 
         StateMachineCtx* state_machine_ctx
         ) = 0;
 
     virtual bool ExecuteForCheckpoint(
         const int group_idx, 
-        const uint64_t instance_id, 
+        const uint64_t instance_id,
         const std::string & val
         );
 
@@ -63,34 +63,34 @@ public:
 
     //After called this function, the vec_file_list that GetCheckpointState return's, can't be delelted, moved and modifyed.
     virtual int LockCheckpointState();
-    
+
     //sDirpath is checkpoint data root dir path.
     //vec_file_list is the relative path of the dir_path.
     virtual int GetCheckpointState(
-        const int group_idx, 
-        std::string & dir_path, 
+        const int group_idx,
+        std::string & dir_path,
         std::vector<std::string> & vec_file_list
-        ); 
+        );
 
     virtual void UnlockCheckpointState();
-    
+
     //Checkpoint file was on dir(checkpoint_tmp_file_dir_path).
     //vec_file_list is all the file in dir(checkpoint_tmp_file_dir_path).
     //vec_file_list filepath is absolute path.
-    //After called this fuction, paxoslib will kill the processor. 
+    //After called this fuction, paxoslib will kill the processor.
     //State machine need to understand this when restart.
     virtual int LoadCheckpointState(
-        const int group_idx, 
+        const int group_idx,
         const std::string & checkpoint_tmp_file_dir_path,
-        const std::vector<std::string> & vec_file_list, 
+        const std::vector<std::string> & vec_file_list,
         const uint64_t checkpoint_instance_id
         );
 
     //You can modify your request at this moment.
     //At this moment, the state machine data will be up to date.
-    //If request is batch, propose requests for multiple identical state machines 
-    //will only call this function once. Ensure that the execute function 
-    //correctly recognizes the modified request. Since this function is not always 
+    //If request is batch, propose requests for multiple identical state machines
+    //will only call this function once. Ensure that the execute function
+    //correctly recognizes the modified request. Since this function is not always
     //called, the execute function must handle the unmodified request correctly.
     virtual void BeforePropose(const int group_idx, std::string& val);
 

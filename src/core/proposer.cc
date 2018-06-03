@@ -52,6 +52,19 @@ void Proposer::Accept() {
     BroadcastMessage(paxos_msg, 1, 1);
 }
 
+void Proposer::AddPreAcceptValue(
+        const Ballot & other_pre_accept_ballot, 
+        const std::string & other_pre_accept_val) {
+    if (other_pre_accept_ballot.isnull()) {
+        return;
+    }
+
+    if (other_pre_accept_ballot > highest_other_pre_accept_ballot_) {
+        highest_other_pre_accept_ballot_ = other_pre_accept_ballot;
+        val_ = other_pre_accept_val;
+    }
+}
+
 void Proposer::AddPrepareTimer(const int timeout_ms) {
     if (prepare_timer_id_ > 0) {
         ioloop_->RemoveTimer(prepare_timer_id_);
@@ -166,7 +179,7 @@ void Proposer::Prepare(const bool need_new_ballot) {
     BroadcastMessage(send_paxos_msg, 1, 1);
 }
 
-void Proposer::OnAccept(const PaxosMsg &paxos_msg) {
+void Proposer::OnAcceptReply(const PaxosMsg &paxos_msg) {
     if (!is_accepting_) {
         return;
     }
@@ -209,7 +222,21 @@ void Proposer::OnAcceptTimeout() {
     Prepare(is_rejected_);
 }
 
-void Proposer::OnPrepare(const PaxosMsg &recv_paxos_msg) {
+void Proposer::OnExpiredAcceptReply(const PaxosMsg & paxos_msg) {
+    if (paxos_msg.rejectbypromiseid() != 0) {
+        is_rejected_ = true;
+        SetOtherProposalId(paxos_msg.rejectbypromiseid());
+    }
+}
+
+void Proposer :: OnExpiredPrepareReply(const PaxosMsg & paxos_msg) {
+    if (paxos_msg.rejectbypromiseid() != 0) {
+        is_rejected_ = true;
+        SetOtherProposalId(paxos_msg.rejectbypromiseid());
+    }
+}
+
+void Proposer::OnPrepareReply(const PaxosMsg &recv_paxos_msg) {
     if (!is_preparing_) {
         // Skip this msg if not preparing or id differs
         return;
@@ -223,20 +250,25 @@ void Proposer::OnPrepare(const PaxosMsg &recv_paxos_msg) {
     // Received a message
     msg_counter.AddReceivedMsg(recv_paxos_msg.nodeid());
 
-    if (true) {// Accepted
+    if (recv_paxos_msg.rejectbypromiseid() == 0) {
+        Ballot ballot(recv_paxos_msg.preacceptid(), recv_paxos_msg.preacceptnodeid);
         msg_counter.AddAcceptedMsg(recv_paxos_msg.nodeid());
+        AddPreAcceptValue(ballot, recv_paxos_msg.value());
     }
     else {
         is_rejected_ = true;
         msg_counter.AddRejectedMsg(recv_paxos_msg.nodeid());
+        SetOtherProposalId(recv_paxos_msg.rejectbypromiseid());
     }
 
-    if (msg_counter.IsPassed()) {
+    if (msg_counter.IsPassed() || msg_counter.IsAllReceived()) {
+        int used_time_ms = time_stat_.Point();
         can_skip_prepare_ = true;
 
         Accept();
     }
     else if (msg_counter.IsRejected()) {
+        AddPrepareTimer(Util::FastRand() % 30 + 10); // wtf is this
     }
 }
 
@@ -271,6 +303,12 @@ void Proposer::Propose(const std::string& val) {
     }
     else {
         Prepare(is_rejected_);
+    }
+}
+
+void Proposer::SetOtherProposalId(const uint64_t other_proposal_id) {
+    if (other_proposal_id > highest_proposal_id_by_others_) {
+        highest_proposal_id_by_others_ = other_proposal_id;
     }
 }
 

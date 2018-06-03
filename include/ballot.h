@@ -15,6 +15,7 @@ public:
     bool operator == (const Ballot &other) const;
     bool operator > (const Ballot &other) const;
 
+    const bool isnull() const;
     void reset();
 
     uint64_t proposal_id_;

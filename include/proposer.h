@@ -23,6 +23,8 @@ public:
 
     void Accept();
 
+    void AddPreAcceptValue(const Ballot & other_pre_accept_ballot, const std::string & other_pre_accept_val);
+
     void AddPrepareTimer(const int timeout_ms = 0);
 
     void AddAcceptTimer(const int timeout_ms = 0);
@@ -38,15 +40,21 @@ public:
 
     virtual void InitInstance();
 
-    void OnAccept(const PaxosMsg &paxos_msg);
+    void OnAcceptReply(const PaxosMsg &paxos_msg);
     void OnAcceptRejected(const PaxosMsg &paxos_msg);
     void OnAcceptTimeout();
-    void OnPrepare(const PaxosMsg &paxos_msg);
+
+    void OnExpiredPrepareReply(const PaxosMsg & paxos_msg);
+    void OnExpiredAcceptReply(const PaxosMsg & paxos_msg);
+
+    void OnPrepareReply(const PaxosMsg &paxos_msg);
     void OnPrepareRejected(const PaxosMsg &paxos_msg);
     void OnPrepareTimeout();
 
     // Generate a new value to propose
     void Propose(const std::string& val);
+
+    void SetOtherProposalId(const uint64_t other_proposal_id);
 
     void SetValue(const std::string& val);
 

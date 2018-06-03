@@ -345,16 +345,16 @@ void Instance::OnReceive(const std::string & buffer) {
             return;
         }
 
-        PaxosMsg oPaxosMsg;
-        bool is_succeeded = oPaxosMsg.ParseFromArray(buffer.data() + body_start_pos, body_len);
+        PaxosMsg paxos_msg;
+        bool is_succeeded = paxos_msg.ParseFromArray(buffer.data() + body_start_pos, body_len);
         if (!is_succeeded) {
             return;
         }
 
-        if (!ReceiveMsgHeaderCheck(header, oPaxosMsg.nodeid())) {
+        if (!ReceiveMsgHeaderCheck(header, paxos_msg.nodeid())) {
             return;
         }
-        OnReceivePaxosMsg(oPaxosMsg);
+        OnReceivePaxosMsg(paxos_msg);
     }
     else if (iCmd == MsgCmd_CheckpointMsg) {
         CheckpointMsg oCheckpointMsg;
@@ -384,7 +384,7 @@ void Instance::OnReceiveCheckpointMsg(const CheckpointMsg & oCheckpointMsg) {
     }
 }
 
-int Instance::OnReceivePaxosMsg(const PaxosMsg & oPaxosMsg, const bool bIsRetry) {
+int Instance::OnReceivePaxosMsg(const PaxosMsg & paxos_msg, const bool bIsRetry) {
     std::vector<PaxosMsgType> prepare_related_msgs{
         MsgType_PaxosPrepareReply,
         MsgType_PaxosAcceptReply,
@@ -404,32 +404,32 @@ int Instance::OnReceivePaxosMsg(const PaxosMsg & oPaxosMsg, const bool bIsRetry)
         MsgType_PaxosLearner_AskforCheckpoint
     };
 
-    auto msg_type = oPaxosMsg.msgtype();
+    auto msg_type = paxos_msg.msgtype();
     if (std::find(prepare_related_msgs.begin(), prepare_related_msgs.end(), msg_type) != prepare_related_msgs.end()) {
-        if (!config_->IsValidNodeID(oPaxosMsg.nodeid())) {
+        if (!config_->IsValidNodeID(paxos_msg.nodeid())) {
             ////BP->GetInstance//BP()->OnReceivePaxosMsgNodeIDNotValid();
             //PLGErr("acceptor reply type msg, from nodeid not in my membership, skip this message");
             return 0;
         }
-        return ReceiveMsgForProposer(oPaxosMsg);
+        return ReceiveMsgForProposer(paxos_msg);
     }
     else if (std::find(normal_msgs.begin(), normal_msgs.end(), msg_type) != normal_msgs.end()) {
         if (config_->GetGid() == 0) {
-            config_->AddTmpNodeOnlyForLearn(oPaxosMsg.nodeid());
+            config_->AddTmpNodeOnlyForLearn(paxos_msg.nodeid());
         }
 
-        if ((!config_->IsValidNodeID(oPaxosMsg.nodeid()))) {
-            config_->AddTmpNodeOnlyForLearn(oPaxosMsg.nodeid());
+        if ((!config_->IsValidNodeID(paxos_msg.nodeid()))) {
+            config_->AddTmpNodeOnlyForLearn(paxos_msg.nodeid());
 
             return 0;
         }
 
-        ChecksumLogic(oPaxosMsg);
-        return ReceiveMsgForAcceptor(oPaxosMsg, bIsRetry);
+        ChecksumLogic(paxos_msg);
+        return ReceiveMsgForAcceptor(paxos_msg, bIsRetry);
     }
     else if (std::find(learner_related_msgs.begin(), learner_related_msgs.end(), msg_type) != learner_related_msgs.end()) {
-        ChecksumLogic(oPaxosMsg);
-        return ReceiveMsgForLearner(oPaxosMsg);
+        ChecksumLogic(paxos_msg);
+        return ReceiveMsgForLearner(paxos_msg);
     }
     else {
     }
@@ -437,14 +437,14 @@ int Instance::OnReceivePaxosMsg(const PaxosMsg & oPaxosMsg, const bool bIsRetry)
     return 0;
 }
 
-int Instance::ReceiveMsgForProposer(const PaxosMsg & oPaxosMsg) {
+int Instance::ReceiveMsgForProposer(const PaxosMsg & paxos_msg) {
+    // Still no idea what it is
     if (config_->IsIMFollower()) {
-        //PLGErr("I'm follower, skip this message");
         return 0;
     }
 
-    if (oPaxosMsg.instanceid() != proposer_.GetInstanceId()) {
-        if (oPaxosMsg.instanceid() + 1 == proposer_.GetInstanceId()) {
+    if (paxos_msg.instanceid() != proposer_.GetInstanceId()) {
+        if (paxos_msg.instanceid() + 1 == proposer_.GetInstanceId()) {
             //Exipred reply msg on last instance.
             //If the response of a node is always slower than the majority node,
             //then the message of the node is always ignored even if it is a reject reply.
@@ -453,60 +453,57 @@ int Instance::ReceiveMsgForProposer(const PaxosMsg & oPaxosMsg) {
             //This causes the node to remain in catch-up state.
             //
             //To avoid this problem, we need to deal with the expired reply.
-            if (oPaxosMsg.msgtype() == MsgType_PaxosPrepareReply) {
-                //proposer_.OnExpiredPrepareReply(oPaxosMsg);
+            if (paxos_msg.msgtype() == MsgType_PaxosPrepareReply) {
+                proposer_.OnExpiredPrepareReply(paxos_msg);
             }
-            else if (oPaxosMsg.msgtype() == MsgType_PaxosAcceptReply) {
-                //proposer_.OnExpiredAcceptReply(oPaxosMsg);
+            else if (paxos_msg.msgtype() == MsgType_PaxosAcceptReply) {
+                proposer_.OnExpiredAcceptReply(paxos_msg);
             }
         }
-
-        ////BP->GetInstance//BP()->OnReceivePaxosProposerMsgInotsame();
-        //PLGErr("InstanceID not same, skip msg");
         return 0;
     }
 
-    if (oPaxosMsg.msgtype() == MsgType_PaxosPrepareReply) {
-        //proposer_.OnPrepareReply(oPaxosMsg);
+    if (paxos_msg.msgtype() == MsgType_PaxosPrepareReply) {
+        proposer_.OnPrepareReply(paxos_msg);
     }
-    else if (oPaxosMsg.msgtype() == MsgType_PaxosAcceptReply) {
-        //proposer_.OnAcceptReply(oPaxosMsg);
+    else if (paxos_msg.msgtype() == MsgType_PaxosAcceptReply) {
+        proposer_.OnAcceptReply(paxos_msg);
     }
 
     return 0;
 }
 
-int Instance::ReceiveMsgForAcceptor(const PaxosMsg & oPaxosMsg, const bool bIsRetry) {
+int Instance::ReceiveMsgForAcceptor(const PaxosMsg & paxos_msg, const bool bIsRetry) {
     if (config_->IsIMFollower()) {
         //PLGErr("I'm follower, skip this message");
         return 0;
     }
 
-    if (oPaxosMsg.instanceid() != acceptor_.GetInstanceId()) {
+    if (paxos_msg.instanceid() != acceptor_.GetInstanceId()) {
         ////BP->GetInstance//BP()->OnReceivePaxosAcceptorMsgInotsame();
     }
 
-    if (oPaxosMsg.instanceid() == acceptor_.GetInstanceId() + 1) {
+    if (paxos_msg.instanceid() == acceptor_.GetInstanceId() + 1) {
         //skip success message
-        PaxosMsg oNewPaxosMsg = oPaxosMsg;
+        PaxosMsg oNewPaxosMsg = paxos_msg;
         oNewPaxosMsg.set_instanceid(acceptor_.GetInstanceId());
         oNewPaxosMsg.set_msgtype(MsgType_PaxosLearner_ProposerSendSuccess);
 
         ReceiveMsgForLearner(oNewPaxosMsg);
     }
 
-    if (oPaxosMsg.instanceid() == acceptor_.GetInstanceId()) {
-        if (oPaxosMsg.msgtype() == MsgType_PaxosPrepare) {
-            return acceptor_.OnPrepare(oPaxosMsg);
+    if (paxos_msg.instanceid() == acceptor_.GetInstanceId()) {
+        if (paxos_msg.msgtype() == MsgType_PaxosPrepare) {
+            return acceptor_.OnPrepare(paxos_msg);
         }
-        else if (oPaxosMsg.msgtype() == MsgType_PaxosAccept) {
-            acceptor_.OnAccept(oPaxosMsg);
+        else if (paxos_msg.msgtype() == MsgType_PaxosAccept) {
+            acceptor_.OnAccept(paxos_msg);
         }
     }
-    else if ((!bIsRetry) && (oPaxosMsg.instanceid() > acceptor_.GetInstanceId())) {
+    else if ((!bIsRetry) && (paxos_msg.instanceid() > acceptor_.GetInstanceId())) {
         //retry msg can't retry again.
-        if (oPaxosMsg.instanceid() >= learner_.GetLatestInstanceID()) {
-            if (oPaxosMsg.instanceid() < acceptor_.GetInstanceId() + RETRY_QUEUE_MAX_LEN) {
+        if (paxos_msg.instanceid() >= learner_.GetLatestInstanceID()) {
+            if (paxos_msg.instanceid() < acceptor_.GetInstanceId() + RETRY_QUEUE_MAX_LEN) {
                 //need retry msg precondition
                 //1. prepare or accept msg
                 //2. msg.instanceid > nowinstanceid.
@@ -514,7 +511,7 @@ int Instance::ReceiveMsgForAcceptor(const PaxosMsg & oPaxosMsg, const bool bIsRe
                 //3. msg.instanceid >= seen latestinstanceid.
                 //    (if < seen latestinstanceid, proposer don't need reply with this instanceid anymore.)
                 //4. msg.instanceid close to nowinstanceid.
-                ioloop_.AddRetryPaxosMsg(oPaxosMsg);
+                ioloop_.AddRetryPaxosMsg(paxos_msg);
             }
             else {
                 //retry msg not series, no use.
@@ -526,35 +523,35 @@ int Instance::ReceiveMsgForAcceptor(const PaxosMsg & oPaxosMsg, const bool bIsRe
     return 0;
 }
 
-int Instance::ReceiveMsgForLearner(const PaxosMsg & oPaxosMsg)
+int Instance::ReceiveMsgForLearner(const PaxosMsg & paxos_msg)
 {
-    if (oPaxosMsg.msgtype() == MsgType_PaxosLearner_AskforLearn)
+    if (paxos_msg.msgtype() == MsgType_PaxosLearner_AskforLearn)
     {
-        //learner_.OnAskforLearn(oPaxosMsg);
+        //learner_.OnAskforLearn(paxos_msg);
     }
-    else if (oPaxosMsg.msgtype() == MsgType_PaxosLearner_SendLearnValue)
+    else if (paxos_msg.msgtype() == MsgType_PaxosLearner_SendLearnValue)
     {
-        //learner_.OnSendLearnValue(oPaxosMsg);
+        //learner_.OnSendLearnValue(paxos_msg);
     }
-    else if (oPaxosMsg.msgtype() == MsgType_PaxosLearner_ProposerSendSuccess)
+    else if (paxos_msg.msgtype() == MsgType_PaxosLearner_ProposerSendSuccess)
     {
-        //learner_.OnProposerSendSuccess(oPaxosMsg);
+        //learner_.OnProposerSendSuccess(paxos_msg);
     }
-    else if (oPaxosMsg.msgtype() == MsgType_PaxosLearner_SendNowInstanceID)
+    else if (paxos_msg.msgtype() == MsgType_PaxosLearner_SendNowInstanceID)
     {
-        //learner_.OnSendNowInstanceID(oPaxosMsg);
+        //learner_.OnSendNowInstanceID(paxos_msg);
     }
-    else if (oPaxosMsg.msgtype() == MsgType_PaxosLearner_ComfirmAskforLearn)
+    else if (paxos_msg.msgtype() == MsgType_PaxosLearner_ComfirmAskforLearn)
     {
-        //learner_.OnComfirmAskForLearn(oPaxosMsg);
+        //learner_.OnComfirmAskForLearn(paxos_msg);
     }
-    else if (oPaxosMsg.msgtype() == MsgType_PaxosLearner_SendLearnValue_Ack)
+    else if (paxos_msg.msgtype() == MsgType_PaxosLearner_SendLearnValue_Ack)
     {
-        //learner_.OnSendLearnValue_Ack(oPaxosMsg);
+        //learner_.OnSendLearnValue_Ack(paxos_msg);
     }
-    else if (oPaxosMsg.msgtype() == MsgType_PaxosLearner_AskforCheckpoint)
+    else if (paxos_msg.msgtype() == MsgType_PaxosLearner_AskforCheckpoint)
     {
-        //learner_.OnAskforCheckpoint(oPaxosMsg);
+        //learner_.OnAskforCheckpoint(paxos_msg);
     }
 
     return 0;
@@ -610,17 +607,17 @@ bool Instance::SMExecute(
     return state_machine_fac_.Execute(config_->GetMyGroupIdx(), llInstanceID, sValue, poStateMachineCtx);
 }
 
-void Instance::ChecksumLogic(const PaxosMsg & oPaxosMsg) {
-    if (oPaxosMsg.instanceid() != acceptor_.GetInstanceId()) {
+void Instance::ChecksumLogic(const PaxosMsg & paxos_msg) {
+    if (paxos_msg.instanceid() != acceptor_.GetInstanceId()) {
         return;
     }
 
     if (acceptor_.GetInstanceId() > 0 && GetLastChecksum() == 0) {
-        //PLGErr("I have no last checksum, other last checksum %u", oPaxosMsg.lastchecksum());
-        last_checksum_ = oPaxosMsg.lastchecksum();
+        //PLGErr("I have no last checksum, other last checksum %u", paxos_msg.lastchecksum());
+        last_checksum_ = paxos_msg.lastchecksum();
         return;
     }
-    assert(oPaxosMsg.lastchecksum() == GetLastChecksum());
+    assert(paxos_msg.lastchecksum() == GetLastChecksum());
 }
 
 int Instance::GetInstanceValue(const uint64_t llInstanceID, std::string & sValue, int & iSMID) {

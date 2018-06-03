@@ -37,6 +37,10 @@ bool Ballot::operator > (const Ballot &other) const {
     }
 }
 
+const bool Ballot::isnull() const {
+    return proposal_id_ == 0;
+}
+
 void Ballot::reset() {
     proposal_id_ = 0;
     node_id_ = 0;
