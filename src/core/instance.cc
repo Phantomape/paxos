@@ -216,30 +216,23 @@ int Instance::PlayLog(const uint64_t llBeginInstanceID, const uint64_t llEndInst
     return 0;
 }
 
-const uint32_t Instance::GetLastChecksum()
-{
+const uint32_t Instance::GetLastChecksum() {
     return last_checksum_;
 }
 
-Committer* Instance::GetCommitter()
-{
+Committer* Instance::GetCommitter() {
     return &commiter_;
 }
 
-Cleaner* Instance::GetCheckpointCleaner()
-{
+Cleaner* Instance::GetCheckpointCleaner() {
     return checkpoint_mgr_.GetCleaner();
 }
 
-Replayer* Instance::GetCheckpointReplayer()
-{
+Replayer* Instance::GetCheckpointReplayer() {
     return checkpoint_mgr_.GetReplayer();
 }
 
-////////////////////////////////////////////////
-
-void Instance::CheckNewValue()
-{
+void Instance::CheckNewValue() {
     /*
     if (!learner_.IsIMLatest())
     {

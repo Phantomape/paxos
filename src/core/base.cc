@@ -39,18 +39,14 @@ void Base::NewInstance()
     InitInstance();
 }
 
-const uint32_t Base::GetLastChecksum() const
-{
-    //return instance_->GetLastChecksum();
+const uint32_t Base::GetLastChecksum() const {
+    return instance_->GetLastChecksum();
 }
 
-int Base::PackMsg(const PaxosMsg & oPaxosMsg, std::string & sBuffer)
-{
+int Base::PackMsg(const PaxosMsg & paxos_msg, std::string & sBuffer) {
     std::string sBodyBuffer;
-    bool is_succeeded = oPaxosMsg.SerializeToString(&sBodyBuffer);
-    if (!is_succeeded)
-    {
-        //PLGErr("PaxosMsg.SerializeToString fail, skip this msg");
+    bool is_succeeded = paxos_msg.SerializeToString(&sBodyBuffer);
+    if (!is_succeeded) {
         return -1;
     }
 
@@ -60,8 +56,7 @@ int Base::PackMsg(const PaxosMsg & oPaxosMsg, std::string & sBuffer)
     return 0;
 }
 
-int Base::PackCheckpointMsg(const CheckpointMsg & oCheckpointMsg, std::string & sBuffer)
-{
+int Base::PackCheckpointMsg(const CheckpointMsg & oCheckpointMsg, std::string & sBuffer) {
     std::string sBodyBuffer;
     bool is_succeeded = oCheckpointMsg.SerializeToString(&sBodyBuffer);
     if (!is_succeeded)
@@ -179,7 +174,7 @@ int Base::SendMessage(const uint64_t iSendtoNodeId, const CheckpointMsg & oCheck
     return communicate_->SendMessage(config_->GetMyGroupIdx(), iSendtoNodeId, sBuffer, iSendType);
 }
 
-int Base::SendMessage(const uint64_t iSendtoNodeId, const PaxosMsg & oPaxosMsg, const int iSendType)
+int Base::SendMessage(const uint64_t iSendtoNodeId, const PaxosMsg & paxos_msg, const int iSendType)
 {
     if (is_test_mode_)
     {
@@ -190,12 +185,12 @@ int Base::SendMessage(const uint64_t iSendtoNodeId, const PaxosMsg & oPaxosMsg, 
 
     if (iSendtoNodeId == config_->GetMyNodeID())
     {
-        instance_->OnReceivePaxosMsg(oPaxosMsg);
+        instance_->OnReceivePaxosMsg(paxos_msg);
         return 0;
     }
 
     std::string sBuffer;
-    int ret = PackMsg(oPaxosMsg, sBuffer);
+    int ret = PackMsg(paxos_msg, sBuffer);
     if (ret != 0)
     {
         return ret;
@@ -204,44 +199,42 @@ int Base::SendMessage(const uint64_t iSendtoNodeId, const PaxosMsg & oPaxosMsg, 
     return communicate_->SendMessage(config_->GetMyGroupIdx(), iSendtoNodeId, sBuffer, iSendType);
 }
 
-int Base::BroadcastMessage(const PaxosMsg & oPaxosMsg, const int iRunType, const int iSendType)
-{
-    if (is_test_mode_)
-    {
+/* Should remove this logic or rename this part cause all network IO should be
+   handled by communicate, which should also be renamed, the author's choice of
+   words is terrible :(
+       
+   Maybe pass the args in this function to Communicator::BroadcastMessage*/
+int Base::BroadcastMessage(const PaxosMsg & paxos_msg, const int iRunType, const int iSendType) {
+    if (is_test_mode_) {
+        std::cout << "called Base::BroadcastMessage()" << std::endl;
         return 0;
     }
 
-    //BP->GetInstanceBP()->BroadcastMessage();
-
-    if (iRunType == BroadcastMessage_Type_RunSelf_First)
-    {
-        if (instance_->OnReceivePaxosMsg(oPaxosMsg) != 0)
-        {
+    if (iRunType == BroadcastMessage_Type_RunSelf_First) {
+        if (instance_->OnReceivePaxosMsg(paxos_msg) != 0) {
             return -1;
         }
     }
 
-    std::string sBuffer;
-    int ret = PackMsg(oPaxosMsg, sBuffer);
-    if (ret != 0)
-    {
+    std::string buffer;
+    int ret = PackMsg(paxos_msg, buffer);
+    if (ret != 0) {
         return ret;
     }
 
-    ret = communicate_->BroadcastMessage(config_->GetMyGroupIdx(), sBuffer, iSendType);
+    ret = communicate_->BroadcastMessage(config_->GetMyGroupIdx(), buffer, iSendType);
 
-    if (iRunType == BroadcastMessage_Type_RunSelf_Final)
-    {
-        instance_->OnReceivePaxosMsg(oPaxosMsg);
+    if (iRunType == BroadcastMessage_Type_RunSelf_Final) {
+        instance_->OnReceivePaxosMsg(paxos_msg);
     }
 
     return ret;
 }
 
-int Base::BroadcastMessageToFollower(const PaxosMsg & oPaxosMsg, const int iSendType)
+int Base::BroadcastMessageToFollower(const PaxosMsg & paxos_msg, const int iSendType)
 {
     std::string sBuffer;
-    int ret = PackMsg(oPaxosMsg, sBuffer);
+    int ret = PackMsg(paxos_msg, sBuffer);
     if (ret != 0)
     {
         return ret;
@@ -250,10 +243,10 @@ int Base::BroadcastMessageToFollower(const PaxosMsg & oPaxosMsg, const int iSend
     return communicate_->BroadcastMessageFollower(config_->GetMyGroupIdx(), sBuffer, iSendType);
 }
 
-int Base::BroadcastMessageToTempNode(const PaxosMsg & oPaxosMsg, const int iSendType)
+int Base::BroadcastMessageToTempNode(const PaxosMsg & paxos_msg, const int iSendType)
 {
     std::string sBuffer;
-    int ret = PackMsg(oPaxosMsg, sBuffer);
+    int ret = PackMsg(paxos_msg, sBuffer);
     if (ret != 0)
     {
         return ret;

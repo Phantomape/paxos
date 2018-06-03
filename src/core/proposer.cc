@@ -176,7 +176,7 @@ void Proposer::Prepare(const bool need_new_ballot) {
 
     AddPrepareTimer();
 
-    BroadcastMessage(send_paxos_msg, 1, 1);
+    BroadcastMessage(send_paxos_msg);
 }
 
 void Proposer::OnAcceptReply(const PaxosMsg &paxos_msg) {
