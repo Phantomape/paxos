@@ -251,7 +251,7 @@ void Proposer::OnPrepareReply(const PaxosMsg &recv_paxos_msg) {
     msg_counter.AddReceivedMsg(recv_paxos_msg.nodeid());
 
     if (recv_paxos_msg.rejectbypromiseid() == 0) {
-        Ballot ballot(recv_paxos_msg.preacceptid(), recv_paxos_msg.preacceptnodeid);
+        Ballot ballot(recv_paxos_msg.preacceptid(), recv_paxos_msg.preacceptnodeid());
         msg_counter.AddAcceptedMsg(recv_paxos_msg.nodeid());
         AddPreAcceptValue(ballot, recv_paxos_msg.value());
     }
