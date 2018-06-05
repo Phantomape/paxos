@@ -18,10 +18,10 @@ class TcpClient;
 // class MessageEvent;
 class Network;
 
-class EventLoop
-{
+class EventLoop {
 public:
     EventLoop(Network * network);
+
     virtual ~EventLoop();
 
     int Init(const int iEpollLength);

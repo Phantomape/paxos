@@ -9,6 +9,7 @@ class EventLoop;
 class Event {
 public: 
     Event(EventLoop* event_loop);
+
     virtual ~Event();
 
     virtual int GetSocketFd() const = 0;
@@ -23,9 +24,8 @@ public:
 
     virtual void OnTimeout(const uint32_t timer_id, const int type);
 
-public:
     void AddEvent(const int event);
-    
+
     void RemoveEvent(const int event);
 
     void JumpoutEpollWait();
@@ -34,7 +34,6 @@ public:
 
     void Destroy();
 
-public:
     void AddTimer(const int timeout_ms, const int type, uint32_t& timer_id);
 
     void RemoveTimer(const uint32_t timer_id);

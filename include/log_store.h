@@ -43,7 +43,7 @@ public:
     int ForceDel(const std::string & file_id, const uint64_t instance_id);
 
     const bool IsValidFileId(const std::string & file_id);
-    
+
     int RebuildIndex(Database * database, int & current_file_write_offset);
 
     int RebuildIndexForOneFile(const int file_id, const int offset, 
@@ -63,8 +63,7 @@ private:
     int GetFileFD(const int need_write_size, int & fd, int & file_id, int & offset);
 
     int ExpandFile(int fd, int & iFileSize);
-    
-private:
+
     int fd_;
     int meta_fd_;
     int file_id_;

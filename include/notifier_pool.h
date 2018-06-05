@@ -5,8 +5,7 @@
 
 namespace paxos {
 
-class Notifier
-{
+class Notifier {
 public:
     Notifier();
 

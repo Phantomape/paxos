@@ -87,11 +87,11 @@ public:
     virtual ~SocketBase();
 
     virtual int DetachSocketHandle();
-    
+
     virtual int GetFamily() const;
-    
+
     static bool GetNonBlocking(int fd);
-    
+
     virtual bool GetNonBlocking() const;
 
     virtual int GetSocketHandle() const;
@@ -101,7 +101,7 @@ public:
     static void SetNonBlocking(int fd, bool on);
 
     virtual void SetSocketHandle(int handle, int family = AF_INET);
-    
+
     virtual void Close();
 
     virtual void Reset();

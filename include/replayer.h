@@ -10,8 +10,7 @@ class StateMachineFac;
 class LogStorage;
 class CheckpointMgr;
     
-class Replayer : public Thread
-{
+class Replayer : public Thread {
 public:
     Replayer(
             Config * poConfig,
@@ -34,7 +33,6 @@ public:
 private:
     bool PlayOne(const uint64_t llInstanceID);
 
-private:
     Config * m_poConfig;
     StateMachineFac * m_poSMFac;
     PaxosLog m_oPaxosLog;

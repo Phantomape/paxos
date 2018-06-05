@@ -4,11 +4,9 @@
 #include "node.h"
 #include "master_state_machine.h"
 
-namespace paxos 
-{
+namespace paxos {
 
-class MasterMgr : public Thread
-{
+class MasterMgr : public Thread {
 public:
     MasterMgr(const Node * poPaxosNode, 
         const int iGroupIdx, 
@@ -18,7 +16,7 @@ public:
     ~MasterMgr();
 
     void RunMaster();
-    
+
     void StopMaster();
 
     int Init();
@@ -31,7 +29,6 @@ public:
 
     void DropMaster();
 
-public:
     MasterStateMachine * GetMasterSM();
 
 private:
@@ -39,7 +36,6 @@ private:
 
     MasterStateMachine m_oDefaultMasterSM;
 
-private:
     int m_iLeaseTime;
 
     bool m_bIsEnd;
@@ -49,5 +45,5 @@ private:
 
     bool m_bNeedDropMaster;
 };
-    
+
 }

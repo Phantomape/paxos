@@ -38,5 +38,5 @@ public:
         const int send_type = Message_SendType_UDP
     ) = 0;
 };
-    
+
 }

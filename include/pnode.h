@@ -12,11 +12,9 @@
 #include "system_v_state_machine.h"
 #include <vector>
 
-namespace paxos
-{
+namespace paxos {
 
-class PNode : public Node
-{
+class PNode : public Node {
 public:
     PNode();
 
@@ -39,28 +37,24 @@ public:
     void SetBatchCount(const int iGroupIdx, const int iBatchCount);
     void SetBatchDelayTimeMs(const int iGroupIdx, const int iBatchDelayTimeMs);
 
-public:
     void AddStateMachine(StateMachine * poSM);
     void AddStateMachine(const int iGroupIdx, StateMachine * poSM);
     int OnReceiveMessage(const char * pcMessage, const int iMessageLen);
     const uint64_t GetNodeId() const;
     void SetTimeoutMs(const int iTimeoutMs);
 
-public:
     void SetHoldPaxosLogCount(const uint64_t llHoldCount);
     void PauseCheckpointReplayer();
     void ContinueCheckpointReplayer();
     void PausePaxosLogCleaner();
     void ContinuePaxosLogCleaner();
-    
-public:
+
     //membership
     int AddMember(const int iGroupIdx, const NodeInfo & oNode);
     int RemoveMember(const int iGroupIdx, const NodeInfo & oNode);
     int ChangeMember(const int iGroupIdx, const NodeInfo & oFromNode, const NodeInfo & oToNode);
     int ShowMembership(const int iGroupIdx, NodeInfoList & vecNodeInfoList);
 
-public:
     //master
     const NodeInfo GetMaster(const int iGroupIdx);
     const NodeInfo GetMasterWithVersion(const int iGroupIdx, uint64_t & llVersion);
@@ -68,12 +62,10 @@ public:
     int SetMasterLease(const int iGroupIdx, const int iLeaseTimeMs);
     int DropMaster(const int iGroupIdx);
 
-public:
     void SetMaxHoldThreads(const int iGroupIdx, const int iMaxHoldThreads);
     void SetProposeWaitTimeThresholdMS(const int iGroupIdx, const int iWaitTimeThresholdMS);
     void SetLogSync(const int iGroupIdx, const bool bLogSync);
 
-public:
     int GetInstanceValue(const int iGroupIdx, const uint64_t instance_id,
             std::vector<std::pair<std::string, int> > & vecValues);
 
@@ -105,5 +97,5 @@ private:
 
     uint64_t m_iMyNodeID;
 };
-    
+
 }

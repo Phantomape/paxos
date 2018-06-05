@@ -35,7 +35,7 @@ public:
             const std::string & message,
             const int iSendType = Message_SendType_UDP
         );
-    
+
     int BroadcastMessageTempNode(
             const int group_idx, 
             const std::string & message,
@@ -61,5 +61,5 @@ private:
     uint64_t node_id_;
     size_t udp_max_size_; 
 };
-    
+
 }

@@ -11,15 +11,14 @@ namespace paxos {
 
 class Communicate;
 
-class SystemVSM : public InternalStateMachine 
-{
+class SystemVSM : public InternalStateMachine {
 public:
     SystemVSM(
             const int iGroupIdx, 
             const uint64_t iMyNodeID,
             const LogStorage * poLogStorage,
             MembershipChangeCallback pMembershipChangeCallback);
-            
+
     ~SystemVSM();
 
     int Init();
@@ -28,18 +27,16 @@ public:
 
     const int StateMachineId() const;
 
-public:
     const uint64_t GetGid() const;
 
     void GetMembership(NodeInfoList & vecNodeInfoList, uint64_t & llVersion); 
 
     int CreateGid_OPValue(const uint64_t llGid, std::string & sOpValue);
-    
+
     int Membership_OPValue(const NodeInfoList & vecNodeInfoList, const uint64_t llVersion, std::string & sOpValue);
 
-public:
     //membership
-    
+
     void AddNodeIDList(const NodeInfoList & vecNodeInfoList);
 
     void RefleshNodeID();
@@ -52,7 +49,6 @@ public:
 
     const bool IsIMInMembership();
 
-public:
     const uint64_t GetCheckpointInstanceID(const int iGroupIdx) const { return m_oSystemVariables.version(); }
 
     bool ExecuteForCheckpoint(const int iGroupIdx, const uint64_t llInstanceID, 
@@ -68,15 +64,13 @@ public:
 
     void UnLockCheckpointState() { }
 
-public:
     int GetCheckpointBuffer(std::string & sCPBuffer);
 
     int UpdateByCheckpoint(const std::string & sCPBuffer, bool & bChange);
 
-public:
     //for tools
     void GetSystemVariables(SystemVariables & oVariables);
-    
+
     int UpdateSystemVariables(const SystemVariables & oVariables);
 
 public:
@@ -94,5 +88,5 @@ private:
 
     MembershipChangeCallback m_pMembershipChangeCallback;
 };
-    
+
 }

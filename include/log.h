@@ -14,5 +14,5 @@ enum class LogLevel {
 };
 
 typedef std::function< void(const int, const char *, va_list) > LogFunc;
-    
+
 }

@@ -36,7 +36,7 @@ public:
     void SetPromiseBallot(const Ballot& promised_ballot);
 
     int OnPrepare(const PaxosMsg& recv_paxos_msg);
-    
+
     void OnAccept(const PaxosMsg& paxos_msg);
 
 private:

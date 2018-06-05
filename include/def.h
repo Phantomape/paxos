@@ -37,14 +37,12 @@ enum PaxosNodeFunctionRet {
 };
 
 
-enum MsgCmd
-{
+enum MsgCmd {
     MsgCmd_PaxosMsg = 1,
     MsgCmd_CheckpointMsg = 2,
 };
 
-enum PaxosMsgType
-{
+enum PaxosMsgType {
     MsgType_PaxosPrepare = 1,
     MsgType_PaxosPrepareReply = 2,
     MsgType_PaxosAccept = 3,
@@ -60,32 +58,27 @@ enum PaxosMsgType
     MsgType_PaxosLearner_OnAskforCheckpoint = 13,
 };
 
-enum PaxosMsgFlagType
-{
+enum PaxosMsgFlagType {
     PaxosMsgFlagType_SendLearnValue_NeedAck = 1,
 };
 
-enum CheckpointMsgType
-{
+enum CheckpointMsgType {
     CheckpointMsgType_SendFile = 1,
     CheckpointMsgType_SendFile_Ack = 2,
 };
 
-enum CheckpointSendFileFlag
-{
+enum CheckpointSendFileFlag {
     CheckpointSendFileFlag_BEGIN = 1,
     CheckpointSendFileFlag_ING = 2,
     CheckpointSendFileFlag_END = 3,
 };
 
-enum CheckpointSendFileAckFlag
-{
+enum CheckpointSendFileAckFlag {
     CheckpointSendFileAckFlag_OK = 1,
     CheckpointSendFileAckFlag_Fail = 2,
 };
 
-enum TimerType
-{
+enum TimerType {
     Timer_Proposer_Prepare_Timeout = 1,
     Timer_Proposer_Accept_Timeout = 2,
     Timer_Learner_Askforlearn_noop = 3,

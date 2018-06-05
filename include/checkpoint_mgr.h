@@ -37,9 +37,9 @@ public:
 
 public:
     const uint64_t GetMinChosenInstanceId() const;
-    
+
     int SetMinChosenInstanceID(const uint64_t llMinChosenInstanceID);
-    
+
     void SetMinChosenInstanceIDCache(const uint64_t llMinChosenInstanceID);
 
     const uint64_t GetCheckpointInstanceID() const;
@@ -52,14 +52,13 @@ private:
     Config * m_poConfig;
     LogStorage * m_poLogStorage;
     StateMachineFac * m_poStateMachineFac;
-    
+
     Replayer m_oReplayer;
     Cleaner m_oCleaner;
 
     uint64_t m_llMinChosenInstanceID;
     uint64_t m_llMaxChosenInstanceID;
 
-private:
     bool m_bInAskforCheckpointMode;
     std::set<uint64_t> m_setNeedAsk;
     uint64_t m_llLastAskforCheckpointTime;

@@ -36,17 +36,14 @@ private:
 
     int CreateDir(const std::string & sDirPath);
 
-private:
     Config * m_poConfig;
     LogStorage * m_poLogStorage;
 
-private:
     uint64_t m_iSenderNodeID; 
     uint64_t m_llUUID;
     uint64_t m_llSequence;
 
-private:
     std::map<std::string, bool> m_mapHasInitDir;
 };
-    
+
 }

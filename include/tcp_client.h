@@ -22,7 +22,7 @@ public:
 private:
     MessageEvent* CreateEvent(const uint64_t node_id, const std::string& ip, const int port);
     MessageEvent* GetEvent(const std::string& ip, const int port);
-    
+
     EventLoop* event_loop_;
     Network* network_;
 

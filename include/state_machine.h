@@ -100,5 +100,5 @@ public:
     //Default is false.
     virtual const bool NeedCallBeforePropose();
 };
-    
+
 }

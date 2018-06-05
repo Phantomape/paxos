@@ -16,7 +16,7 @@ public:
             const std::string & sPaxosValue, paxos::StateMachineCtx * poSMCtx);
 
     const int StateMachineId() const { return 1; }
-    
+
     bool ExecuteForCheckpoint(const int iGroupIdx, const uint64_t llInstanceID, 
             const std::string & sPaxosValue) { return true; }
 
@@ -25,8 +25,8 @@ public:
     const int GetGroupIdx() const;
 
     int GetCheckpointState(const int iGroupIdx, std::string & sDirPath, 
-            std::vector<std::string> & vecFileList) { return 0; }    
-    
+            std::vector<std::string> & vecFileList) { return 0; }
+
     int LoadCheckpointState(const int iGroupIdx, const std::string & sCheckpointTmpFileDirPath,
             const std::vector<std::string> & vecFileList, const uint64_t llCheckpointInstanceID) { return 0; }
 
@@ -38,5 +38,5 @@ private:
     uint64_t node_id_;
     int group_idx_;
 };
-    
+
 }

@@ -16,7 +16,7 @@ public:
     void UnLock();
 
     void Wait();
-    
+
     void Interupt();
 
     bool WaitTime(const int iTimeMs);

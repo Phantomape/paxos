@@ -7,11 +7,9 @@
 #include <condition_variable>
 #include <thread>
 
-namespace paxos
-{
+namespace paxos {
 
-class PendingProposal
-{
+class PendingProposal {
 public:
     PendingProposal();
     const std::string * psValue;
@@ -27,10 +25,10 @@ public:
     uint64_t llAbsEnqueueTime;
 };
 
-class ProposeBatch
-{
+class ProposeBatch {
 public:
     ProposeBatch(const int iGroupIdx, Node * poPaxosNode, NotifierPool * poNotifierPool);
+
     virtual ~ProposeBatch();
 
     void Start();
@@ -41,7 +39,6 @@ public:
 
     int Propose(const std::string & sValue, uint64_t & llInstanceID, uint32_t & iBatchIndex, StateMachineCtx * poStateMachineCtx);
 
-public:
     void SetBatchCount(const int iBatchCount);
     void SetBatchDelayTimeMs(const int iBatchDelayTimeMs);
 
@@ -67,7 +64,6 @@ private:
     bool m_bIsStarted;
     int m_iNowQueueValueSize;
 
-private:
     int m_iBatchCount;
     int m_iBatchDelayTimeMs;
     int m_iBatchMaxSize;

@@ -12,16 +12,15 @@ public:
     ~Timer();
 
     void AddTimer(const uint64_t abs_time, uint32_t & timer_id);
-    
+
     void AddTimerWithType(const uint64_t abs_time, const int type, uint32_t & timer_id);
 
     bool PopTimeout(uint32_t & timer_id, int & type);
 
     const int GetNextTimeout() const;
-    
+
 private:
-    struct TimerObj
-    {
+    struct TimerObj {
         TimerObj(uint32_t timer_id, uint64_t abs_time, int type) 
             : timer_id_(timer_id), abs_time_(abs_time), type_(type) {}
 
@@ -43,5 +42,5 @@ private:
     uint32_t current_timer_id_;
     std::vector<TimerObj> vec_timer_heap_;
 };
-    
+
 }

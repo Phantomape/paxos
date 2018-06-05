@@ -26,14 +26,12 @@ public:
 
     void ClearRetryQueue();
 
-public:
     int AddMessage(const char* msg, const int msg_len);
 
     int AddRetryPaxosMsg(const PaxosMsg& paxos_msg);
 
     void AddNotify();
 
-public:
     virtual bool AddTimer(const int timeout, const int type, uint32_t& timer_id);
 
     virtual void RemoveTimer(uint32_t& timer_id);

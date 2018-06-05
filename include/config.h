@@ -25,14 +25,12 @@ public:
 
     const bool CheckConfig();
 
-public:
     SystemVSM * GetSystemVSM();
 
-public:
     const uint64_t GetGid() const;
 
     const uint64_t GetMyNodeID() const;
-    
+
     const int GetNodeCount() const;
 
     const int GetMyGroupIdx() const;
@@ -43,14 +41,12 @@ public:
 
     const bool GetIsUseMembership() const;
 
-public:
     const int GetPrepareTimeoutMs() const;
 
     const int GetAcceptTimeoutMs() const;
 
     const uint64_t GetAskforLearnTimeoutMs() const;
 
-public:
     const bool IsValidNodeID(const uint64_t iNodeID);
 
     const bool IsIMFollower() const;
@@ -63,12 +59,10 @@ public:
 
     void SetLogSync(const bool bLogSync);
 
-public:
     void SetMasterSM(InternalStateMachine * poMasterSM);
 
     InternalStateMachine * GetMasterSM();
 
-public:
     void AddTmpNodeOnlyForLearn(const uint64_t iTmpNodeID);
 
     //this function only for communicate.

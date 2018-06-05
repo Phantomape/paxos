@@ -11,7 +11,7 @@ namespace paxos {
 class PaxosLog {
 public:
     PaxosLog(const LogStorage * poLogStorage);
-    
+
     ~PaxosLog();
 
     int WriteLog(const WriteOptions & oWriteOptions, const int iGroupIdx, const uint64_t llInstanceID, const std::string & sValue);

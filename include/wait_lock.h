@@ -48,5 +48,5 @@ private:
     int m_iRejectRate;
     int m_iLockWaitTimeThresholdMS;
 };
-    
+
 }

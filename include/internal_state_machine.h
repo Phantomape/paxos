@@ -13,5 +13,5 @@ public:
 
     virtual int UpdateByCheckpoint(const std::string & sCPBuffer, bool & bChange) = 0;
 };
-    
+
 }

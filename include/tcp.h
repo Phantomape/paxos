@@ -10,7 +10,7 @@ namespace paxos {
 class TcpRead : public Thread {
 public:
     TcpRead(Network* network);
-    
+
     ~TcpRead();
 
     int Init();
@@ -25,8 +25,7 @@ private:
     EventLoop event_loop_;
 };
 
-class TcpWrite : public Thread
-{
+class TcpWrite : public Thread {
 public:
     TcpWrite(Network* network);
 

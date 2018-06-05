@@ -78,5 +78,5 @@ private:
     
     std::map<std::string, bool> m_mapAlreadySendedFile;
 };
-    
+
 }

@@ -47,5 +47,16 @@ private:
     
     PhxEchoSM echo_state_machine_;
 };
-    
 
+// I still have no idea what ctx does
+class KVStateMachineCtx {
+public:
+    int execute_ret_;
+    std::string read_val_;
+    uint64_t read_version_;
+
+    KVStateMachineCtx() {
+        execute_ret_ = -1;
+        read_version_ = 0;
+    }
+};

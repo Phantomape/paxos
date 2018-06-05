@@ -17,8 +17,8 @@ public:
     const char* What() const throw ();
 
 protected:
-    int     err_code_;
-    std::string  err_msg_;
+    int err_code_;
+    std::string err_msg_;
 };
 
 }

@@ -13,8 +13,7 @@ class StateMachine;
 
 static const uint64_t nullnode = 0;
 
-class NodeInfo
-{
+class NodeInfo {
 public:
     NodeInfo();
 

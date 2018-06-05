@@ -13,6 +13,7 @@ class CommitCtx
 {
 public:
     CommitCtx(Config * poConfig);
+
     ~CommitCtx();
 
     void NewCommit(std::string * psValue, StateMachineCtx * poSMCtx, const int iTimeoutMs);
@@ -25,14 +26,12 @@ public:
 
     bool IsMyCommit(const uint64_t llInstanceID, const std::string & sLearnValue, StateMachineCtx *& poSMCtx);
 
-public:
     void SetResult(const int iCommitRet, const uint64_t llInstanceID, const std::string & sLearnValue);
 
     void SetResultOnlyRet(const int iCommitRet);
 
     int GetResult(uint64_t & llSuccInstanceID);
 
-public:
     const int GetTimeoutMs() const;
 
 private:

@@ -21,9 +21,9 @@ public:
 
 public:
     int NewValueGetID(const std::string & sValue, uint64_t & llInstanceID);
-    
+
     int NewValueGetID(const std::string & sValue, uint64_t & llInstanceID, StateMachineCtx * poStateMachineCtx);
-    
+
     int NewValueGetIDNoRetry(const std::string & sValue, uint64_t & llInstanceID, StateMachineCtx * poStateMachineCtx);
 
     int NewValue(const std::string & sValue);
@@ -38,7 +38,6 @@ public:
 private:
     void LogStatus();
 
-private:
     Config * m_poConfig;
     CommitCtx * m_poCommitCtx;
     IoLoop * m_poIOLoop;
@@ -49,5 +48,5 @@ private:
 
     uint64_t m_llLastLogTime;
 };
-    
+
 }

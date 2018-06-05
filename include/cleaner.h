@@ -33,7 +33,6 @@ public:
 
     const bool IsPaused() const;
 
-public:
     void SetHoldPaxosLogCount(const uint64_t llHoldCount);
 
     int FixMinChosenInstanceID(const uint64_t llOldMinChosenInstanceID);
@@ -41,7 +40,6 @@ public:
 private:
     bool DeleteOne(const uint64_t llInstanceID);
 
-private:
     Config * m_poConfig;
     StateMachineFac * m_poStateMachineFac;
     LogStorage * m_poLogStorage;
@@ -57,5 +55,5 @@ private:
 
     uint64_t m_llHoldCount;
 };
-    
+
 }

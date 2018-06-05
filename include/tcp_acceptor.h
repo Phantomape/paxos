@@ -30,7 +30,6 @@ private:
     ServerSocket server_socket_;
     std::vector<EventLoop *> vec_event_loop_;
 
-private:
     bool is_eneded_;
     bool is_started_;
 };

@@ -29,5 +29,5 @@ private:
     friend class Node;
     Node* node;
 };
-    
+
 }

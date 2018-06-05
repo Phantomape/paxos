@@ -13,7 +13,7 @@ namespace paxos {
 class PaxosComparator : public leveldb::Comparator {
 public:
     int Compare(const leveldb::Slice & a, const leveldb::Slice & b) const;
-    
+
     static int PCompare(const leveldb::Slice & a, const leveldb::Slice & b);
 
     const char * Name() const {return "PaxosComparator";}
@@ -60,8 +60,7 @@ public:
     int SetMasterVariables(const WriteOptions & write_options, const std::string & buffer);
 
     int GetMasterVariables(std::string & buffer);
-    
-public:
+
     int GetMaxInstanceIDFileID(std::string & file_id, uint64_t & instance_id);
 
     int RebuildOneIndex(const uint64_t instance_id, const std::string & file_id);
@@ -74,8 +73,7 @@ private:
     int GetFromLevelDb(const uint64_t instance_id, std::string & val);
 
     int PutToLevelDb(const bool bSync, const uint64_t instance_id, const std::string & val);
-        
-private:
+
     std::string GenKey(const uint64_t instance_id);
 
     const uint64_t GetInstanceIDFromKey(const std::string & sKey);
@@ -85,7 +83,7 @@ public:
     leveldb::DB * leveldb_;
     PaxosComparator paxos_cmp_;
     bool has_init_;
-    
+
     LogStore * value_store_;
     std::string db_path_;
 
@@ -124,7 +122,7 @@ public:
     int SetSystemVariables(const WriteOptions & write_options, const int group_idx, const std::string & buffer);
 
     int GetSystemVariables(const int group_idx, std::string & buffer);
-    
+
     int SetMasterVariables(const WriteOptions & write_options, const int group_idx, const std::string & buffer);
 
     int GetMasterVariables(const int group_idx, std::string & buffer);
@@ -134,5 +132,3 @@ private:
 };
 
 }
-    
-

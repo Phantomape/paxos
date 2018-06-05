@@ -25,8 +25,7 @@ namespace paxos {
 #define LEARNER_SYNCHRONIZER_SEND_QPS (InternalOptions::Instance()->GetLearnerSynchronizerSendQps())
 #define CLEANER_DELETE_QPS (InternalOptions::Instance()->GetCleanerDeleteQps())
 
-class InternalOptions
-{
+class InternalOptions {
 public:
     InternalOptions();
     ~InternalOptions();
@@ -39,7 +38,6 @@ public:
 
     void SetGroupCount(const int iGroupCount);
 
-public:
     const int GetMaxBufferSize();
 
     const int GetStartPrepareTimeoutMs();
@@ -79,5 +77,5 @@ private:
     bool is_im_follower_;
     int group_count_;
 };
-    
+
 }

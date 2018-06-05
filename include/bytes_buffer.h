@@ -5,7 +5,7 @@ namespace paxos {
 class BytesBuffer {
 public:
     BytesBuffer();
-    
+
     ~BytesBuffer();
 
     char* GetPtr();
@@ -18,5 +18,5 @@ private:
     char* buffer_;
     int len_;
 };
-    
+
 }

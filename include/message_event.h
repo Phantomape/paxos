@@ -52,7 +52,7 @@ private:
     int ReadLeft();
 
     //void ReadDone(BytesBuffer & oBytesBuffer, const int iLen);
-    
+
     int WriteLeft();
 
     void WriteDone();
@@ -61,7 +61,7 @@ private:
 
     void ReConnect();
 
-    Socket socket_;    
+    Socket socket_;
     SocketAddress addr_;
     std::string host_;
     Network* network_;
@@ -77,11 +77,10 @@ private:
     int last_write_pos_;
     int left_write_len_;
 
-    struct QueueData
-    {
+    struct QueueData {
         uint64_t llEnqueueAbsTime;
         std::string * psValue;
-    };    
+    };
 
     std::queue<QueueData> m_oInQueue;
     int queue_size_;

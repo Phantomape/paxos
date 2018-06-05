@@ -10,6 +10,7 @@ namespace paxos {
 class DefaultNetwork : public Network {
 public:
     DefaultNetwork();
+    
     virtual ~DefaultNetwork();
 
     int Init(const std::string& ip, const int port, const int thread_cnt);

@@ -34,7 +34,7 @@ private:
 class UdpSend : public Thread {
 public:
     UdpSend();
-    
+
     ~UdpSend();
 
     int Init();

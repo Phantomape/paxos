@@ -90,7 +90,6 @@ private:
 
     void NewInstance();
 
-private:
     Config* config_;
 
     Communicate* communicate_;

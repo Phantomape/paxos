@@ -15,7 +15,7 @@ class Group
 {
 public:
     Group(LogStorage * poLogStorage, 
-            Network * poNetwork,    
+            Network * poNetwork,
             InternalStateMachine * poMasterSM,
             const int iGroupIdx,
             const Options & oOptions);

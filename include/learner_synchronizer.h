@@ -13,7 +13,7 @@ class Learner;
 class LearnerSynchronizer : public Thread{
 public:
     LearnerSynchronizer(Config * poConfig, Learner * poLearner, PaxosLog * poPaxosLog);
-    
+
     ~LearnerSynchronizer();
 
     void Ack();

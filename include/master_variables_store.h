@@ -6,11 +6,9 @@
 #include "log_storage.h"
 #include "paxos_msg.pb.h"
 
-namespace paxos
-{
+namespace paxos {
 
-class MasterVariablesStore
-{
+class MasterVariablesStore {
 public:
     MasterVariablesStore(const LogStorage * poLogStorage);
 
