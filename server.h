@@ -4,6 +4,8 @@
 #include <string>
 #include <vector>
 
+#include <grpc++/grpc++.h>
+
 class PhxEchoSMCtx {
 public:
     int iExecuteRet;

@@ -723,10 +723,10 @@ void LogStoreLogger::Log(const char * pcFormat, ...) {
     uint64_t llNowTime = Time::GetTimestampMS();
     time_t tNowTimeSeconds = (time_t)(llNowTime / 1000);
     //tm * local_time = localtime(&tNowTimeSeconds);
-    tm * local_time = nullptr;
-    local_time = localtime_r(&tNowTimeSeconds, local_time);
+    tm local_time;
+    localtime_r(&tNowTimeSeconds, &local_time);
     char sTimePrefix[64] = {0};
-    strftime(sTimePrefix, sizeof(sTimePrefix), "%Y-%m-%d %H:%M:%S", local_time);
+    strftime(sTimePrefix, sizeof(sTimePrefix), "%Y-%m-%d %H:%M:%S", &local_time);
 
     char sPrefix[128] = {0};
     snprintf(sPrefix, sizeof(sPrefix), "%s:%d ", sTimePrefix, (int)(llNowTime % 1000));
