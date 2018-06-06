@@ -8,13 +8,13 @@
 namespace paxos {
 
 Replayer::Replayer(
-    Config * poConfig, 
-    StateMachineFac * poSMFac, 
-    LogStorage * poLogStorage, 
+    Config * poConfig,
+    StateMachineFac * poSMFac,
+    LogStorage * poLogStorage,
     CheckpointMgr * poCheckpointMgr)
-    : m_poConfig(poConfig), 
-    m_poSMFac(poSMFac), 
-    m_oPaxosLog(poLogStorage), 
+    : m_poConfig(poConfig),
+    m_poSMFac(poSMFac),
+    m_oPaxosLog(poLogStorage),
     m_poCheckpointMgr(poCheckpointMgr),
     m_bCanrun(false),
     m_bIsPaused(true),
@@ -58,7 +58,7 @@ void Replayer::Run() {
         }
 
         if (llInstanceID >= m_poCheckpointMgr->GetMaxChosenInstanceID()) {
-            //PLGImp("now maxchosen instanceid %lu small than excute instanceid %lu, wait", 
+            //PLGImp("now maxchosen instanceid %lu small than excute instanceid %lu, wait",
                     //m_poCheckpointMgr->GetMaxChosenInstanceID(), llInstanceID);
             Time::MsSleep(1000);
             continue;
@@ -84,6 +84,7 @@ bool Replayer::PlayOne(const uint64_t llInstanceID) {
     bool bExecuteRet = m_poSMFac->ExecuteForCheckpoint(
             m_poConfig->GetMyGroupIdx(), llInstanceID, oState.acceptedvalue());
     if (!bExecuteRet) {
+        std::cout << "Called Replayer::PlayOne failed" << std::endl;
     }
 
     return bExecuteRet;
