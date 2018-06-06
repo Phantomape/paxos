@@ -4,55 +4,46 @@
 
 namespace paxos {
 
-MasterVariablesStore::MasterVariablesStore(const LogStorage * poLogStorage) : m_poLogStorage((LogStorage *)poLogStorage)
-{
+MasterVariablesStore::MasterVariablesStore(const LogStorage * poLogStorage) : m_poLogStorage((LogStorage *)poLogStorage) {
 }
 
-MasterVariablesStore::~MasterVariablesStore()
-{
+MasterVariablesStore::~MasterVariablesStore() {
 }
 
-int MasterVariablesStore::Write(const WriteOptions & oWriteOptions, const int iGroupIdx, const MasterVariables & oVariables)
-{
+int MasterVariablesStore::Write(const WriteOptions & oWriteOptions, const int iGroupIdx, const MasterVariables & oVariables) {
     const int m_iMyGroupIdx = iGroupIdx;
 
     std::string sBuffer;
     bool sSucc = oVariables.SerializeToString(&sBuffer);
-    if (!sSucc)
-    {
+    if (!sSucc) {
         //PLG1Err("Variables.Serialize fail");
         return -1;
     }
-    
+
     int ret = m_poLogStorage->SetMasterVariables(oWriteOptions, iGroupIdx, sBuffer);
-    if (ret != 0)
-    {
+    if (ret != 0) {
         return ret;
     }
 
     return 0;
 }
 
-int MasterVariablesStore::Read(const int iGroupIdx, MasterVariables & oVariables)
-{
+int MasterVariablesStore::Read(const int iGroupIdx, MasterVariables & oVariables) {
     const int m_iMyGroupIdx = iGroupIdx;
 
     std::string sBuffer;
     int ret = m_poLogStorage->GetMasterVariables(iGroupIdx, sBuffer);
-    if (ret != 0 && ret != 1)
-    {
+    if (ret != 0 && ret != 1) {
         //PLG1Err("DB.Get fail, groupidx %d ret %d", iGroupIdx, ret);
         return ret;
     }
-    else if (ret == 1)
-    {
+    else if (ret == 1) {
         //PLG1Imp("DB.Get not found, groupidx %d", iGroupIdx);
         return 1;
     }
 
     bool bSucc = oVariables.ParseFromArray(sBuffer.data(), sBuffer.size());
-    if (!bSucc)
-    {
+    if (!bSucc) {
         //PLG1Err("Variables.ParseFromArray fail, bufferlen %zu", sBuffer.size());
         return -1;
     }
@@ -61,5 +52,3 @@ int MasterVariablesStore::Read(const int iGroupIdx, MasterVariables & oVariables
 }
 
 }
-
-

@@ -21,7 +21,7 @@ namespace paxos {
 #define UDP_QUEUE_MAXLEN (InternalOptions::Instance()->GetMaxQueueLen())
 #define TCP_OUTQUEUE_DROP_TIMEMS (InternalOptions::Instance()->GetTcpOutQueueDropTimeMs())
 #define LOG_FILE_MAX_SIZE (InternalOptions::Instance()->GetLogFileMaxSize())
-#define CONNECTTION_NONACTIVE_TIMEOUT (InternalOptions::Instance()->GetTcpConnectionNonActiveTimeout())
+#define CONNECTION_NONACTIVE_TIMEOUT (InternalOptions::Instance()->GetTcpConnectionNonActiveTimeout())
 #define LEARNER_SYNCHRONIZER_SEND_QPS (InternalOptions::Instance()->GetLearnerSynchronizerSendQps())
 #define CLEANER_DELETE_QPS (InternalOptions::Instance()->GetCleanerDeleteQps())
 

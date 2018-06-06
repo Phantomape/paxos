@@ -32,8 +32,7 @@ Instance::~Instance() {
     //PLGHead("Instance Deleted, GroupIdx %d.", config_->GetMyGroupIdx());
 }
 
-int Instance::Init()
-{
+int Instance::Init() {
     //Must init acceptor first, because the max instanceid is record in acceptor state.
     int ret = acceptor_.Init();
     if (ret != 0) {
@@ -240,22 +239,19 @@ void Instance::CheckNewValue() {
     }
    */
 
-    if (config_->IsIMFollower())
-    {
+    if (config_->IsIMFollower()) {
         //PLGErr("I'm follower, skip this new value");
         commit_ctx_.SetResultOnlyRet(PaxosTryCommitRet_Follower_Cannot_Commit);
         return;
     }
 
-    if (!config_->CheckConfig())
-    {
+    if (!config_->CheckConfig()) {
         //PLGErr("I'm not in membership, skip this new value");
         commit_ctx_.SetResultOnlyRet(PaxosTryCommitRet_Im_Not_In_Membership);
         return;
     }
 
-    if ((int)commit_ctx_.GetCommitValue().size() > MAX_VALUE_SIZE)
-    {
+    if ((int)commit_ctx_.GetCommitValue().size() > MAX_VALUE_SIZE) {
         //PLGErr("value size %zu to large, skip this new value",
         //    commit_ctx_.GetCommitValue().size());
         commit_ctx_.SetResultOnlyRet(PaxosTryCommitRet_Value_Size_TooLarge);
@@ -298,8 +294,7 @@ void Instance::OnNewValueCommitTimeout() {
     commit_ctx_.SetResult(PaxosTryCommitRet_Timeout, proposer_.GetInstanceId(), "");
 }
 
-int Instance::OnReceiveMessage(const char* pcMessage, const int iMessageLen)
-{
+int Instance::OnReceiveMessage(const char* pcMessage, const int iMessageLen) {
     ioloop_.AddMessage(pcMessage, iMessageLen);
 
     return 0;
@@ -516,34 +511,26 @@ int Instance::ReceiveMsgForAcceptor(const PaxosMsg & paxos_msg, const bool bIsRe
     return 0;
 }
 
-int Instance::ReceiveMsgForLearner(const PaxosMsg & paxos_msg)
-{
-    if (paxos_msg.msgtype() == MsgType_PaxosLearner_AskforLearn)
-    {
+int Instance::ReceiveMsgForLearner(const PaxosMsg & paxos_msg) {
+    if (paxos_msg.msgtype() == MsgType_PaxosLearner_AskforLearn) {
         //learner_.OnAskforLearn(paxos_msg);
     }
-    else if (paxos_msg.msgtype() == MsgType_PaxosLearner_SendLearnValue)
-    {
+    else if (paxos_msg.msgtype() == MsgType_PaxosLearner_SendLearnValue) {
         //learner_.OnSendLearnValue(paxos_msg);
     }
-    else if (paxos_msg.msgtype() == MsgType_PaxosLearner_ProposerSendSuccess)
-    {
+    else if (paxos_msg.msgtype() == MsgType_PaxosLearner_ProposerSendSuccess) {
         //learner_.OnProposerSendSuccess(paxos_msg);
     }
-    else if (paxos_msg.msgtype() == MsgType_PaxosLearner_SendNowInstanceID)
-    {
+    else if (paxos_msg.msgtype() == MsgType_PaxosLearner_SendNowInstanceID) {
         //learner_.OnSendNowInstanceID(paxos_msg);
     }
-    else if (paxos_msg.msgtype() == MsgType_PaxosLearner_ComfirmAskforLearn)
-    {
+    else if (paxos_msg.msgtype() == MsgType_PaxosLearner_ComfirmAskforLearn) {
         //learner_.OnComfirmAskForLearn(paxos_msg);
     }
-    else if (paxos_msg.msgtype() == MsgType_PaxosLearner_SendLearnValue_Ack)
-    {
+    else if (paxos_msg.msgtype() == MsgType_PaxosLearner_SendLearnValue_Ack) {
         //learner_.OnSendLearnValue_Ack(paxos_msg);
     }
-    else if (paxos_msg.msgtype() == MsgType_PaxosLearner_AskforCheckpoint)
-    {
+    else if (paxos_msg.msgtype() == MsgType_PaxosLearner_AskforCheckpoint) {
         //learner_.OnAskforCheckpoint(paxos_msg);
     }
 
@@ -564,26 +551,21 @@ const uint64_t Instance::GetMinChosenInstanceId() {
     //return checkpoint_mgr_.GetMinChosenInstanceId();
 }
 
-void Instance::OnTimeout(const uint32_t iTimerID, const int iType)
-{
-    if (iType == Timer_Proposer_Prepare_Timeout)
-    {
+void Instance::OnTimeout(const uint32_t iTimerID, const int iType) {
+    // Use switch to replace if-else
+    if (iType == Timer_Proposer_Prepare_Timeout) {
         proposer_.OnPrepareTimeout();
     }
-    else if (iType == Timer_Proposer_Accept_Timeout)
-    {
+    else if (iType == Timer_Proposer_Accept_Timeout) {
         proposer_.OnAcceptTimeout();
     }
-    else if (iType == Timer_Learner_Askforlearn_noop)
-    {
+    else if (iType == Timer_Learner_Askforlearn_noop) {
         //learner_.AskforLearn_Noop();
     }
-    else if (iType == Timer_Instance_Commit_Timeout)
-    {
+    else if (iType == Timer_Instance_Commit_Timeout) {
         //OnProposeCommitTimeout();
     }
-    else
-    {
+    else {
         //PLGErr("unknown timer type %d, timerid %u", iType, iTimerID);
     }
 }
@@ -616,15 +598,13 @@ void Instance::ChecksumLogic(const PaxosMsg & paxos_msg) {
 int Instance::GetInstanceValue(const uint64_t llInstanceID, std::string & sValue, int & iSMID) {
     iSMID = 0;
 
-    if (llInstanceID >= acceptor_.GetInstanceId())
-    {
+    if (llInstanceID >= acceptor_.GetInstanceId()) {
         return Paxos_GetInstanceValue_Value_Not_Chosen_Yet;
     }
 
     AcceptorStateData oState;
     int ret = paxos_log_.ReadState(config_->GetMyGroupIdx(), llInstanceID, oState);
-    if (ret != 0 && ret != 1)
-    {
+    if (ret != 0 && ret != 1) {
         return -1;
     }
 

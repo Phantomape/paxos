@@ -12,21 +12,17 @@ WaitLock::WaitLock()
 {
 }
 
-WaitLock::~WaitLock()
-{
+WaitLock::~WaitLock() {
 }
 
-bool WaitLock::CanLock()
-{
+bool WaitLock::CanLock() {
     if (m_iMaxWaitLockCount != -1
-            && m_iWaitLockCount >= m_iMaxWaitLockCount) 
-    {
+            && m_iWaitLockCount >= m_iMaxWaitLockCount)  {
         //to much lock waiting
         return false;
     }
 
-    if (m_iLockWaitTimeThresholdMS == -1)
-    {
+    if (m_iLockWaitTimeThresholdMS == -1) {
         return true;
     }
 
@@ -34,55 +30,44 @@ bool WaitLock::CanLock()
     return ((int)(e_rand() % 100)) >= m_iRejectRate;
 }
 
-void WaitLock::RefleshRejectRate(const int iUseTimeMs)
-{
-    if (m_iLockWaitTimeThresholdMS == -1)
-    {
+void WaitLock::RefleshRejectRate(const int iUseTimeMs) {
+    if (m_iLockWaitTimeThresholdMS == -1) {
         return;
     }
 
     m_iLockUseTimeSum += iUseTimeMs;
     m_iLockUseTimeCount++;
-    if (m_iLockUseTimeCount >= WAIT_LOCK_USERTIME_AVG_INTERVAL)
-    {
+    if (m_iLockUseTimeCount >= WAIT_LOCK_USERTIME_AVG_INTERVAL) {
         m_iAvgLockUseTime = m_iLockUseTimeSum / m_iLockUseTimeCount;
         m_iLockUseTimeSum = 0;
         m_iLockUseTimeCount = 0;
 
-        if (m_iAvgLockUseTime > m_iLockWaitTimeThresholdMS)
-        {
-            if (m_iRejectRate != 98)
-            {
+        if (m_iAvgLockUseTime > m_iLockWaitTimeThresholdMS) {
+            if (m_iRejectRate != 98) {
                 m_iRejectRate = m_iRejectRate + 3 > 98 ? 98 : m_iRejectRate + 3;
             }
         }
-        else
-        {
-            if (m_iRejectRate != 0)
-            {
+        else {
+            if (m_iRejectRate != 0) {
                 m_iRejectRate = m_iRejectRate - 3 < 0 ? 0 : m_iRejectRate - 3;
             }
         }
     }
 }
 
-void WaitLock::SetMaxWaitLogCount(const int iMaxWaitLockCount)
-{
+void WaitLock::SetMaxWaitLogCount(const int iMaxWaitLockCount) {
     m_iMaxWaitLockCount = iMaxWaitLockCount;
 }
 
-void WaitLock::SetLockWaitTimeThreshold(const int iLockWaitTimeThresholdMS)
-{
+void WaitLock::SetLockWaitTimeThreshold(const int iLockWaitTimeThresholdMS) {
     m_iLockWaitTimeThresholdMS = iLockWaitTimeThresholdMS;
 }
 
-bool WaitLock::Lock(const int iTimeoutMs, int & iUseTimeMs)
-{
+bool WaitLock::Lock(const int iTimeoutMs, int & iUseTimeMs) {
     uint64_t llBeginTime = Time::GetSteadyClockMS();
 
     m_oSerialLock.Lock();
-    if (!CanLock())
-    {
+    if (!CanLock()) {
         //printf("reject, now rate %d\n", m_iRejectRate);
         iUseTimeMs = 0;
         m_oSerialLock.UnLock();
@@ -92,17 +77,13 @@ bool WaitLock::Lock(const int iTimeoutMs, int & iUseTimeMs)
     m_iWaitLockCount++;
     bool bGetLock = true;;
 
-    while (m_bIsLockUsing)
-    {
-        if (iTimeoutMs == -1)
-        {
+    while (m_bIsLockUsing) {
+        if (iTimeoutMs == -1) {
             m_oSerialLock.WaitTime(1000);
             continue;
         }
-        else
-        {
-            if (!m_oSerialLock.WaitTime(iTimeoutMs))
-            {
+        else {
+            if (!m_oSerialLock.WaitTime(iTimeoutMs)) {
                 //lock timeout
                 bGetLock = false;
                 break;
@@ -117,8 +98,7 @@ bool WaitLock::Lock(const int iTimeoutMs, int & iUseTimeMs)
 
     RefleshRejectRate(iUseTimeMs);
 
-    if (bGetLock)
-    {
+    if (bGetLock) {
         m_bIsLockUsing = true;
     }
     m_oSerialLock.UnLock();
@@ -126,8 +106,7 @@ bool WaitLock::Lock(const int iTimeoutMs, int & iUseTimeMs)
     return bGetLock;
 }
 
-void WaitLock::UnLock()
-{
+void WaitLock::UnLock() {
     m_oSerialLock.Lock();
 
     m_bIsLockUsing = false;
@@ -136,23 +115,16 @@ void WaitLock::UnLock()
     m_oSerialLock.UnLock();
 }
 
-////////////////////////////////////////////
-
-int WaitLock::GetNowHoldThreadCount()
-{
+int WaitLock::GetNowHoldThreadCount() {
     return m_iWaitLockCount;
 }
 
-int WaitLock::GetNowAvgThreadWaitTime()
-{
+int WaitLock::GetNowAvgThreadWaitTime() {
     return m_iAvgLockUseTime;
 }
 
-int WaitLock::GetNowRejectRate()
-{
+int WaitLock::GetNowRejectRate() {
     return m_iRejectRate;
 }
 
 }
-
-

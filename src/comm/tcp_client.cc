@@ -27,8 +27,7 @@ int TcpClient::AddMessage(const std::string& ip, const int port, const std::stri
     return event->AddMessage(message);
 }
 
-MessageEvent* TcpClient::GetEvent(const std::string& ip, const int port)
-{
+MessageEvent* TcpClient::GetEvent(const std::string& ip, const int port) {
     uint32_t ip_addr = (uint32_t)inet_addr(ip.c_str());
     uint64_t node_id = (((uint64_t)ip_addr) << 32) | port;
 
@@ -42,8 +41,7 @@ MessageEvent* TcpClient::GetEvent(const std::string& ip, const int port)
     return CreateEvent(node_id, ip, port);
 }
 
-MessageEvent* TcpClient::CreateEvent(const uint64_t node_id, const std::string & ip, const int port)
-{
+MessageEvent* TcpClient::CreateEvent(const uint64_t node_id, const std::string & ip, const int port) {
     Socket socket;
     socket.SetNonBlocking(true);
     socket.SetNoDelay(true);
@@ -65,8 +63,7 @@ MessageEvent* TcpClient::CreateEvent(const uint64_t node_id, const std::string &
     return event;
 }
 
-void TcpClient :: DealWithWrite()
-{
+void TcpClient :: DealWithWrite() {
     size_t size = vec_event_.size();
 
     for (size_t i = 0; i < size; i++) {   

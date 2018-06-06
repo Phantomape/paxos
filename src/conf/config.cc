@@ -191,5 +191,3 @@ const int Config::SyncInterval() const {
 }
 
 }
-
-

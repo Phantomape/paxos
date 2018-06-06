@@ -34,8 +34,7 @@ PhxEchoServer::PhxEchoServer(const paxos::NodeInfo & oMyNode, const paxos::NodeI
     : node_info_(oMyNode), vec_node_list_(vecNodeList), node_(nullptr) {
 }
 
-PhxEchoServer::~PhxEchoServer()
-{
+PhxEchoServer::~PhxEchoServer() {
     delete node_;
 }
 
@@ -98,14 +97,12 @@ int PhxEchoServer::Echo(const std::string& echo_send_val, std::string& sEchoResp
 
     uint64_t instance_id = 0;
     int ret = node_->Propose(0, echo_send_val, instance_id, &oCtx);
-    if (ret != 0)
-    {
+    if (ret != 0) {
         printf("paxos propose fail, ret %d\n", ret);
         return ret;
     }
 
-    if (oEchoSMCtx.iExecuteRet != 0)
-    {
+    if (oEchoSMCtx.iExecuteRet != 0) {
         printf("echo sm excute fail, excuteret %d\n", oEchoSMCtx.iExecuteRet);
         return oEchoSMCtx.iExecuteRet;
     }

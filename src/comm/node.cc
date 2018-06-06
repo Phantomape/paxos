@@ -15,7 +15,7 @@ int Node::Run(const Options & options, Node *& node) {
 
     //Breakpoint::m_poBreakpoint = nullptr;
     //BP->SetInstance(options.poBreakpoint);
-    
+
     PNode * pnode = new PNode();
     int ret = pnode->Init(options, network);
     if (ret != 0) {
@@ -33,10 +33,10 @@ int Node::Run(const Options & options, Node *& node) {
     network->Run();
 
     node = pnode;
-    
+
     return 0;
 }
-    
+
 }
 
 

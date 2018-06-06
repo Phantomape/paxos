@@ -47,7 +47,7 @@ void TcpAcceptor::Run() {
             catch(...) {
                 fd = -1;
             }
-            
+
             if (fd >= 0) {
                 AddEvent(fd, oAddr);
             }
@@ -77,7 +77,5 @@ void TcpAcceptor :: AddEvent(int iFD, SocketAddress oAddr) {
 
     min_active_event_loop->AddEvent(iFD, oAddr);
 }
-    
+
 }
-
-

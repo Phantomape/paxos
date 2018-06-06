@@ -15,7 +15,7 @@ int SystemVariablesStore::Write(const WriteOptions & write_options, const int gr
     if (!sSucc) {
         return -1;
     }
-    
+
     int ret = log_storage_->SetSystemVariables(write_options, group_idx, buffer);
     if (ret != 0) {
         return ret;
@@ -45,5 +45,3 @@ int SystemVariablesStore::Read(const int group_idx, SystemVariables & system_var
 }
 
 }
-
-

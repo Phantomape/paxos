@@ -93,36 +93,28 @@ const int InternalOptions::GetMaxQueueLen() {
 
 const int InternalOptions::GetAskforLearnInterval() {
     if (!is_im_follower_) {
-        if (is_large_buffer_mode_)
-        {
+        if (is_large_buffer_mode_) {
             return 50000 + (Util::FastRand() % 10000);
         }
-        else
-        {
+        else {
             return 2500 + (Util::FastRand() % 500);
         }
     }
-    else
-    {
-        if (is_large_buffer_mode_)
-        {
+    else {
+        if (is_large_buffer_mode_) {
             return 30000 + (Util::FastRand() % 15000);
         }
-        else
-        {
+        else {
             return 2000 + (Util::FastRand() % 1000);
         }
     }
 }
 
-const int InternalOptions::GetLearnerReceiver_Ack_Lead()
-{
-    if (is_large_buffer_mode_)
-    {
+const int InternalOptions::GetLearnerReceiver_Ack_Lead() {
+    if (is_large_buffer_mode_) {
         return 2;
     }
-    else
-    {
+    else {
         return 4;
     }
 }
@@ -200,5 +192,3 @@ const int InternalOptions::GetCleanerDeleteQps() {
 }
 
 }
-
-

@@ -11,8 +11,7 @@ int parse_ipport(const char * pcStr, paxos::NodeInfo & oNodeInfo) {
     int iPort = -1;
 
     int count = sscanf(pcStr, "%[^':']:%d", sIP, &iPort);
-    if (count != 2)
-    {
+    if (count != 2) {
         return -1;
     }
     oNodeInfo.SetIpPort(sIP, iPort);
@@ -24,19 +23,15 @@ int parse_ipport_list(const char * pcStr, NodeInfoList & vec_node_info_list) {
     string sTmpStr;
     int iStrLen = strlen(pcStr);
 
-    for (int i = 0; i < iStrLen; i++)
-    {
-        if (pcStr[i] == ',' || i == iStrLen - 1)
-        {
-            if (i == iStrLen - 1 && pcStr[i] != ',')
-            {
+    for (int i = 0; i < iStrLen; i++) {
+        if (pcStr[i] == ',' || i == iStrLen - 1) {
+            if (i == iStrLen - 1 && pcStr[i] != ',') {
                 sTmpStr += pcStr[i];
             }
-            
+
             paxos::NodeInfo oNodeInfo;
             int ret = parse_ipport(sTmpStr.c_str(), oNodeInfo);
-            if (ret != 0)
-            {
+            if (ret != 0) {
                 return ret;
             }
 
@@ -44,8 +39,7 @@ int parse_ipport_list(const char * pcStr, NodeInfoList & vec_node_info_list) {
 
             sTmpStr = "";
         }
-        else
-        {
+        else {
             sTmpStr += pcStr[i];
         }
     }
@@ -79,8 +73,7 @@ int main(int argc, char ** argv) {
 
     PhxEchoServer server(node, vec_node_info_list);
     int ret = server.Run();
-    if (ret != 0)
-    {
+    if (ret != 0) {
         return -1;
     }
 

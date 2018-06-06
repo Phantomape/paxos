@@ -8,8 +8,7 @@
 
 namespace paxos {
 
-Base::Base(const Config * poConfig, const Communicate * poCommunicate, const Instance * poInstance)
-{
+Base::Base(const Config * poConfig, const Communicate * poCommunicate, const Instance * poInstance) {
     config_ = (Config *)poConfig;
     communicate_ = (Communicate *)poCommunicate;
     instance_ = (Instance *)poInstance;
@@ -19,22 +18,18 @@ Base::Base(const Config * poConfig, const Communicate * poCommunicate, const Ins
     is_test_mode_ = false;
 }
 
-Base::~Base()
-{
+Base::~Base() {
 }
 
-uint64_t Base::GetInstanceId()
-{
+uint64_t Base::GetInstanceId() {
     return instance_id_;
 }
 
-void Base::SetInstanceId(const uint64_t llInstanceId)
-{
+void Base::SetInstanceId(const uint64_t llInstanceId) {
     instance_id_ = llInstanceId;
 }
 
-void Base::NewInstance()
-{
+void Base::NewInstance() {
     instance_id_++;
     InitInstance();
 }
@@ -59,8 +54,7 @@ int Base::PackMsg(const PaxosMsg & paxos_msg, std::string & sBuffer) {
 int Base::PackCheckpointMsg(const CheckpointMsg & oCheckpointMsg, std::string & sBuffer) {
     std::string sBodyBuffer;
     bool is_succeeded = oCheckpointMsg.SerializeToString(&sBodyBuffer);
-    if (!is_succeeded)
-    {
+    if (!is_succeeded) {
         //PLGErr("CheckpointMsg.SerializeToString fail, skip this msg");
         return -1;
     }
@@ -71,8 +65,7 @@ int Base::PackCheckpointMsg(const CheckpointMsg & oCheckpointMsg, std::string & 
     return 0;
 }
 
-void Base::PackBaseMsg(const std::string & sBodyBuffer, const int iCmd, std::string & sBuffer)
-{
+void Base::PackBaseMsg(const std::string & sBodyBuffer, const int iCmd, std::string & sBuffer) {
     char sGroupIdx[GROUPIDXLEN] = {0};
     int iGroupIdx = config_->GetMyGroupIdx();
     memcpy(sGroupIdx, &iGroupIdx, sizeof(sGroupIdx));
@@ -111,16 +104,14 @@ int Base::UnPackBaseMsg(const std::string & sBuffer, Header & header, size_t & i
     size_t iHeaderStartPos = GROUPIDXLEN + HEADLEN_LEN;
     iBodyStartPos = iHeaderStartPos + iHeaderLen;
 
-    if (iBodyStartPos > sBuffer.size())
-    {
+    if (iBodyStartPos > sBuffer.size()) {
         //BP->GetAlgorithmBaseBP()->UnPackHeaderLenTooLong();
         //NLErr("Header headerlen too loog %d", iHeaderLen);
         return -1;
     }
 
     bool is_succeeded = header.ParseFromArray(sBuffer.data() + iHeaderStartPos, iHeaderLen);
-    if (!is_succeeded)
-    {
+    if (!is_succeeded) {
         //NLErr("Header.ParseFromArray fail, skip this msg");
         return -1;
     }
@@ -128,10 +119,8 @@ int Base::UnPackBaseMsg(const std::string & sBuffer, Header & header, size_t & i
     //NLDebug("buffer_size %zu header len %d cmdid %d gid %lu rid %lu version %d body_startpos %zu",
     //        sBuffer.size(), iHeaderLen, header.cmdid(), header.gid(), header.rid(), header.version(), iBodyStartPos);
 
-    if (header.version() >= 1)
-    {
-        if (iBodyStartPos + CHECKSUM_LEN > sBuffer.size())
-        {
+    if (header.version() >= 1) {
+        if (iBodyStartPos + CHECKSUM_LEN > sBuffer.size()) {
             //NLErr("no checksum, body start pos %zu buffersize %zu", iBodyStartPos, sBuffer.size());
             return -1;
         }
@@ -142,8 +131,7 @@ int Base::UnPackBaseMsg(const std::string & sBuffer, Header & header, size_t & i
         memcpy(&iBufferChecksum, sBuffer.data() + sBuffer.size() - CHECKSUM_LEN, CHECKSUM_LEN);
 
         uint32_t iNewCalBufferChecksum = crc32(0, (const uint8_t *)sBuffer.data(), sBuffer.size() - CHECKSUM_LEN, NET_CRC32SKIP);
-        if (iNewCalBufferChecksum != iBufferChecksum)
-        {
+        if (iNewCalBufferChecksum != iBufferChecksum) {
             //BP->GetAlgorithmBaseBP()->UnPackChecksumNotSame();
             return -1;
         }
@@ -166,33 +154,28 @@ int Base::SendMessage(const uint64_t iSendtoNodeId, const CheckpointMsg & oCheck
     }
     std::string sBuffer;
     int ret = PackCheckpointMsg(oCheckpointMsg, sBuffer);
-    if (ret != 0)
-    {
+    if (ret != 0) {
         return ret;
     }
 
     return communicate_->SendMessage(config_->GetMyGroupIdx(), iSendtoNodeId, sBuffer, iSendType);
 }
 
-int Base::SendMessage(const uint64_t iSendtoNodeId, const PaxosMsg & paxos_msg, const int iSendType)
-{
-    if (is_test_mode_)
-    {
+int Base::SendMessage(const uint64_t iSendtoNodeId, const PaxosMsg & paxos_msg, const int iSendType) {
+    if (is_test_mode_) {
         return 0;
     }
 
     //BP->GetInstanceBP()->SendMessage();
 
-    if (iSendtoNodeId == config_->GetMyNodeID())
-    {
+    if (iSendtoNodeId == config_->GetMyNodeID()) {
         instance_->OnReceivePaxosMsg(paxos_msg);
         return 0;
     }
 
     std::string sBuffer;
     int ret = PackMsg(paxos_msg, sBuffer);
-    if (ret != 0)
-    {
+    if (ret != 0) {
         return ret;
     }
 
@@ -202,7 +185,6 @@ int Base::SendMessage(const uint64_t iSendtoNodeId, const PaxosMsg & paxos_msg, 
 /* Should remove this logic or rename this part cause all network IO should be
    handled by communicate, which should also be renamed, the author's choice of
    words is terrible :(
-       
    Maybe pass the args in this function to Communicator::BroadcastMessage*/
 int Base::BroadcastMessage(const PaxosMsg & paxos_msg, const int iRunType, const int iSendType) {
     if (is_test_mode_) {
@@ -231,36 +213,28 @@ int Base::BroadcastMessage(const PaxosMsg & paxos_msg, const int iRunType, const
     return ret;
 }
 
-int Base::BroadcastMessageToFollower(const PaxosMsg & paxos_msg, const int iSendType)
-{
+int Base::BroadcastMessageToFollower(const PaxosMsg & paxos_msg, const int iSendType) {
     std::string sBuffer;
     int ret = PackMsg(paxos_msg, sBuffer);
-    if (ret != 0)
-    {
+    if (ret != 0) {
         return ret;
     }
 
     return communicate_->BroadcastMessageFollower(config_->GetMyGroupIdx(), sBuffer, iSendType);
 }
 
-int Base::BroadcastMessageToTempNode(const PaxosMsg & paxos_msg, const int iSendType)
-{
+int Base::BroadcastMessageToTempNode(const PaxosMsg & paxos_msg, const int iSendType) {
     std::string sBuffer;
     int ret = PackMsg(paxos_msg, sBuffer);
-    if (ret != 0)
-    {
+    if (ret != 0) {
         return ret;
     }
 
     return communicate_->BroadcastMessageTempNode(config_->GetMyGroupIdx(), sBuffer, iSendType);
 }
 
-///////////////////////////
-
-void Base::SetAsTestMode()
-{
+void Base::SetAsTestMode() {
     is_test_mode_ = true;
 }
 
 }
-

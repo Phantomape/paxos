@@ -50,8 +50,7 @@ static void InitFastRandomSeed() {
 }
 
 const uint32_t Util::FastRand() {
-    if (!seed_thread_safe.init)
-    {
+    if (!seed_thread_safe.init) {
         InitFastRandomSeed();
     }
 
@@ -91,42 +90,34 @@ int TimeStat::Point() {
     return passed_time;
 }
 
-int FileUtils::IsDir(const std::string & sPath, bool & bIsDir)
-{
+int FileUtils::IsDir(const std::string & sPath, bool & bIsDir) {
     bIsDir = false;
     struct stat tStat;
     int ret = stat(sPath.c_str(), &tStat);
-    if (ret != 0)
-    {
+    if (ret != 0) {
         return ret;
     }
 
-    if (tStat.st_mode & S_IFDIR)
-    {
+    if (tStat.st_mode & S_IFDIR) {
         bIsDir = true;
     }
 
     return 0;
 }
 
-int FileUtils::DeleteDir(const std::string & sDirPath)
-{
+int FileUtils::DeleteDir(const std::string & sDirPath) {
     DIR * dir = nullptr;
     struct dirent  * ptr;
 
     dir = opendir(sDirPath.c_str());
-    if (dir == nullptr)
-    {
+    if (dir == nullptr) {
         return 0;
     }
 
-
     int ret = 0;
-    while ((ptr = readdir(dir)) != nullptr)
-    {
+    while ((ptr = readdir(dir)) != nullptr) {
         if (strcmp(ptr->d_name, ".") == 0
-                || strcmp(ptr->d_name, "..") == 0)
-        {
+                || strcmp(ptr->d_name, "..") == 0) {
             continue;
         }
 
@@ -135,24 +126,19 @@ int FileUtils::DeleteDir(const std::string & sDirPath)
 
         bool bIsDir = false;
         ret = FileUtils::IsDir(sChildPath, bIsDir);
-        if (ret != 0)
-        {
+        if (ret != 0) {
             break;
         }
 
-        if (bIsDir)
-        {
+        if (bIsDir) {
             ret = DeleteDir(sChildPath);
-            if (ret != 0)
-            {
+            if (ret != 0) {
                 break;
             }
         }
-        else
-        {
+        else {
             ret = remove(sChildPath);
-            if (ret != 0)
-            {
+            if (ret != 0) {
                 break;
             }
         }
@@ -160,32 +146,26 @@ int FileUtils::DeleteDir(const std::string & sDirPath)
 
     closedir(dir);
 
-    if (ret == 0)
-    {
+    if (ret == 0) {
         ret = remove(sDirPath.c_str());
     }
 
     return ret;
 }
 
-int FileUtils::IterDir(const std::string & sDirPath, std::vector<std::string> & vecFilePathList)
-{
+int FileUtils::IterDir(const std::string & sDirPath, std::vector<std::string> & vecFilePathList) {
     DIR * dir = nullptr;
     struct dirent  * ptr;
 
     dir = opendir(sDirPath.c_str());
-    if (dir == nullptr)
-    {
+    if (dir == nullptr) {
         return 0;
     }
 
-
     int ret = 0;
-    while ((ptr = readdir(dir)) != nullptr)
-    {
+    while ((ptr = readdir(dir)) != nullptr) {
         if (strcmp(ptr->d_name, ".") == 0
-                || strcmp(ptr->d_name, "..") == 0)
-        {
+                || strcmp(ptr->d_name, "..") == 0) {
             continue;
         }
 
@@ -194,21 +174,17 @@ int FileUtils::IterDir(const std::string & sDirPath, std::vector<std::string> & 
 
         bool bIsDir = false;
         ret = FileUtils::IsDir(sChildPath, bIsDir);
-        if (ret != 0)
-        {
+        if (ret != 0) {
             break;
         }
 
-        if (bIsDir)
-        {
+        if (bIsDir) {
             ret = IterDir(sChildPath, vecFilePathList);
-            if (ret != 0)
-            {
+            if (ret != 0) {
                 break;
             }
         }
-        else
-        {
+        else {
             vecFilePathList.push_back(sChildPath);
         }
     }

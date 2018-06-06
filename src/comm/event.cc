@@ -29,18 +29,17 @@ void Event :: AddEvent(const int event) {
     if (event_ == previous_event) {
         return;
     }
-    
+
     event_loop->ModEvent(this, event_);
 }
 
-void Event::RemoveEvent(const int event)
-{
+void Event::RemoveEvent(const int event) {
     int previous_event = event;
     event_ &= (~event);
     if (event_ == previous_event) {
         return;
     }
-    
+
     if (event_ == 0) {
         event_loop->RemoveEvent(this);
     }

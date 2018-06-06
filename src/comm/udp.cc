@@ -150,7 +150,7 @@ void UdpSend::Run() {
 
 int UdpSend::AddMessage(const std::string& ip, const int port, const std::string& message) {
     send_queue.lock();
-    
+
     int UDP_QUEUE_MAX_LEN = 100; // This const need to be stored somewhere else
     if ((int)send_queue.size() > UDP_QUEUE_MAX_LEN) {
         send_queue.unlock();

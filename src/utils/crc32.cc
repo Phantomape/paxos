@@ -54,8 +54,7 @@ uint32_t crc32(uint32_t crc, const uint8_t *buf, int size, int skiplen) {
     p = buf;
     crc = crc ^ ~0U;
 
-    while (size > 0)
-    {
+    while (size > 0) {
         crc = crc32_tab[(crc ^ *p) & 0xFF] ^ (crc >> 8);
 
         size -= skiplen;
@@ -64,5 +63,3 @@ uint32_t crc32(uint32_t crc, const uint8_t *buf, int size, int skiplen) {
 
     return crc ^ ~0U;
 }
-
-

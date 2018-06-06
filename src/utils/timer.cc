@@ -22,10 +22,8 @@ void Timer::AddTimerWithType(const uint64_t abs_time, const int type, uint32_t &
     push_heap(begin(vec_timer_heap_), end(vec_timer_heap_));
 }
 
-const int Timer::GetNextTimeout() const
-{
-    if (vec_timer_heap_.empty())
-    {
+const int Timer::GetNextTimeout() const {
+    if (vec_timer_heap_.empty()) {
         return -1;
     }
 
@@ -33,28 +31,24 @@ const int Timer::GetNextTimeout() const
 
     TimerObj tObj = vec_timer_heap_.front();
     uint64_t llNowTime = Time::GetSteadyClockMS();
-    if (tObj.abs_time_ > llNowTime)
-    {
+    if (tObj.abs_time_ > llNowTime) {
         iNextTimeout = (int)(tObj.abs_time_ - llNowTime);
     }
 
     return iNextTimeout;
 }
 
-bool Timer::PopTimeout(uint32_t & timer_id, int & type)
-{
-    if (vec_timer_heap_.empty())
-    {
+bool Timer::PopTimeout(uint32_t & timer_id, int & type) {
+    if (vec_timer_heap_.empty()) {
         return false;
     }
 
     TimerObj tObj = vec_timer_heap_.front();
     uint64_t llNowTime = Time::GetSteadyClockMS();
-    if (tObj.abs_time_ > llNowTime)
-    {
+    if (tObj.abs_time_ > llNowTime) {
         return false;
     }
-    
+
     pop_heap(begin(vec_timer_heap_), end(vec_timer_heap_));
     vec_timer_heap_.pop_back();
 
@@ -62,8 +56,6 @@ bool Timer::PopTimeout(uint32_t & timer_id, int & type)
     type = tObj.type_;
 
     return true;
-}    
-    
 }
 
-
+}

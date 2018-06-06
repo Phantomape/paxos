@@ -29,33 +29,25 @@ int Communicator::Send(const int iGroupIdx, const uint64_t iNodeID,
         return 0;
     }
 
-    //BP->GetNetworkBP()->Send(sMessage);
-    
-    if (sMessage.size() > udp_max_size_ || iSendType == Message_SendType_TCP)
-    {
+    if (sMessage.size() > udp_max_size_ || iSendType == Message_SendType_TCP) {
         //BP->GetNetworkBP()->SendTcp(sMessage);
         return network_->SendMessageTCP(iGroupIdx, oNodeInfo.GetIp(), oNodeInfo.GetPort(), sMessage);
     }
-    else
-    {
+    else {
         //BP->GetNetworkBP()->SendUdp(sMessage);
         return network_->SendMessageUDP(iGroupIdx, oNodeInfo.GetIp(), oNodeInfo.GetPort(), sMessage);
     }
 }
 
-int Communicator::SendMessage(const int iGroupIdx, const uint64_t iSendtoNodeID, const std::string & sMessage, const int iSendType)
-{
+int Communicator::SendMessage(const int iGroupIdx, const uint64_t iSendtoNodeID, const std::string & sMessage, const int iSendType) {
     return Send(iGroupIdx, iSendtoNodeID, NodeInfo(iSendtoNodeID), sMessage, iSendType);
 }
 
-int Communicator::BroadcastMessage(const int iGroupIdx, const std::string & sMessage, const int iSendType)
-{
+int Communicator::BroadcastMessage(const int iGroupIdx, const std::string & sMessage, const int iSendType) {
     const std::set<uint64_t> & setNodeInfo = config_->GetSystemVSM()->GetMembershipMap();
-    
-    for (auto & it : setNodeInfo)
-    {
-        if (it != node_id_)
-        {
+
+    for (auto & it : setNodeInfo) {
+        if (it != node_id_) {
             Send(iGroupIdx, it, NodeInfo(it), sMessage, iSendType);
         }
     }
@@ -63,42 +55,31 @@ int Communicator::BroadcastMessage(const int iGroupIdx, const std::string & sMes
     return 0;
 }
 
-int Communicator::BroadcastMessageFollower(const int iGroupIdx, const std::string & sMessage, const int iSendType)
-{
+int Communicator::BroadcastMessageFollower(const int iGroupIdx, const std::string & sMessage, const int iSendType) {
     const std::map<uint64_t, uint64_t> & mapFollowerNodeInfo = config_->GetMyFollowerMap();
-    
-    for (auto & it : mapFollowerNodeInfo)
-    {
-        if (it.first != node_id_)
-        {
+
+    for (auto & it : mapFollowerNodeInfo) {
+        if (it.first != node_id_) {
             Send(iGroupIdx, it.first, NodeInfo(it.first), sMessage, iSendType);
         }
     }
-    
-    //PLGDebug("%zu node", mapFollowerNodeInfo.size());
 
     return 0;
 }
 
-int Communicator::BroadcastMessageTempNode(const int iGroupIdx, const std::string & sMessage, const int iSendType)
-{
+int Communicator::BroadcastMessageTempNode(const int iGroupIdx, const std::string & sMessage, const int iSendType) {
     const std::map<uint64_t, uint64_t> & mapTempNode = config_->GetTmpNodeMap();
-    
-    for (auto & it : mapTempNode)
-    {
-        if (it.first != node_id_)
-        {
+
+    for (auto & it : mapTempNode) {
+        if (it.first != node_id_) {
             Send(iGroupIdx, it.first, NodeInfo(it.first), sMessage, iSendType);
         }
     }
-    
-    //PLGDebug("%zu node", mapTempNode.size());
 
     return 0;
 }
 
-void Communicator::SetUDPMaxSize(const size_t iUDPMaxSize)
-{
+void Communicator::SetUDPMaxSize(const size_t iUDPMaxSize) {
     udp_max_size_ = iUDPMaxSize;
 }
 

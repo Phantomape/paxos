@@ -88,7 +88,5 @@ Options::Options() {
     use_batch_propose_ = false;
     open_change_value_before_propose_ = false;
 }
-    
+
 }
-
-

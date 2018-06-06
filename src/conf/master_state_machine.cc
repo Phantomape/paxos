@@ -11,8 +11,7 @@ MasterStateMachine::MasterStateMachine(
     const uint64_t iMyNodeID,
     const int iGroupIdx,
     MasterChangeCallback pMasterChangeCallback)
-    : m_oMVStore(poLogStorage), m_pMasterChangeCallback(pMasterChangeCallback)
-{
+    : m_oMVStore(poLogStorage), m_pMasterChangeCallback(pMasterChangeCallback) {
     m_iMyGroupIdx = iGroupIdx;
     m_iMyNodeID = iMyNodeID;
 
@@ -22,37 +21,28 @@ MasterStateMachine::MasterStateMachine(
     m_llAbsExpireTime = 0;
 }
 
-MasterStateMachine::~MasterStateMachine()
-{
+MasterStateMachine::~MasterStateMachine() {
 }
 
-////////////////////////////////////////////////////////////////////////////////////////////
-
-int MasterStateMachine::Init()
-{
+int MasterStateMachine::Init() {
     MasterVariables oVariables;
     int ret = m_oMVStore.Read(m_iMyGroupIdx, oVariables);
-    if (ret != 0 && ret != 1)
-    {
+    if (ret != 0 && ret != 1) {
         //PLG1Err("Master variables read from store fail, ret %d", ret);
         return -1;
     }
 
-    if (ret == 1)
-    {
+    if (ret == 1) {
         //PLG1Imp("no master variables exist");
     }
-    else
-    {
+    else {
         m_llMasterVersion = oVariables.version();
 
-        if (oVariables.masternodeid() == m_iMyNodeID)
-        {
+        if (oVariables.masternodeid() == m_iMyNodeID) {
             m_iMasterNodeID = nullnode;
             m_llAbsExpireTime = 0;
         }
-        else
-        {
+        else {
             m_iMasterNodeID = oVariables.masternodeid();
             m_llAbsExpireTime = Time::GetSteadyClockMS() + oVariables.leasetime();
         }
@@ -61,8 +51,7 @@ int MasterStateMachine::Init()
     return 0;
 }
 
-int MasterStateMachine::UpdateMasterToStore(const uint64_t llMasterNodeID, const uint64_t llVersion, const uint32_t iLeaseTime)
-{
+int MasterStateMachine::UpdateMasterToStore(const uint64_t llMasterNodeID, const uint64_t llVersion, const uint32_t iLeaseTime) {
     MasterVariables oVariables;
     oVariables.set_masternodeid(llMasterNodeID);
     oVariables.set_version(llVersion);
@@ -81,39 +70,33 @@ const int MasterStateMachine::StateMachineId() const {
 int MasterStateMachine::LearnMaster(
         const uint64_t llInstanceID,
         const MasterOperator & oMasterOper,
-        const uint64_t llAbsMasterTimeout)
-{
+        const uint64_t llAbsMasterTimeout) {
     std::lock_guard<std::mutex> oLockGuard(m_oMutex);
 
     if (oMasterOper.lastversion() != 0
             && llInstanceID > m_llMasterVersion
-            && oMasterOper.lastversion() != m_llMasterVersion)
-    {
+            && oMasterOper.lastversion() != m_llMasterVersion) {
         //BP->GetMasterBP()->MasterSMInconsistent();
         m_llMasterVersion = oMasterOper.lastversion();
     }
 
-    if (oMasterOper.version() != m_llMasterVersion)
-    {
+    if (oMasterOper.version() != m_llMasterVersion) {
         return 0;
     }
 
     int ret = UpdateMasterToStore(oMasterOper.nodeid(), llInstanceID, oMasterOper.timeout());
-    if (ret != 0)
-    {
+    if (ret != 0) {
         //PLG1Err("UpdateMasterToStore fail, ret %d", ret);
         return -1;
     }
 
     bool bMasterChange = false;
-    if (m_iMasterNodeID != oMasterOper.nodeid())
-    {
+    if (m_iMasterNodeID != oMasterOper.nodeid()) {
         bMasterChange = true;
     }
 
     m_iMasterNodeID = oMasterOper.nodeid();
-    if (m_iMasterNodeID == m_iMyNodeID)
-    {
+    if (m_iMasterNodeID == m_iMyNodeID) {
         //self be master
         //use local abstimeout
         m_llAbsExpireTime = llAbsMasterTimeout;
@@ -121,8 +104,7 @@ int MasterStateMachine::LearnMaster(
         //BP->GetMasterBP()->SuccessBeMaster();
         //PLG1Head("Be master success, absexpiretime %lu", m_llAbsExpireTime);
     }
-    else
-    {
+    else {
         //other be master
         //use new start timeout
         m_llAbsExpireTime = Time::GetSteadyClockMS() + oMasterOper.timeout();
@@ -134,10 +116,8 @@ int MasterStateMachine::LearnMaster(
     m_iLeaseTime = oMasterOper.timeout();
     m_llMasterVersion = llInstanceID;
 
-    if (bMasterChange)
-    {
-        if (m_pMasterChangeCallback != nullptr)
-        {
+    if (bMasterChange) {
+        if (m_pMasterChangeCallback != nullptr) {
             m_pMasterChangeCallback(m_iMyGroupIdx, NodeInfo(m_iMasterNodeID), m_llMasterVersion);
         }
     }
@@ -145,26 +125,21 @@ int MasterStateMachine::LearnMaster(
     return 0;
 }
 
-void MasterStateMachine::SafeGetMaster(uint64_t & iMasterNodeID, uint64_t & llMasterVersion)
-{
+void MasterStateMachine::SafeGetMaster(uint64_t & iMasterNodeID, uint64_t & llMasterVersion) {
     std::lock_guard<std::mutex> oLockGuard(m_oMutex);
 
-    if (Time::GetSteadyClockMS() >= m_llAbsExpireTime)
-    {
+    if (Time::GetSteadyClockMS() >= m_llAbsExpireTime) {
         iMasterNodeID = nullnode;
     }
-    else
-    {
+    else {
         iMasterNodeID = m_iMasterNodeID;
     }
 
     llMasterVersion = m_llMasterVersion;
 }
 
-const uint64_t MasterStateMachine::GetMaster() const
-{
-    if (Time::GetSteadyClockMS() >= m_llAbsExpireTime)
-    {
+const uint64_t MasterStateMachine::GetMaster() const {
+    if (Time::GetSteadyClockMS() >= m_llAbsExpireTime) {
         return nullnode;
     }
 
@@ -182,24 +157,18 @@ const bool MasterStateMachine::IsIMMaster() const {
     return iMasterNodeID == m_iMyNodeID;
 }
 
-////////////////////////////////////////////////////////////////////////////////////////////
-
 bool MasterStateMachine::Execute(const int iGroupIdx, const uint64_t llInstanceID,
-        const std::string & sValue, StateMachineCtx * poSMCtx)
-{
+        const std::string & sValue, StateMachineCtx * poSMCtx) {
     MasterOperator oMasterOper;
     bool bSucc = oMasterOper.ParseFromArray(sValue.data(), sValue.size());
-    if (!bSucc)
-    {
+    if (!bSucc) {
         //PLG1Err("oMasterOper data wrong");
         return false;
     }
 
-    if (oMasterOper.operator_() == MasterOperatorType_Complete)
-    {
+    if (oMasterOper.operator_() == MasterOperatorType_Complete) {
         uint64_t * pAbsMasterTimeout = nullptr;
-        if (poSMCtx != nullptr && poSMCtx->ctx_ != nullptr)
-        {
+        if (poSMCtx != nullptr && poSMCtx->ctx_ != nullptr) {
             pAbsMasterTimeout = (uint64_t *)poSMCtx->ctx_;
         }
 
@@ -208,13 +177,11 @@ bool MasterStateMachine::Execute(const int iGroupIdx, const uint64_t llInstanceI
         //PLG1Imp("absmaster timeout %lu", llAbsMasterTimeout);
 
         int ret = LearnMaster(llInstanceID, oMasterOper, llAbsMasterTimeout);
-        if (ret != 0)
-        {
+        if (ret != 0) {
             return false;
         }
     }
-    else
-    {
+    else {
         //PLG1Err("unknown op %u", oMasterOper.operator_());
         //wrong op, just skip, so return true;
         return true;
@@ -223,15 +190,12 @@ bool MasterStateMachine::Execute(const int iGroupIdx, const uint64_t llInstanceI
     return true;
 }
 
-////////////////////////////////////////////////////
-
 bool MasterStateMachine::MakeOpValue(
         const uint64_t iNodeID,
         const uint64_t llVersion,
         const int iTimeout,
         const MasterOperatorType iOp,
-        std::string & sPaxosValue)
-{
+        std::string & sPaxosValue) {
     MasterOperator oMasterOper;
     oMasterOper.set_nodeid(iNodeID);
     oMasterOper.set_version(llVersion);
@@ -242,24 +206,20 @@ bool MasterStateMachine::MakeOpValue(
     return oMasterOper.SerializeToString(&sPaxosValue);
 }
 
-////////////////////////////////////////////////////////////
-
-int MasterStateMachine::GetCheckpointBuffer(std::string & sCPBuffer)
-{
+int MasterStateMachine::GetCheckpointBuffer(std::string & sCPBuffer) {
     std::lock_guard<std::mutex> oLockGuard(m_oMutex);
 
     if (m_llMasterVersion == (uint64_t)-1) {
         return 0;
     }
-    
+
     MasterVariables oVariables;
     oVariables.set_masternodeid(m_iMasterNodeID);
     oVariables.set_version(m_llMasterVersion);
     oVariables.set_leasetime(m_iLeaseTime);
 
     bool sSucc = oVariables.SerializeToString(&sCPBuffer);
-    if (!sSucc)
-    {
+    if (!sSucc) {
         //PLG1Err("Variables.Serialize fail");
         return -1;
     }
@@ -267,17 +227,14 @@ int MasterStateMachine::GetCheckpointBuffer(std::string & sCPBuffer)
     return 0;
 }
 
-int MasterStateMachine::UpdateByCheckpoint(const std::string & sCPBuffer, bool & bChange)
-{
-    if (sCPBuffer.size() == 0)
-    {
+int MasterStateMachine::UpdateByCheckpoint(const std::string & sCPBuffer, bool & bChange) {
+    if (sCPBuffer.size() == 0) {
         return 0;
     }
 
     MasterVariables oVariables;
     bool bSucc = oVariables.ParseFromArray(sCPBuffer.data(), sCPBuffer.size());
-    if (!bSucc)
-    {
+    if (!bSucc) {
         //PLG1Err("Variables.ParseFromArray fail, bufferlen %zu", sCPBuffer.size());
         return -1;
     }
@@ -285,40 +242,32 @@ int MasterStateMachine::UpdateByCheckpoint(const std::string & sCPBuffer, bool &
     std::lock_guard<std::mutex> oLockGuard(m_oMutex);
 
     if (oVariables.version() <= m_llMasterVersion
-            && m_llMasterVersion != (uint64_t)-1)
-    {
+            && m_llMasterVersion != (uint64_t)-1) {
         return 0;
     }
 
-
     int ret = UpdateMasterToStore(oVariables.masternodeid(), oVariables.version(), oVariables.leasetime());
-    if (ret != 0)
-    {
+    if (ret != 0) {
         return -1;
     }
 
     bool bMasterChange = false;
     m_llMasterVersion = oVariables.version();
 
-    if (oVariables.masternodeid() == m_iMyNodeID)
-    {
+    if (oVariables.masternodeid() == m_iMyNodeID) {
         m_iMasterNodeID = nullnode;
         m_llAbsExpireTime = 0;
     }
-    else
-    {
-        if (m_iMasterNodeID != oVariables.masternodeid())
-        {
+    else {
+        if (m_iMasterNodeID != oVariables.masternodeid()) {
             bMasterChange = true;
         }
         m_iMasterNodeID = oVariables.masternodeid();
         m_llAbsExpireTime = Time::GetSteadyClockMS() + oVariables.leasetime();
     }
 
-    if (bMasterChange)
-    {
-        if (m_pMasterChangeCallback != nullptr)
-        {
+    if (bMasterChange) {
+        if (m_pMasterChangeCallback != nullptr) {
             m_pMasterChangeCallback(m_iMyGroupIdx, NodeInfo(m_iMasterNodeID), m_llMasterVersion);
         }
     }
@@ -326,15 +275,11 @@ int MasterStateMachine::UpdateByCheckpoint(const std::string & sCPBuffer, bool &
     return 0;
 }
 
-////////////////////////////////////////////////////////
-
-void MasterStateMachine::BeforePropose(const int iGroupIdx, std::string & sValue)
-{
+void MasterStateMachine::BeforePropose(const int iGroupIdx, std::string & sValue) {
     std::lock_guard<std::mutex> oLockGuard(m_oMutex);
     MasterOperator oMasterOper;
     bool bSucc = oMasterOper.ParseFromArray(sValue.data(), sValue.size());
-    if (!bSucc)
-    {
+    if (!bSucc) {
         return;
     }
 
@@ -344,8 +289,8 @@ void MasterStateMachine::BeforePropose(const int iGroupIdx, std::string & sValue
     assert(bSucc == true);
 } 
 
-const bool MasterStateMachine::NeedCallBeforePropose()
-{
+const bool MasterStateMachine::NeedCallBeforePropose() {
     return true;
 }
+
 }

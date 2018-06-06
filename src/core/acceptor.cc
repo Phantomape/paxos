@@ -132,4 +132,3 @@ void Acceptor::OnAccept(const PaxosMsg &paxos_msg) {
 }
 
 }
-

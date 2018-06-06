@@ -15,8 +15,7 @@ Learner::Learner(
         const CheckpointMgr * checkpoint_mgr,
         const StateMachineFac * state_machine_fac)
     : Base(config, communicate, instance), 
-    paxos_log_(log_storage), learner_synchronizer_((Config *)config, this, &paxos_log_)
-{
+    paxos_log_(log_storage), learner_synchronizer_((Config *)config, this, &paxos_log_) {
     acceptor_ = (Acceptor *)acceptor;
     InitInstance();
 
@@ -32,12 +31,9 @@ Learner::Learner(
     //m_bIsIMLearning = false;
 
     //m_llLastAckInstanceID = 0;
-
-
 }
 
 Learner::~Learner() {
-
 }
 
 const uint64_t Learner::GetLatestInstanceID() {

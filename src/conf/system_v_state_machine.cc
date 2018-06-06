@@ -10,20 +10,17 @@ SystemVSM::SystemVSM(
         const LogStorage * poLogStorage,
         MembershipChangeCallback pMembershipChangeCallback)
     : m_iMyGroupIdx(group_idx), m_oSystemVStore(poLogStorage),
-    m_iMyNodeID(iMyNodeID), m_pMembershipChangeCallback(pMembershipChangeCallback)
-{
+    m_iMyNodeID(iMyNodeID), m_pMembershipChangeCallback(pMembershipChangeCallback) {
 }
 
-SystemVSM::~SystemVSM()
-{
+SystemVSM::~SystemVSM() {
 }
 
 const int SystemVSM::StateMachineId() const {
     return SYSTEM_V_STATE_MACHINE_ID;
 }
 
-int SystemVSM::Init()
-{
+int SystemVSM::Init() {
     int ret = m_oSystemVStore.Read(m_iMyGroupIdx, m_oSystemVariables);
     if (ret != 0 && ret != 1) {
         return ret;
@@ -40,8 +37,7 @@ int SystemVSM::Init()
     return 0;
 }
 
-int SystemVSM::UpdateSystemVariables(const SystemVariables & oVariables)
-{
+int SystemVSM::UpdateSystemVariables(const SystemVariables & oVariables) {
     WriteOptions oWriteOptions;
     oWriteOptions.sync = true;
 
@@ -116,7 +112,7 @@ int SystemVSM::Membership_OPValue(const NodeInfoList & vecNodeInfoList, const ui
     //must must set version first!
     oVariables.set_version(llVersion);
     oVariables.set_gid(m_oSystemVariables.gid());
-    
+
     for (auto & tNodeInfo : vecNodeInfoList) {
         PaxosNodeInfo * poNodeInfo = oVariables.add_membership();
         //to do, what rid?
@@ -225,10 +221,8 @@ int SystemVSM::GetCheckpointBuffer(std::string & sCPBuffer) {
     return 0;
 }
 
-int SystemVSM::UpdateByCheckpoint(const std::string & sCPBuffer, bool & bChange)
-{
-    if (sCPBuffer.size() == 0)
-    {
+int SystemVSM::UpdateByCheckpoint(const std::string & sCPBuffer, bool & bChange) {
+    if (sCPBuffer.size() == 0) {
         return 0;
     }
 
@@ -258,28 +252,19 @@ int SystemVSM::UpdateByCheckpoint(const std::string & sCPBuffer, bool & bChange)
     SystemVariables oOldVariables = m_oSystemVariables;
 
     int ret = UpdateSystemVariables(oVariables);
-    if (ret != 0)
-    {
+    if (ret != 0) {
         return -1;
     }
 
     return 0;
 }
 
-///////////////////////////////////////////////////////////////////////
-
-void SystemVSM::GetSystemVariables(SystemVariables & oVariables)
-{
+void SystemVSM::GetSystemVariables(SystemVariables & oVariables) {
     oVariables = m_oSystemVariables;
 }
 
-///////////////////////////////////////////////////////////////////////
-
-const std::set<uint64_t> & SystemVSM::GetMembershipMap()
-{
+const std::set<uint64_t> & SystemVSM::GetMembershipMap() {
     return m_setNodeID;
 }
 
 }
-
-

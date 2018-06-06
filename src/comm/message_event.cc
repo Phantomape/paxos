@@ -1,7 +1,8 @@
-
+#include "internal_options.h"
 #include "message_event.h"
 #include "network.h"
 #include "event_loop.h"
+#include "util.h"
 
 namespace paxos {
 
@@ -34,10 +35,8 @@ MessageEvent::MessageEvent(
     queue_size_ = 0;
 }
 
-MessageEvent::~MessageEvent()
-{
-    while (!m_oInQueue.empty())
-    {
+MessageEvent::~MessageEvent() {
+    while (!m_oInQueue.empty()) {
         QueueData tData = m_oInQueue.front();
         m_oInQueue.pop();
 
@@ -54,16 +53,13 @@ const std::string & MessageEvent::GetSocketHost() {
 }
 
 const bool MessageEvent::IsActive() {
-    /*
     uint64_t llNowTime = Time::GetSteadyClockMS();
     if (llNowTime > last_active_time_
-            && ((int)(llNowTime - last_active_time_) > CONNECTTION_NONACTIVE_TIMEOUT))
-    {
+            && ((int)(llNowTime - last_active_time_) > CONNECTION_NONACTIVE_TIMEOUT)) {
         return false;
     }
-    
+
     return true;
-    */
 }
 
 int MessageEvent::AddMessage(const std::string & message) {
@@ -109,8 +105,7 @@ void MessageEvent::ReadDone(BytesBuffer & oBytesBuffer, const int iLen)
 }
 */
 
-int MessageEvent::ReadLeft()
-{
+int MessageEvent::ReadLeft() {
     /*
     bool bAgain = false;
     int iReadLen = socket_.Receive(m_oReadCacheBuffer.GetPtr() + last_read_pos_, left_read_len_, &bAgain);
@@ -135,8 +130,7 @@ int MessageEvent::ReadLeft()
     */
 }
 
-int MessageEvent::OnRead()
-{
+int MessageEvent::OnRead() {
     /*
     if (left_read_len_ > 0)
     {
@@ -226,14 +220,11 @@ void MessageEvent::OpenWrite() {
     }
 }
 
-void MessageEvent::WriteDone()
-{
-    //PLHead("ok");
+void MessageEvent::WriteDone() {
     RemoveEvent(EPOLLOUT);
 }
 
-int MessageEvent::WriteLeft()
-{
+int MessageEvent::WriteLeft() {
     /*
     int iWriteLen = socket_.send(m_oWriteCacheBuffer.GetPtr() + last_write_pos_, left_write_len_);
     //PLImp("writelen %d", iWriteLen);
@@ -263,18 +254,14 @@ int MessageEvent::WriteLeft()
     return 0;
 }
 
-int MessageEvent::OnWrite()
-{
+int MessageEvent::OnWrite() {
     int ret = 0;
-    while (!m_oInQueue.empty() || left_write_len_ > 0)
-    {
+    while (!m_oInQueue.empty() || left_write_len_ > 0) {
         ret = DoOnWrite();
-        if (ret != 0 && ret != 1)
-        {
+        if (ret != 0 && ret != 1) {
             return ret;
         }
-        else if (ret == 1)
-        {
+        else if (ret == 1) {
             //need break, wait next write
             return 0;
         }
@@ -285,16 +272,13 @@ int MessageEvent::OnWrite()
     return 0;
 }
 
-int MessageEvent::DoOnWrite()
-{
-    if (left_write_len_ > 0)
-    {
+int MessageEvent::DoOnWrite() {
+    if (left_write_len_ > 0) {
         return WriteLeft();
     }
 
     mutex_.lock();
-    if (m_oInQueue.empty())
-    {
+    if (m_oInQueue.empty()) {
         mutex_.unlock();
         return 0;
     }
@@ -369,8 +353,7 @@ int MessageEvent::DoOnWrite()
     return 0;
 }
 
-void MessageEvent::OnError(bool & bNeedDelete)
-{
+void MessageEvent::OnError(bool & bNeedDelete) {
     bNeedDelete = false;
 
     if (type_ == MessageEventType_RECV) {
@@ -401,21 +384,17 @@ void MessageEvent::OnError(bool & bNeedDelete)
     }
 }
 
-void MessageEvent::OnTimeout(const uint32_t iTimerID, const int iType)
-{
-    if (iTimerID != reconnect_timeout_id_)
-    {
+void MessageEvent::OnTimeout(const uint32_t iTimerID, const int iType) {
+    if (iTimerID != reconnect_timeout_id_) {
         return;
     }
 
-    if (iType == MessageEventTimerType_Reconnect)
-    {
+    if (iType == MessageEventTimerType_Reconnect) {
         ReConnect();
     }
-}    
+}
 
-void MessageEvent::ReConnect()
-{
+void MessageEvent::ReConnect() {
     //reset 
     event_ = 0;
     left_write_len_ = 0;
@@ -427,7 +406,5 @@ void MessageEvent::ReConnect()
     socket_.Connect(addr_);
     AddEvent(EPOLLOUT);
 }
-    
+
 }
-
-

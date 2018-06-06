@@ -10,7 +10,6 @@ int Network::OnReceiveMessage(const char* message, const int message_len) {
         // node->OnReceiveMessage(message, message_len);
     }
     else {
-
     }
 
     return 0;

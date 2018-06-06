@@ -12,7 +12,7 @@ BytesBuffer::BytesBuffer()
     buffer_ = new char[len_];
     assert(buffer_ != nullptr);
 }
-    
+
 BytesBuffer::~BytesBuffer() {
     delete []buffer_;
 }
@@ -40,5 +40,3 @@ void BytesBuffer::Ready(const int buffer_len) {
 }
 
 }
-
-

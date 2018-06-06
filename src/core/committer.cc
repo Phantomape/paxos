@@ -7,23 +7,19 @@
 namespace paxos {
 
 Committer::Committer(Config * poConfig, CommitCtx * poCommitCtx, IoLoop * poIOLoop, StateMachineFac * poSMFac)
-    : m_poConfig(poConfig), m_poCommitCtx(poCommitCtx), m_poIOLoop(poIOLoop), m_poSMFac(poSMFac), m_iTimeoutMs(-1)
-{
+    : m_poConfig(poConfig), m_poCommitCtx(poCommitCtx), m_poIOLoop(poIOLoop), m_poSMFac(poSMFac), m_iTimeoutMs(-1) {
     m_llLastLogTime = Time::GetSteadyClockMS();
 }
 
-Committer::~Committer()
-{
+Committer::~Committer() {
 }
 
-int Committer::NewValue(const std::string & sValue)
-{
+int Committer::NewValue(const std::string & sValue) {
     uint64_t instance_id = 0;
     return NewValueGetID(sValue, instance_id, nullptr);
 }
 
-int Committer::NewValueGetID(const std::string & sValue, uint64_t & instance_id)
-{
+int Committer::NewValueGetID(const std::string & sValue, uint64_t & instance_id) {
     return NewValueGetID(sValue, instance_id, nullptr);
 }
 
@@ -121,7 +117,5 @@ void Committer::LogStatus() {
         m_llLastLogTime = llNowTime;
     }
 }
-    
+
 }
-
-

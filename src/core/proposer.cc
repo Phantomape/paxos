@@ -12,8 +12,7 @@ Proposer::Proposer(
         const Instance * poInstance,
         const Learner * poLearner,
         const IoLoop * poIOLoop)
-    : Base(config, communicate, poInstance), msg_counter(config)
-{
+    : Base(config, communicate, poInstance), msg_counter(config) {
     config_ = (Config*)config;
     learner_ = (Learner*)poLearner;
     ioloop_ = (IoLoop *)poIOLoop;

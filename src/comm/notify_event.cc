@@ -62,7 +62,7 @@ int NotifyEvent::OnRead() {
 void NotifyEvent::OnError(bool & need_delete) {
     need_delete = false;
 }
-    
+
 }
 
 

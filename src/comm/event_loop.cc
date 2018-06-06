@@ -22,8 +22,7 @@ EventLoop::~EventLoop() {
 void EventLoop::ClearEvent() {
 }
 
-void EventLoop::AddEvent(int fd, SocketAddress addr)
-{
+void EventLoop::AddEvent(int fd, SocketAddress addr) {
     std::lock_guard<std::mutex> lck(mutex_);
     queue_socket_addr_.push(std::make_pair(fd, addr));
 }
@@ -198,8 +197,7 @@ void EventLoop::SingleLoop(const int timeout) {
             continue;
         }
 
-        try
-        {
+        try {
             if (event_id & EPOLLIN) {
                 res = event->OnRead();
             }

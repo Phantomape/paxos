@@ -3,7 +3,7 @@
 namespace paxos {
 
 Group::Group(LogStorage * poLogStorage, 
-            Network * poNetwork,    
+            Network * poNetwork,
             InternalStateMachine * poMasterSM,
             const int iGroupIdx,
             const Options & oOptions) : 
@@ -12,84 +12,68 @@ Group::Group(LogStorage * poLogStorage,
             oOptions.node_, oOptions.vec_node_info_list_, oOptions.vec_follower_node_info_list_, 
             iGroupIdx, oOptions.group_count_, oOptions.membership_change_callback_),
     m_oInstance(&m_oConfig, poLogStorage, &m_oCommunicate, oOptions),
-    m_iInitRet(-1), m_poThread(nullptr)
-{
+    m_iInitRet(-1), m_poThread(nullptr) {
     m_oConfig.SetMasterSM(poMasterSM);
 }
 
-Group::~Group()
-{
+Group::~Group() {
 }
 
-void Group::StartInit()
-{
+void Group::StartInit() {
     m_poThread = new std::thread(&Group::Init, this);
     assert(m_poThread != nullptr);
 }
 
-void Group::Init()
-{
+void Group::Init() {
     m_iInitRet = m_oConfig.Init();
-    if (m_iInitRet != 0)
-    {
+    if (m_iInitRet != 0) {
         return;
     }
 
     //inside sm
     AddStateMachine(m_oConfig.GetSystemVSM());
     AddStateMachine(m_oConfig.GetMasterSM());
-    
+
     m_iInitRet = m_oInstance.Init();
 }
 
-int Group::GetInitRet()
-{
+int Group::GetInitRet() {
     m_poThread->join();
     delete m_poThread;
 
     return m_iInitRet;
 }
 
-void Group::Start()
-{
+void Group::Start() {
     m_oInstance.Start();
 }
 
-void Group::Stop()
-{
+void Group::Stop() {
     m_oInstance.Stop();
 }
 
-Config * Group::GetConfig()
-{
+Config * Group::GetConfig() {
     return &m_oConfig;
 }
 
-Instance * Group::GetInstance()
-{
+Instance * Group::GetInstance() {
     return &m_oInstance;
 }
 
-Committer * Group::GetCommitter()
-{
+Committer * Group::GetCommitter() {
     return m_oInstance.GetCommitter();
 }
 
-Cleaner * Group::GetCheckpointCleaner()
-{
+Cleaner * Group::GetCheckpointCleaner() {
     return m_oInstance.GetCheckpointCleaner();
 }
 
-Replayer * Group::GetCheckpointReplayer()
-{
+Replayer * Group::GetCheckpointReplayer() {
     return m_oInstance.GetCheckpointReplayer();
 }
 
-void Group::AddStateMachine(StateMachine * poSM)
-{
+void Group::AddStateMachine(StateMachine * poSM) {
     m_oInstance.AddStateMachine(poSM);
 }
 
 }
-
-
