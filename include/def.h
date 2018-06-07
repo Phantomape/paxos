@@ -85,4 +85,10 @@ enum TimerType {
     Timer_Instance_Commit_Timeout = 4,
 };
 
+enum KVOperatorType {
+    KVOperatorType_READ = 1,
+    KVOperatorType_WRITE = 2,
+    KVOperatorType_DELETE = 3,
+};
+
 }
