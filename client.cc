@@ -34,7 +34,7 @@ KVClient * KVClient::Instance() {
     static KVClient oKVClient;
     return &oKVClient;
 }
-/*
+
 KVClientRet KVClient::Get(const std::string & sKey, std::string & sValue, uint64_t & llVersion) {
     if (!m_bHasInit) {
         return KVCLIENT_SYS_FAIL;
@@ -143,7 +143,7 @@ KVClientRet KVClient::Del(const std::string & sKey, const uint64_t llVersion) {
 
     return KVCLIENT_OK;
 }
-*/
+
 KVClientRet KVClient::GetCheckpointInstanceID(uint64_t & llCheckpointInstanceID) {
     if (!m_bHasInit) {
         return KVCLIENT_SYS_FAIL;
