@@ -10,6 +10,8 @@
 using namespace std;
 using namespace paxos;
 
+namespace paxoskv {
+
 PhxEchoSM::PhxEchoSM() {
 }
 
@@ -110,4 +112,6 @@ int PhxEchoServer::Echo(const std::string& echo_send_val, std::string& sEchoResp
     sEchoRespValue = oEchoSMCtx.sEchoRespValue.c_str();
 
     return 0;
+}
+
 }

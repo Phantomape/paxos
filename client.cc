@@ -2,6 +2,8 @@
 #include "rpc.pb.h"
 #include "log.h"
 
+namespace paxoskv {
+
 KVClient::KVClient() {
     m_bHasInit = false;
     m_poLevelDB = nullptr;
@@ -32,7 +34,7 @@ KVClient * KVClient::Instance() {
     static KVClient oKVClient;
     return &oKVClient;
 }
-
+/*
 KVClientRet KVClient::Get(const std::string & sKey, std::string & sValue, uint64_t & llVersion) {
     if (!m_bHasInit) {
         return KVCLIENT_SYS_FAIL;
@@ -49,7 +51,7 @@ KVClientRet KVClient::Get(const std::string & sKey, std::string & sValue, uint64
         return KVCLIENT_SYS_FAIL;
     }
 
-    paxos::KVData data;
+    KVData data;
     bool bSucc = data.ParseFromArray(sBuffer.data(), sBuffer.size());
     if (!bSucc) {
         return KVCLIENT_SYS_FAIL;
@@ -85,7 +87,7 @@ KVClientRet KVClient::Set(const std::string & sKey, const std::string & sValue, 
     }
 
     llServerVersion++;
-    paxos::KVData data;
+    KVData data;
     data.set_value(sValue);
     data.set_version(llServerVersion);
     data.set_isdeleted(false);
@@ -123,7 +125,7 @@ KVClientRet KVClient::Del(const std::string & sKey, const uint64_t llVersion) {
     }
 
     llServerVersion++;
-    paxos::KVData data;
+    KVData data;
     data.set_value(sServerValue);
     data.set_version(llServerVersion);
     data.set_isdeleted(true);
@@ -141,7 +143,7 @@ KVClientRet KVClient::Del(const std::string & sKey, const uint64_t llVersion) {
 
     return KVCLIENT_OK;
 }
-
+*/
 KVClientRet KVClient::GetCheckpointInstanceID(uint64_t & llCheckpointInstanceID) {
     if (!m_bHasInit) {
         return KVCLIENT_SYS_FAIL;
@@ -188,4 +190,6 @@ KVClientRet KVClient::SetCheckpointInstanceID(const uint64_t llCheckpointInstanc
     }
 
     return KVCLIENT_OK;
+}
+
 }

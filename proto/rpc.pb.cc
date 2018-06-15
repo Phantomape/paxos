@@ -17,7 +17,7 @@
 #include <google/protobuf/wire_format.h>
 // @@protoc_insertion_point(includes)
 
-namespace paxos {
+namespace paxoskv {
 class KVOperatorDefaultTypeInternal {
 public:
  ::google::protobuf::internal::ExplicitlyConstructed<KVOperator>
@@ -131,8 +131,8 @@ void TableStruct::InitDefaultsImpl() {
   ::google::protobuf::internal::OnShutdownDestroyMessage(
       &_KVData_default_instance_);_KVResponse_default_instance_._instance.DefaultConstruct();
   ::google::protobuf::internal::OnShutdownDestroyMessage(
-      &_KVResponse_default_instance_);_KVResponse_default_instance_._instance.get_mutable()->data_ = const_cast< ::paxos::KVData*>(
-      ::paxos::KVData::internal_default_instance());
+      &_KVResponse_default_instance_);_KVResponse_default_instance_._instance.get_mutable()->data_ = const_cast< ::paxoskv::KVData*>(
+      ::paxoskv::KVData::internal_default_instance());
 }
 
 void InitDefaults() {
@@ -143,21 +143,22 @@ namespace {
 void AddDescriptorsImpl() {
   InitDefaults();
   static const char descriptor[] GOOGLE_ATTRIBUTE_SECTION_VARIABLE(protodesc_cold) = {
-      "\n\trpc.proto\022\005paxos\"X\n\nKVOperator\022\013\n\003key\030"
-      "\001 \001(\t\022\r\n\005value\030\002 \001(\014\022\017\n\007version\030\003 \001(\004\022\020\n"
-      "\010operator\030\004 \001(\r\022\013\n\003sid\030\005 \001(\r\";\n\006KVData\022\r"
-      "\n\005value\030\001 \001(\014\022\017\n\007version\030\002 \001(\004\022\021\n\tisdele"
-      "ted\030\003 \001(\010\"M\n\nKVResponse\022\033\n\004data\030\001 \001(\0132\r."
-      "paxos.KVData\022\013\n\003ret\030\002 \001(\005\022\025\n\rmaster_node"
-      "id\030\003 \001(\0042\316\001\n\002KV\022-\n\003Put\022\021.paxos.KVOperato"
-      "r\032\021.paxos.KVResponse\"\000\0222\n\010GetLocal\022\021.pax"
-      "os.KVOperator\032\021.paxos.KVResponse\"\000\0223\n\tGe"
-      "tGlobal\022\021.paxos.KVOperator\032\021.paxos.KVRes"
-      "ponse\"\000\0220\n\006Delete\022\021.paxos.KVOperator\032\021.p"
-      "axos.KVResponse\"\000b\006proto3"
+      "\n\trpc.proto\022\007paxoskv\"X\n\nKVOperator\022\013\n\003ke"
+      "y\030\001 \001(\t\022\r\n\005value\030\002 \001(\014\022\017\n\007version\030\003 \001(\004\022"
+      "\020\n\010operator\030\004 \001(\r\022\013\n\003sid\030\005 \001(\r\";\n\006KVData"
+      "\022\r\n\005value\030\001 \001(\014\022\017\n\007version\030\002 \001(\004\022\021\n\tisde"
+      "leted\030\003 \001(\010\"O\n\nKVResponse\022\035\n\004data\030\001 \001(\0132"
+      "\017.paxoskv.KVData\022\013\n\003ret\030\002 \001(\005\022\025\n\rmaster_"
+      "nodeid\030\003 \001(\0042\345\001\n\tKVService\0221\n\003Put\022\023.paxo"
+      "skv.KVOperator\032\023.paxoskv.KVResponse\"\000\0226\n"
+      "\010GetLocal\022\023.paxoskv.KVOperator\032\023.paxoskv"
+      ".KVResponse\"\000\0227\n\tGetGlobal\022\023.paxoskv.KVO"
+      "perator\032\023.paxoskv.KVResponse\"\000\0224\n\006Delete"
+      "\022\023.paxoskv.KVOperator\032\023.paxoskv.KVRespon"
+      "se\"\000b\006proto3"
   };
   ::google::protobuf::DescriptorPool::InternalAddGeneratedFile(
-      descriptor, 465);
+      descriptor, 492);
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedFile(
     "rpc.proto", &protobuf_RegisterTypes);
 }
@@ -193,7 +194,7 @@ KVOperator::KVOperator()
     protobuf_rpc_2eproto::InitDefaults();
   }
   SharedCtor();
-  // @@protoc_insertion_point(constructor:paxos.KVOperator)
+  // @@protoc_insertion_point(constructor:paxoskv.KVOperator)
 }
 KVOperator::KVOperator(const KVOperator& from)
   : ::google::protobuf::Message(),
@@ -211,7 +212,7 @@ KVOperator::KVOperator(const KVOperator& from)
   ::memcpy(&version_, &from.version_,
     static_cast<size_t>(reinterpret_cast<char*>(&sid_) -
     reinterpret_cast<char*>(&version_)) + sizeof(sid_));
-  // @@protoc_insertion_point(copy_constructor:paxos.KVOperator)
+  // @@protoc_insertion_point(copy_constructor:paxoskv.KVOperator)
 }
 
 void KVOperator::SharedCtor() {
@@ -224,7 +225,7 @@ void KVOperator::SharedCtor() {
 }
 
 KVOperator::~KVOperator() {
-  // @@protoc_insertion_point(destructor:paxos.KVOperator)
+  // @@protoc_insertion_point(destructor:paxoskv.KVOperator)
   SharedDtor();
 }
 
@@ -257,7 +258,7 @@ KVOperator* KVOperator::New(::google::protobuf::Arena* arena) const {
 }
 
 void KVOperator::Clear() {
-// @@protoc_insertion_point(message_clear_start:paxos.KVOperator)
+// @@protoc_insertion_point(message_clear_start:paxoskv.KVOperator)
   ::google::protobuf::uint32 cached_has_bits = 0;
   // Prevent compiler warnings about cached_has_bits being unused
   (void) cached_has_bits;
@@ -274,7 +275,7 @@ bool KVOperator::MergePartialFromCodedStream(
     ::google::protobuf::io::CodedInputStream* input) {
 #define DO_(EXPRESSION) if (!GOOGLE_PREDICT_TRUE(EXPRESSION)) goto failure
   ::google::protobuf::uint32 tag;
-  // @@protoc_insertion_point(parse_start:paxos.KVOperator)
+  // @@protoc_insertion_point(parse_start:paxoskv.KVOperator)
   for (;;) {
     ::std::pair< ::google::protobuf::uint32, bool> p = input->ReadTagWithCutoffNoLastTag(127u);
     tag = p.first;
@@ -289,7 +290,7 @@ bool KVOperator::MergePartialFromCodedStream(
           DO_(::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
             this->key().data(), static_cast<int>(this->key().length()),
             ::google::protobuf::internal::WireFormatLite::PARSE,
-            "paxos.KVOperator.key"));
+            "paxoskv.KVOperator.key"));
         } else {
           goto handle_unusual;
         }
@@ -362,17 +363,17 @@ bool KVOperator::MergePartialFromCodedStream(
     }
   }
 success:
-  // @@protoc_insertion_point(parse_success:paxos.KVOperator)
+  // @@protoc_insertion_point(parse_success:paxoskv.KVOperator)
   return true;
 failure:
-  // @@protoc_insertion_point(parse_failure:paxos.KVOperator)
+  // @@protoc_insertion_point(parse_failure:paxoskv.KVOperator)
   return false;
 #undef DO_
 }
 
 void KVOperator::SerializeWithCachedSizes(
     ::google::protobuf::io::CodedOutputStream* output) const {
-  // @@protoc_insertion_point(serialize_start:paxos.KVOperator)
+  // @@protoc_insertion_point(serialize_start:paxoskv.KVOperator)
   ::google::protobuf::uint32 cached_has_bits = 0;
   (void) cached_has_bits;
 
@@ -381,7 +382,7 @@ void KVOperator::SerializeWithCachedSizes(
     ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
       this->key().data(), static_cast<int>(this->key().length()),
       ::google::protobuf::internal::WireFormatLite::SERIALIZE,
-      "paxos.KVOperator.key");
+      "paxoskv.KVOperator.key");
     ::google::protobuf::internal::WireFormatLite::WriteStringMaybeAliased(
       1, this->key(), output);
   }
@@ -411,13 +412,13 @@ void KVOperator::SerializeWithCachedSizes(
     ::google::protobuf::internal::WireFormat::SerializeUnknownFields(
         (::google::protobuf::internal::GetProto3PreserveUnknownsDefault()   ? _internal_metadata_.unknown_fields()   : _internal_metadata_.default_instance()), output);
   }
-  // @@protoc_insertion_point(serialize_end:paxos.KVOperator)
+  // @@protoc_insertion_point(serialize_end:paxoskv.KVOperator)
 }
 
 ::google::protobuf::uint8* KVOperator::InternalSerializeWithCachedSizesToArray(
     bool deterministic, ::google::protobuf::uint8* target) const {
   (void)deterministic; // Unused
-  // @@protoc_insertion_point(serialize_to_array_start:paxos.KVOperator)
+  // @@protoc_insertion_point(serialize_to_array_start:paxoskv.KVOperator)
   ::google::protobuf::uint32 cached_has_bits = 0;
   (void) cached_has_bits;
 
@@ -426,7 +427,7 @@ void KVOperator::SerializeWithCachedSizes(
     ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
       this->key().data(), static_cast<int>(this->key().length()),
       ::google::protobuf::internal::WireFormatLite::SERIALIZE,
-      "paxos.KVOperator.key");
+      "paxoskv.KVOperator.key");
     target =
       ::google::protobuf::internal::WireFormatLite::WriteStringToArray(
         1, this->key(), target);
@@ -458,12 +459,12 @@ void KVOperator::SerializeWithCachedSizes(
     target = ::google::protobuf::internal::WireFormat::SerializeUnknownFieldsToArray(
         (::google::protobuf::internal::GetProto3PreserveUnknownsDefault()   ? _internal_metadata_.unknown_fields()   : _internal_metadata_.default_instance()), target);
   }
-  // @@protoc_insertion_point(serialize_to_array_end:paxos.KVOperator)
+  // @@protoc_insertion_point(serialize_to_array_end:paxoskv.KVOperator)
   return target;
 }
 
 size_t KVOperator::ByteSizeLong() const {
-// @@protoc_insertion_point(message_byte_size_start:paxos.KVOperator)
+// @@protoc_insertion_point(message_byte_size_start:paxoskv.KVOperator)
   size_t total_size = 0;
 
   if ((_internal_metadata_.have_unknown_fields() &&  ::google::protobuf::internal::GetProto3PreserveUnknownsDefault())) {
@@ -514,22 +515,22 @@ size_t KVOperator::ByteSizeLong() const {
 }
 
 void KVOperator::MergeFrom(const ::google::protobuf::Message& from) {
-// @@protoc_insertion_point(generalized_merge_from_start:paxos.KVOperator)
+// @@protoc_insertion_point(generalized_merge_from_start:paxoskv.KVOperator)
   GOOGLE_DCHECK_NE(&from, this);
   const KVOperator* source =
       ::google::protobuf::internal::DynamicCastToGenerated<const KVOperator>(
           &from);
   if (source == NULL) {
-  // @@protoc_insertion_point(generalized_merge_from_cast_fail:paxos.KVOperator)
+  // @@protoc_insertion_point(generalized_merge_from_cast_fail:paxoskv.KVOperator)
     ::google::protobuf::internal::ReflectionOps::Merge(from, this);
   } else {
-  // @@protoc_insertion_point(generalized_merge_from_cast_success:paxos.KVOperator)
+  // @@protoc_insertion_point(generalized_merge_from_cast_success:paxoskv.KVOperator)
     MergeFrom(*source);
   }
 }
 
 void KVOperator::MergeFrom(const KVOperator& from) {
-// @@protoc_insertion_point(class_specific_merge_from_start:paxos.KVOperator)
+// @@protoc_insertion_point(class_specific_merge_from_start:paxoskv.KVOperator)
   GOOGLE_DCHECK_NE(&from, this);
   _internal_metadata_.MergeFrom(from._internal_metadata_);
   ::google::protobuf::uint32 cached_has_bits = 0;
@@ -555,14 +556,14 @@ void KVOperator::MergeFrom(const KVOperator& from) {
 }
 
 void KVOperator::CopyFrom(const ::google::protobuf::Message& from) {
-// @@protoc_insertion_point(generalized_copy_from_start:paxos.KVOperator)
+// @@protoc_insertion_point(generalized_copy_from_start:paxoskv.KVOperator)
   if (&from == this) return;
   Clear();
   MergeFrom(from);
 }
 
 void KVOperator::CopyFrom(const KVOperator& from) {
-// @@protoc_insertion_point(class_specific_copy_from_start:paxos.KVOperator)
+// @@protoc_insertion_point(class_specific_copy_from_start:paxoskv.KVOperator)
   if (&from == this) return;
   Clear();
   MergeFrom(from);
@@ -600,41 +601,41 @@ void KVOperator::clear_key() {
   key_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
 const ::std::string& KVOperator::key() const {
-  // @@protoc_insertion_point(field_get:paxos.KVOperator.key)
+  // @@protoc_insertion_point(field_get:paxoskv.KVOperator.key)
   return key_.GetNoArena();
 }
 void KVOperator::set_key(const ::std::string& value) {
   
   key_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
-  // @@protoc_insertion_point(field_set:paxos.KVOperator.key)
+  // @@protoc_insertion_point(field_set:paxoskv.KVOperator.key)
 }
 #if LANG_CXX11
 void KVOperator::set_key(::std::string&& value) {
   
   key_.SetNoArena(
     &::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::move(value));
-  // @@protoc_insertion_point(field_set_rvalue:paxos.KVOperator.key)
+  // @@protoc_insertion_point(field_set_rvalue:paxoskv.KVOperator.key)
 }
 #endif
 void KVOperator::set_key(const char* value) {
   GOOGLE_DCHECK(value != NULL);
   
   key_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
-  // @@protoc_insertion_point(field_set_char:paxos.KVOperator.key)
+  // @@protoc_insertion_point(field_set_char:paxoskv.KVOperator.key)
 }
 void KVOperator::set_key(const char* value, size_t size) {
   
   key_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
       ::std::string(reinterpret_cast<const char*>(value), size));
-  // @@protoc_insertion_point(field_set_pointer:paxos.KVOperator.key)
+  // @@protoc_insertion_point(field_set_pointer:paxoskv.KVOperator.key)
 }
 ::std::string* KVOperator::mutable_key() {
   
-  // @@protoc_insertion_point(field_mutable:paxos.KVOperator.key)
+  // @@protoc_insertion_point(field_mutable:paxoskv.KVOperator.key)
   return key_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
 ::std::string* KVOperator::release_key() {
-  // @@protoc_insertion_point(field_release:paxos.KVOperator.key)
+  // @@protoc_insertion_point(field_release:paxoskv.KVOperator.key)
   
   return key_.ReleaseNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
@@ -645,7 +646,7 @@ void KVOperator::set_allocated_key(::std::string* key) {
     
   }
   key_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), key);
-  // @@protoc_insertion_point(field_set_allocated:paxos.KVOperator.key)
+  // @@protoc_insertion_point(field_set_allocated:paxoskv.KVOperator.key)
 }
 
 // bytes value = 2;
@@ -653,41 +654,41 @@ void KVOperator::clear_value() {
   value_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
 const ::std::string& KVOperator::value() const {
-  // @@protoc_insertion_point(field_get:paxos.KVOperator.value)
+  // @@protoc_insertion_point(field_get:paxoskv.KVOperator.value)
   return value_.GetNoArena();
 }
 void KVOperator::set_value(const ::std::string& value) {
   
   value_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
-  // @@protoc_insertion_point(field_set:paxos.KVOperator.value)
+  // @@protoc_insertion_point(field_set:paxoskv.KVOperator.value)
 }
 #if LANG_CXX11
 void KVOperator::set_value(::std::string&& value) {
   
   value_.SetNoArena(
     &::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::move(value));
-  // @@protoc_insertion_point(field_set_rvalue:paxos.KVOperator.value)
+  // @@protoc_insertion_point(field_set_rvalue:paxoskv.KVOperator.value)
 }
 #endif
 void KVOperator::set_value(const char* value) {
   GOOGLE_DCHECK(value != NULL);
   
   value_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
-  // @@protoc_insertion_point(field_set_char:paxos.KVOperator.value)
+  // @@protoc_insertion_point(field_set_char:paxoskv.KVOperator.value)
 }
 void KVOperator::set_value(const void* value, size_t size) {
   
   value_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
       ::std::string(reinterpret_cast<const char*>(value), size));
-  // @@protoc_insertion_point(field_set_pointer:paxos.KVOperator.value)
+  // @@protoc_insertion_point(field_set_pointer:paxoskv.KVOperator.value)
 }
 ::std::string* KVOperator::mutable_value() {
   
-  // @@protoc_insertion_point(field_mutable:paxos.KVOperator.value)
+  // @@protoc_insertion_point(field_mutable:paxoskv.KVOperator.value)
   return value_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
 ::std::string* KVOperator::release_value() {
-  // @@protoc_insertion_point(field_release:paxos.KVOperator.value)
+  // @@protoc_insertion_point(field_release:paxoskv.KVOperator.value)
   
   return value_.ReleaseNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
@@ -698,7 +699,7 @@ void KVOperator::set_allocated_value(::std::string* value) {
     
   }
   value_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
-  // @@protoc_insertion_point(field_set_allocated:paxos.KVOperator.value)
+  // @@protoc_insertion_point(field_set_allocated:paxoskv.KVOperator.value)
 }
 
 // uint64 version = 3;
@@ -706,13 +707,13 @@ void KVOperator::clear_version() {
   version_ = GOOGLE_ULONGLONG(0);
 }
 ::google::protobuf::uint64 KVOperator::version() const {
-  // @@protoc_insertion_point(field_get:paxos.KVOperator.version)
+  // @@protoc_insertion_point(field_get:paxoskv.KVOperator.version)
   return version_;
 }
 void KVOperator::set_version(::google::protobuf::uint64 value) {
   
   version_ = value;
-  // @@protoc_insertion_point(field_set:paxos.KVOperator.version)
+  // @@protoc_insertion_point(field_set:paxoskv.KVOperator.version)
 }
 
 // uint32 operator = 4;
@@ -720,13 +721,13 @@ void KVOperator::clear_operator_() {
   operator__ = 0u;
 }
 ::google::protobuf::uint32 KVOperator::operator_() const {
-  // @@protoc_insertion_point(field_get:paxos.KVOperator.operator)
+  // @@protoc_insertion_point(field_get:paxoskv.KVOperator.operator)
   return operator__;
 }
 void KVOperator::set_operator_(::google::protobuf::uint32 value) {
   
   operator__ = value;
-  // @@protoc_insertion_point(field_set:paxos.KVOperator.operator)
+  // @@protoc_insertion_point(field_set:paxoskv.KVOperator.operator)
 }
 
 // uint32 sid = 5;
@@ -734,13 +735,13 @@ void KVOperator::clear_sid() {
   sid_ = 0u;
 }
 ::google::protobuf::uint32 KVOperator::sid() const {
-  // @@protoc_insertion_point(field_get:paxos.KVOperator.sid)
+  // @@protoc_insertion_point(field_get:paxoskv.KVOperator.sid)
   return sid_;
 }
 void KVOperator::set_sid(::google::protobuf::uint32 value) {
   
   sid_ = value;
-  // @@protoc_insertion_point(field_set:paxos.KVOperator.sid)
+  // @@protoc_insertion_point(field_set:paxoskv.KVOperator.sid)
 }
 
 #endif  // PROTOBUF_INLINE_NOT_IN_HEADERS
@@ -759,7 +760,7 @@ KVData::KVData()
     protobuf_rpc_2eproto::InitDefaults();
   }
   SharedCtor();
-  // @@protoc_insertion_point(constructor:paxos.KVData)
+  // @@protoc_insertion_point(constructor:paxoskv.KVData)
 }
 KVData::KVData(const KVData& from)
   : ::google::protobuf::Message(),
@@ -773,7 +774,7 @@ KVData::KVData(const KVData& from)
   ::memcpy(&version_, &from.version_,
     static_cast<size_t>(reinterpret_cast<char*>(&isdeleted_) -
     reinterpret_cast<char*>(&version_)) + sizeof(isdeleted_));
-  // @@protoc_insertion_point(copy_constructor:paxos.KVData)
+  // @@protoc_insertion_point(copy_constructor:paxoskv.KVData)
 }
 
 void KVData::SharedCtor() {
@@ -785,7 +786,7 @@ void KVData::SharedCtor() {
 }
 
 KVData::~KVData() {
-  // @@protoc_insertion_point(destructor:paxos.KVData)
+  // @@protoc_insertion_point(destructor:paxoskv.KVData)
   SharedDtor();
 }
 
@@ -817,7 +818,7 @@ KVData* KVData::New(::google::protobuf::Arena* arena) const {
 }
 
 void KVData::Clear() {
-// @@protoc_insertion_point(message_clear_start:paxos.KVData)
+// @@protoc_insertion_point(message_clear_start:paxoskv.KVData)
   ::google::protobuf::uint32 cached_has_bits = 0;
   // Prevent compiler warnings about cached_has_bits being unused
   (void) cached_has_bits;
@@ -833,7 +834,7 @@ bool KVData::MergePartialFromCodedStream(
     ::google::protobuf::io::CodedInputStream* input) {
 #define DO_(EXPRESSION) if (!GOOGLE_PREDICT_TRUE(EXPRESSION)) goto failure
   ::google::protobuf::uint32 tag;
-  // @@protoc_insertion_point(parse_start:paxos.KVData)
+  // @@protoc_insertion_point(parse_start:paxoskv.KVData)
   for (;;) {
     ::std::pair< ::google::protobuf::uint32, bool> p = input->ReadTagWithCutoffNoLastTag(127u);
     tag = p.first;
@@ -891,17 +892,17 @@ bool KVData::MergePartialFromCodedStream(
     }
   }
 success:
-  // @@protoc_insertion_point(parse_success:paxos.KVData)
+  // @@protoc_insertion_point(parse_success:paxoskv.KVData)
   return true;
 failure:
-  // @@protoc_insertion_point(parse_failure:paxos.KVData)
+  // @@protoc_insertion_point(parse_failure:paxoskv.KVData)
   return false;
 #undef DO_
 }
 
 void KVData::SerializeWithCachedSizes(
     ::google::protobuf::io::CodedOutputStream* output) const {
-  // @@protoc_insertion_point(serialize_start:paxos.KVData)
+  // @@protoc_insertion_point(serialize_start:paxoskv.KVData)
   ::google::protobuf::uint32 cached_has_bits = 0;
   (void) cached_has_bits;
 
@@ -925,13 +926,13 @@ void KVData::SerializeWithCachedSizes(
     ::google::protobuf::internal::WireFormat::SerializeUnknownFields(
         (::google::protobuf::internal::GetProto3PreserveUnknownsDefault()   ? _internal_metadata_.unknown_fields()   : _internal_metadata_.default_instance()), output);
   }
-  // @@protoc_insertion_point(serialize_end:paxos.KVData)
+  // @@protoc_insertion_point(serialize_end:paxoskv.KVData)
 }
 
 ::google::protobuf::uint8* KVData::InternalSerializeWithCachedSizesToArray(
     bool deterministic, ::google::protobuf::uint8* target) const {
   (void)deterministic; // Unused
-  // @@protoc_insertion_point(serialize_to_array_start:paxos.KVData)
+  // @@protoc_insertion_point(serialize_to_array_start:paxoskv.KVData)
   ::google::protobuf::uint32 cached_has_bits = 0;
   (void) cached_has_bits;
 
@@ -956,12 +957,12 @@ void KVData::SerializeWithCachedSizes(
     target = ::google::protobuf::internal::WireFormat::SerializeUnknownFieldsToArray(
         (::google::protobuf::internal::GetProto3PreserveUnknownsDefault()   ? _internal_metadata_.unknown_fields()   : _internal_metadata_.default_instance()), target);
   }
-  // @@protoc_insertion_point(serialize_to_array_end:paxos.KVData)
+  // @@protoc_insertion_point(serialize_to_array_end:paxoskv.KVData)
   return target;
 }
 
 size_t KVData::ByteSizeLong() const {
-// @@protoc_insertion_point(message_byte_size_start:paxos.KVData)
+// @@protoc_insertion_point(message_byte_size_start:paxoskv.KVData)
   size_t total_size = 0;
 
   if ((_internal_metadata_.have_unknown_fields() &&  ::google::protobuf::internal::GetProto3PreserveUnknownsDefault())) {
@@ -996,22 +997,22 @@ size_t KVData::ByteSizeLong() const {
 }
 
 void KVData::MergeFrom(const ::google::protobuf::Message& from) {
-// @@protoc_insertion_point(generalized_merge_from_start:paxos.KVData)
+// @@protoc_insertion_point(generalized_merge_from_start:paxoskv.KVData)
   GOOGLE_DCHECK_NE(&from, this);
   const KVData* source =
       ::google::protobuf::internal::DynamicCastToGenerated<const KVData>(
           &from);
   if (source == NULL) {
-  // @@protoc_insertion_point(generalized_merge_from_cast_fail:paxos.KVData)
+  // @@protoc_insertion_point(generalized_merge_from_cast_fail:paxoskv.KVData)
     ::google::protobuf::internal::ReflectionOps::Merge(from, this);
   } else {
-  // @@protoc_insertion_point(generalized_merge_from_cast_success:paxos.KVData)
+  // @@protoc_insertion_point(generalized_merge_from_cast_success:paxoskv.KVData)
     MergeFrom(*source);
   }
 }
 
 void KVData::MergeFrom(const KVData& from) {
-// @@protoc_insertion_point(class_specific_merge_from_start:paxos.KVData)
+// @@protoc_insertion_point(class_specific_merge_from_start:paxoskv.KVData)
   GOOGLE_DCHECK_NE(&from, this);
   _internal_metadata_.MergeFrom(from._internal_metadata_);
   ::google::protobuf::uint32 cached_has_bits = 0;
@@ -1030,14 +1031,14 @@ void KVData::MergeFrom(const KVData& from) {
 }
 
 void KVData::CopyFrom(const ::google::protobuf::Message& from) {
-// @@protoc_insertion_point(generalized_copy_from_start:paxos.KVData)
+// @@protoc_insertion_point(generalized_copy_from_start:paxoskv.KVData)
   if (&from == this) return;
   Clear();
   MergeFrom(from);
 }
 
 void KVData::CopyFrom(const KVData& from) {
-// @@protoc_insertion_point(class_specific_copy_from_start:paxos.KVData)
+// @@protoc_insertion_point(class_specific_copy_from_start:paxoskv.KVData)
   if (&from == this) return;
   Clear();
   MergeFrom(from);
@@ -1073,41 +1074,41 @@ void KVData::clear_value() {
   value_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
 const ::std::string& KVData::value() const {
-  // @@protoc_insertion_point(field_get:paxos.KVData.value)
+  // @@protoc_insertion_point(field_get:paxoskv.KVData.value)
   return value_.GetNoArena();
 }
 void KVData::set_value(const ::std::string& value) {
   
   value_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
-  // @@protoc_insertion_point(field_set:paxos.KVData.value)
+  // @@protoc_insertion_point(field_set:paxoskv.KVData.value)
 }
 #if LANG_CXX11
 void KVData::set_value(::std::string&& value) {
   
   value_.SetNoArena(
     &::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::move(value));
-  // @@protoc_insertion_point(field_set_rvalue:paxos.KVData.value)
+  // @@protoc_insertion_point(field_set_rvalue:paxoskv.KVData.value)
 }
 #endif
 void KVData::set_value(const char* value) {
   GOOGLE_DCHECK(value != NULL);
   
   value_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
-  // @@protoc_insertion_point(field_set_char:paxos.KVData.value)
+  // @@protoc_insertion_point(field_set_char:paxoskv.KVData.value)
 }
 void KVData::set_value(const void* value, size_t size) {
   
   value_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
       ::std::string(reinterpret_cast<const char*>(value), size));
-  // @@protoc_insertion_point(field_set_pointer:paxos.KVData.value)
+  // @@protoc_insertion_point(field_set_pointer:paxoskv.KVData.value)
 }
 ::std::string* KVData::mutable_value() {
   
-  // @@protoc_insertion_point(field_mutable:paxos.KVData.value)
+  // @@protoc_insertion_point(field_mutable:paxoskv.KVData.value)
   return value_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
 ::std::string* KVData::release_value() {
-  // @@protoc_insertion_point(field_release:paxos.KVData.value)
+  // @@protoc_insertion_point(field_release:paxoskv.KVData.value)
   
   return value_.ReleaseNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
@@ -1118,7 +1119,7 @@ void KVData::set_allocated_value(::std::string* value) {
     
   }
   value_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
-  // @@protoc_insertion_point(field_set_allocated:paxos.KVData.value)
+  // @@protoc_insertion_point(field_set_allocated:paxoskv.KVData.value)
 }
 
 // uint64 version = 2;
@@ -1126,13 +1127,13 @@ void KVData::clear_version() {
   version_ = GOOGLE_ULONGLONG(0);
 }
 ::google::protobuf::uint64 KVData::version() const {
-  // @@protoc_insertion_point(field_get:paxos.KVData.version)
+  // @@protoc_insertion_point(field_get:paxoskv.KVData.version)
   return version_;
 }
 void KVData::set_version(::google::protobuf::uint64 value) {
   
   version_ = value;
-  // @@protoc_insertion_point(field_set:paxos.KVData.version)
+  // @@protoc_insertion_point(field_set:paxoskv.KVData.version)
 }
 
 // bool isdeleted = 3;
@@ -1140,13 +1141,13 @@ void KVData::clear_isdeleted() {
   isdeleted_ = false;
 }
 bool KVData::isdeleted() const {
-  // @@protoc_insertion_point(field_get:paxos.KVData.isdeleted)
+  // @@protoc_insertion_point(field_get:paxoskv.KVData.isdeleted)
   return isdeleted_;
 }
 void KVData::set_isdeleted(bool value) {
   
   isdeleted_ = value;
-  // @@protoc_insertion_point(field_set:paxos.KVData.isdeleted)
+  // @@protoc_insertion_point(field_set:paxoskv.KVData.isdeleted)
 }
 
 #endif  // PROTOBUF_INLINE_NOT_IN_HEADERS
@@ -1165,7 +1166,7 @@ KVResponse::KVResponse()
     protobuf_rpc_2eproto::InitDefaults();
   }
   SharedCtor();
-  // @@protoc_insertion_point(constructor:paxos.KVResponse)
+  // @@protoc_insertion_point(constructor:paxoskv.KVResponse)
 }
 KVResponse::KVResponse(const KVResponse& from)
   : ::google::protobuf::Message(),
@@ -1173,14 +1174,14 @@ KVResponse::KVResponse(const KVResponse& from)
       _cached_size_(0) {
   _internal_metadata_.MergeFrom(from._internal_metadata_);
   if (from.has_data()) {
-    data_ = new ::paxos::KVData(*from.data_);
+    data_ = new ::paxoskv::KVData(*from.data_);
   } else {
     data_ = NULL;
   }
   ::memcpy(&master_nodeid_, &from.master_nodeid_,
     static_cast<size_t>(reinterpret_cast<char*>(&ret_) -
     reinterpret_cast<char*>(&master_nodeid_)) + sizeof(ret_));
-  // @@protoc_insertion_point(copy_constructor:paxos.KVResponse)
+  // @@protoc_insertion_point(copy_constructor:paxoskv.KVResponse)
 }
 
 void KVResponse::SharedCtor() {
@@ -1191,7 +1192,7 @@ void KVResponse::SharedCtor() {
 }
 
 KVResponse::~KVResponse() {
-  // @@protoc_insertion_point(destructor:paxos.KVResponse)
+  // @@protoc_insertion_point(destructor:paxoskv.KVResponse)
   SharedDtor();
 }
 
@@ -1223,7 +1224,7 @@ KVResponse* KVResponse::New(::google::protobuf::Arena* arena) const {
 }
 
 void KVResponse::Clear() {
-// @@protoc_insertion_point(message_clear_start:paxos.KVResponse)
+// @@protoc_insertion_point(message_clear_start:paxoskv.KVResponse)
   ::google::protobuf::uint32 cached_has_bits = 0;
   // Prevent compiler warnings about cached_has_bits being unused
   (void) cached_has_bits;
@@ -1242,13 +1243,13 @@ bool KVResponse::MergePartialFromCodedStream(
     ::google::protobuf::io::CodedInputStream* input) {
 #define DO_(EXPRESSION) if (!GOOGLE_PREDICT_TRUE(EXPRESSION)) goto failure
   ::google::protobuf::uint32 tag;
-  // @@protoc_insertion_point(parse_start:paxos.KVResponse)
+  // @@protoc_insertion_point(parse_start:paxoskv.KVResponse)
   for (;;) {
     ::std::pair< ::google::protobuf::uint32, bool> p = input->ReadTagWithCutoffNoLastTag(127u);
     tag = p.first;
     if (!p.second) goto handle_unusual;
     switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
-      // .paxos.KVData data = 1;
+      // .paxoskv.KVData data = 1;
       case 1: {
         if (static_cast< ::google::protobuf::uint8>(tag) ==
             static_cast< ::google::protobuf::uint8>(10u /* 10 & 0xFF */)) {
@@ -1300,21 +1301,21 @@ bool KVResponse::MergePartialFromCodedStream(
     }
   }
 success:
-  // @@protoc_insertion_point(parse_success:paxos.KVResponse)
+  // @@protoc_insertion_point(parse_success:paxoskv.KVResponse)
   return true;
 failure:
-  // @@protoc_insertion_point(parse_failure:paxos.KVResponse)
+  // @@protoc_insertion_point(parse_failure:paxoskv.KVResponse)
   return false;
 #undef DO_
 }
 
 void KVResponse::SerializeWithCachedSizes(
     ::google::protobuf::io::CodedOutputStream* output) const {
-  // @@protoc_insertion_point(serialize_start:paxos.KVResponse)
+  // @@protoc_insertion_point(serialize_start:paxoskv.KVResponse)
   ::google::protobuf::uint32 cached_has_bits = 0;
   (void) cached_has_bits;
 
-  // .paxos.KVData data = 1;
+  // .paxoskv.KVData data = 1;
   if (this->has_data()) {
     ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
       1, *this->data_, output);
@@ -1334,17 +1335,17 @@ void KVResponse::SerializeWithCachedSizes(
     ::google::protobuf::internal::WireFormat::SerializeUnknownFields(
         (::google::protobuf::internal::GetProto3PreserveUnknownsDefault()   ? _internal_metadata_.unknown_fields()   : _internal_metadata_.default_instance()), output);
   }
-  // @@protoc_insertion_point(serialize_end:paxos.KVResponse)
+  // @@protoc_insertion_point(serialize_end:paxoskv.KVResponse)
 }
 
 ::google::protobuf::uint8* KVResponse::InternalSerializeWithCachedSizesToArray(
     bool deterministic, ::google::protobuf::uint8* target) const {
   (void)deterministic; // Unused
-  // @@protoc_insertion_point(serialize_to_array_start:paxos.KVResponse)
+  // @@protoc_insertion_point(serialize_to_array_start:paxoskv.KVResponse)
   ::google::protobuf::uint32 cached_has_bits = 0;
   (void) cached_has_bits;
 
-  // .paxos.KVData data = 1;
+  // .paxoskv.KVData data = 1;
   if (this->has_data()) {
     target = ::google::protobuf::internal::WireFormatLite::
       InternalWriteMessageNoVirtualToArray(
@@ -1365,12 +1366,12 @@ void KVResponse::SerializeWithCachedSizes(
     target = ::google::protobuf::internal::WireFormat::SerializeUnknownFieldsToArray(
         (::google::protobuf::internal::GetProto3PreserveUnknownsDefault()   ? _internal_metadata_.unknown_fields()   : _internal_metadata_.default_instance()), target);
   }
-  // @@protoc_insertion_point(serialize_to_array_end:paxos.KVResponse)
+  // @@protoc_insertion_point(serialize_to_array_end:paxoskv.KVResponse)
   return target;
 }
 
 size_t KVResponse::ByteSizeLong() const {
-// @@protoc_insertion_point(message_byte_size_start:paxos.KVResponse)
+// @@protoc_insertion_point(message_byte_size_start:paxoskv.KVResponse)
   size_t total_size = 0;
 
   if ((_internal_metadata_.have_unknown_fields() &&  ::google::protobuf::internal::GetProto3PreserveUnknownsDefault())) {
@@ -1378,7 +1379,7 @@ size_t KVResponse::ByteSizeLong() const {
       ::google::protobuf::internal::WireFormat::ComputeUnknownFieldsSize(
         (::google::protobuf::internal::GetProto3PreserveUnknownsDefault()   ? _internal_metadata_.unknown_fields()   : _internal_metadata_.default_instance()));
   }
-  // .paxos.KVData data = 1;
+  // .paxoskv.KVData data = 1;
   if (this->has_data()) {
     total_size += 1 +
       ::google::protobuf::internal::WireFormatLite::MessageSizeNoVirtual(
@@ -1407,29 +1408,29 @@ size_t KVResponse::ByteSizeLong() const {
 }
 
 void KVResponse::MergeFrom(const ::google::protobuf::Message& from) {
-// @@protoc_insertion_point(generalized_merge_from_start:paxos.KVResponse)
+// @@protoc_insertion_point(generalized_merge_from_start:paxoskv.KVResponse)
   GOOGLE_DCHECK_NE(&from, this);
   const KVResponse* source =
       ::google::protobuf::internal::DynamicCastToGenerated<const KVResponse>(
           &from);
   if (source == NULL) {
-  // @@protoc_insertion_point(generalized_merge_from_cast_fail:paxos.KVResponse)
+  // @@protoc_insertion_point(generalized_merge_from_cast_fail:paxoskv.KVResponse)
     ::google::protobuf::internal::ReflectionOps::Merge(from, this);
   } else {
-  // @@protoc_insertion_point(generalized_merge_from_cast_success:paxos.KVResponse)
+  // @@protoc_insertion_point(generalized_merge_from_cast_success:paxoskv.KVResponse)
     MergeFrom(*source);
   }
 }
 
 void KVResponse::MergeFrom(const KVResponse& from) {
-// @@protoc_insertion_point(class_specific_merge_from_start:paxos.KVResponse)
+// @@protoc_insertion_point(class_specific_merge_from_start:paxoskv.KVResponse)
   GOOGLE_DCHECK_NE(&from, this);
   _internal_metadata_.MergeFrom(from._internal_metadata_);
   ::google::protobuf::uint32 cached_has_bits = 0;
   (void) cached_has_bits;
 
   if (from.has_data()) {
-    mutable_data()->::paxos::KVData::MergeFrom(from.data());
+    mutable_data()->::paxoskv::KVData::MergeFrom(from.data());
   }
   if (from.master_nodeid() != 0) {
     set_master_nodeid(from.master_nodeid());
@@ -1440,14 +1441,14 @@ void KVResponse::MergeFrom(const KVResponse& from) {
 }
 
 void KVResponse::CopyFrom(const ::google::protobuf::Message& from) {
-// @@protoc_insertion_point(generalized_copy_from_start:paxos.KVResponse)
+// @@protoc_insertion_point(generalized_copy_from_start:paxoskv.KVResponse)
   if (&from == this) return;
   Clear();
   MergeFrom(from);
 }
 
 void KVResponse::CopyFrom(const KVResponse& from) {
-// @@protoc_insertion_point(class_specific_copy_from_start:paxos.KVResponse)
+// @@protoc_insertion_point(class_specific_copy_from_start:paxoskv.KVResponse)
   if (&from == this) return;
   Clear();
   MergeFrom(from);
@@ -1478,7 +1479,7 @@ void KVResponse::InternalSwap(KVResponse* other) {
 #if PROTOBUF_INLINE_NOT_IN_HEADERS
 // KVResponse
 
-// .paxos.KVData data = 1;
+// .paxoskv.KVData data = 1;
 bool KVResponse::has_data() const {
   return this != internal_default_instance() && data_ != NULL;
 }
@@ -1486,28 +1487,28 @@ void KVResponse::clear_data() {
   if (GetArenaNoVirtual() == NULL && data_ != NULL) delete data_;
   data_ = NULL;
 }
-const ::paxos::KVData& KVResponse::data() const {
-  const ::paxos::KVData* p = data_;
-  // @@protoc_insertion_point(field_get:paxos.KVResponse.data)
-  return p != NULL ? *p : *reinterpret_cast<const ::paxos::KVData*>(
-      &::paxos::_KVData_default_instance_);
+const ::paxoskv::KVData& KVResponse::data() const {
+  const ::paxoskv::KVData* p = data_;
+  // @@protoc_insertion_point(field_get:paxoskv.KVResponse.data)
+  return p != NULL ? *p : *reinterpret_cast<const ::paxoskv::KVData*>(
+      &::paxoskv::_KVData_default_instance_);
 }
-::paxos::KVData* KVResponse::mutable_data() {
+::paxoskv::KVData* KVResponse::mutable_data() {
   
   if (data_ == NULL) {
-    data_ = new ::paxos::KVData;
+    data_ = new ::paxoskv::KVData;
   }
-  // @@protoc_insertion_point(field_mutable:paxos.KVResponse.data)
+  // @@protoc_insertion_point(field_mutable:paxoskv.KVResponse.data)
   return data_;
 }
-::paxos::KVData* KVResponse::release_data() {
-  // @@protoc_insertion_point(field_release:paxos.KVResponse.data)
+::paxoskv::KVData* KVResponse::release_data() {
+  // @@protoc_insertion_point(field_release:paxoskv.KVResponse.data)
   
-  ::paxos::KVData* temp = data_;
+  ::paxoskv::KVData* temp = data_;
   data_ = NULL;
   return temp;
 }
-void KVResponse::set_allocated_data(::paxos::KVData* data) {
+void KVResponse::set_allocated_data(::paxoskv::KVData* data) {
   delete data_;
   data_ = data;
   if (data) {
@@ -1515,7 +1516,7 @@ void KVResponse::set_allocated_data(::paxos::KVData* data) {
   } else {
     
   }
-  // @@protoc_insertion_point(field_set_allocated:paxos.KVResponse.data)
+  // @@protoc_insertion_point(field_set_allocated:paxoskv.KVResponse.data)
 }
 
 // int32 ret = 2;
@@ -1523,13 +1524,13 @@ void KVResponse::clear_ret() {
   ret_ = 0;
 }
 ::google::protobuf::int32 KVResponse::ret() const {
-  // @@protoc_insertion_point(field_get:paxos.KVResponse.ret)
+  // @@protoc_insertion_point(field_get:paxoskv.KVResponse.ret)
   return ret_;
 }
 void KVResponse::set_ret(::google::protobuf::int32 value) {
   
   ret_ = value;
-  // @@protoc_insertion_point(field_set:paxos.KVResponse.ret)
+  // @@protoc_insertion_point(field_set:paxoskv.KVResponse.ret)
 }
 
 // uint64 master_nodeid = 3;
@@ -1537,19 +1538,19 @@ void KVResponse::clear_master_nodeid() {
   master_nodeid_ = GOOGLE_ULONGLONG(0);
 }
 ::google::protobuf::uint64 KVResponse::master_nodeid() const {
-  // @@protoc_insertion_point(field_get:paxos.KVResponse.master_nodeid)
+  // @@protoc_insertion_point(field_get:paxoskv.KVResponse.master_nodeid)
   return master_nodeid_;
 }
 void KVResponse::set_master_nodeid(::google::protobuf::uint64 value) {
   
   master_nodeid_ = value;
-  // @@protoc_insertion_point(field_set:paxos.KVResponse.master_nodeid)
+  // @@protoc_insertion_point(field_set:paxoskv.KVResponse.master_nodeid)
 }
 
 #endif  // PROTOBUF_INLINE_NOT_IN_HEADERS
 
 // @@protoc_insertion_point(namespace_scope)
 
-}  // namespace paxos
+}  // namespace paxoskv
 
 // @@protoc_insertion_point(global_scope)

@@ -13,124 +13,124 @@
 #include <grpcpp/impl/codegen/rpc_service_method.h>
 #include <grpcpp/impl/codegen/service_type.h>
 #include <grpcpp/impl/codegen/sync_stream.h>
-namespace paxos {
+namespace paxoskv {
 
-static const char* KV_method_names[] = {
-  "/paxos.KV/Put",
-  "/paxos.KV/GetLocal",
-  "/paxos.KV/GetGlobal",
-  "/paxos.KV/Delete",
+static const char* KVService_method_names[] = {
+  "/paxoskv.KVService/Put",
+  "/paxoskv.KVService/GetLocal",
+  "/paxoskv.KVService/GetGlobal",
+  "/paxoskv.KVService/Delete",
 };
 
-std::unique_ptr< KV::Stub> KV::NewStub(const std::shared_ptr< ::grpc::ChannelInterface>& channel, const ::grpc::StubOptions& options) {
+std::unique_ptr< KVService::Stub> KVService::NewStub(const std::shared_ptr< ::grpc::ChannelInterface>& channel, const ::grpc::StubOptions& options) {
   (void)options;
-  std::unique_ptr< KV::Stub> stub(new KV::Stub(channel));
+  std::unique_ptr< KVService::Stub> stub(new KVService::Stub(channel));
   return stub;
 }
 
-KV::Stub::Stub(const std::shared_ptr< ::grpc::ChannelInterface>& channel)
-  : channel_(channel), rpcmethod_Put_(KV_method_names[0], ::grpc::internal::RpcMethod::NORMAL_RPC, channel)
-  , rpcmethod_GetLocal_(KV_method_names[1], ::grpc::internal::RpcMethod::NORMAL_RPC, channel)
-  , rpcmethod_GetGlobal_(KV_method_names[2], ::grpc::internal::RpcMethod::NORMAL_RPC, channel)
-  , rpcmethod_Delete_(KV_method_names[3], ::grpc::internal::RpcMethod::NORMAL_RPC, channel)
+KVService::Stub::Stub(const std::shared_ptr< ::grpc::ChannelInterface>& channel)
+  : channel_(channel), rpcmethod_Put_(KVService_method_names[0], ::grpc::internal::RpcMethod::NORMAL_RPC, channel)
+  , rpcmethod_GetLocal_(KVService_method_names[1], ::grpc::internal::RpcMethod::NORMAL_RPC, channel)
+  , rpcmethod_GetGlobal_(KVService_method_names[2], ::grpc::internal::RpcMethod::NORMAL_RPC, channel)
+  , rpcmethod_Delete_(KVService_method_names[3], ::grpc::internal::RpcMethod::NORMAL_RPC, channel)
   {}
 
-::grpc::Status KV::Stub::Put(::grpc::ClientContext* context, const ::paxos::KVOperator& request, ::paxos::KVResponse* response) {
+::grpc::Status KVService::Stub::Put(::grpc::ClientContext* context, const ::paxoskv::KVOperator& request, ::paxoskv::KVResponse* response) {
   return ::grpc::internal::BlockingUnaryCall(channel_.get(), rpcmethod_Put_, context, request, response);
 }
 
-::grpc::ClientAsyncResponseReader< ::paxos::KVResponse>* KV::Stub::AsyncPutRaw(::grpc::ClientContext* context, const ::paxos::KVOperator& request, ::grpc::CompletionQueue* cq) {
-  return ::grpc::internal::ClientAsyncResponseReaderFactory< ::paxos::KVResponse>::Create(channel_.get(), cq, rpcmethod_Put_, context, request, true);
+::grpc::ClientAsyncResponseReader< ::paxoskv::KVResponse>* KVService::Stub::AsyncPutRaw(::grpc::ClientContext* context, const ::paxoskv::KVOperator& request, ::grpc::CompletionQueue* cq) {
+  return ::grpc::internal::ClientAsyncResponseReaderFactory< ::paxoskv::KVResponse>::Create(channel_.get(), cq, rpcmethod_Put_, context, request, true);
 }
 
-::grpc::ClientAsyncResponseReader< ::paxos::KVResponse>* KV::Stub::PrepareAsyncPutRaw(::grpc::ClientContext* context, const ::paxos::KVOperator& request, ::grpc::CompletionQueue* cq) {
-  return ::grpc::internal::ClientAsyncResponseReaderFactory< ::paxos::KVResponse>::Create(channel_.get(), cq, rpcmethod_Put_, context, request, false);
+::grpc::ClientAsyncResponseReader< ::paxoskv::KVResponse>* KVService::Stub::PrepareAsyncPutRaw(::grpc::ClientContext* context, const ::paxoskv::KVOperator& request, ::grpc::CompletionQueue* cq) {
+  return ::grpc::internal::ClientAsyncResponseReaderFactory< ::paxoskv::KVResponse>::Create(channel_.get(), cq, rpcmethod_Put_, context, request, false);
 }
 
-::grpc::Status KV::Stub::GetLocal(::grpc::ClientContext* context, const ::paxos::KVOperator& request, ::paxos::KVResponse* response) {
+::grpc::Status KVService::Stub::GetLocal(::grpc::ClientContext* context, const ::paxoskv::KVOperator& request, ::paxoskv::KVResponse* response) {
   return ::grpc::internal::BlockingUnaryCall(channel_.get(), rpcmethod_GetLocal_, context, request, response);
 }
 
-::grpc::ClientAsyncResponseReader< ::paxos::KVResponse>* KV::Stub::AsyncGetLocalRaw(::grpc::ClientContext* context, const ::paxos::KVOperator& request, ::grpc::CompletionQueue* cq) {
-  return ::grpc::internal::ClientAsyncResponseReaderFactory< ::paxos::KVResponse>::Create(channel_.get(), cq, rpcmethod_GetLocal_, context, request, true);
+::grpc::ClientAsyncResponseReader< ::paxoskv::KVResponse>* KVService::Stub::AsyncGetLocalRaw(::grpc::ClientContext* context, const ::paxoskv::KVOperator& request, ::grpc::CompletionQueue* cq) {
+  return ::grpc::internal::ClientAsyncResponseReaderFactory< ::paxoskv::KVResponse>::Create(channel_.get(), cq, rpcmethod_GetLocal_, context, request, true);
 }
 
-::grpc::ClientAsyncResponseReader< ::paxos::KVResponse>* KV::Stub::PrepareAsyncGetLocalRaw(::grpc::ClientContext* context, const ::paxos::KVOperator& request, ::grpc::CompletionQueue* cq) {
-  return ::grpc::internal::ClientAsyncResponseReaderFactory< ::paxos::KVResponse>::Create(channel_.get(), cq, rpcmethod_GetLocal_, context, request, false);
+::grpc::ClientAsyncResponseReader< ::paxoskv::KVResponse>* KVService::Stub::PrepareAsyncGetLocalRaw(::grpc::ClientContext* context, const ::paxoskv::KVOperator& request, ::grpc::CompletionQueue* cq) {
+  return ::grpc::internal::ClientAsyncResponseReaderFactory< ::paxoskv::KVResponse>::Create(channel_.get(), cq, rpcmethod_GetLocal_, context, request, false);
 }
 
-::grpc::Status KV::Stub::GetGlobal(::grpc::ClientContext* context, const ::paxos::KVOperator& request, ::paxos::KVResponse* response) {
+::grpc::Status KVService::Stub::GetGlobal(::grpc::ClientContext* context, const ::paxoskv::KVOperator& request, ::paxoskv::KVResponse* response) {
   return ::grpc::internal::BlockingUnaryCall(channel_.get(), rpcmethod_GetGlobal_, context, request, response);
 }
 
-::grpc::ClientAsyncResponseReader< ::paxos::KVResponse>* KV::Stub::AsyncGetGlobalRaw(::grpc::ClientContext* context, const ::paxos::KVOperator& request, ::grpc::CompletionQueue* cq) {
-  return ::grpc::internal::ClientAsyncResponseReaderFactory< ::paxos::KVResponse>::Create(channel_.get(), cq, rpcmethod_GetGlobal_, context, request, true);
+::grpc::ClientAsyncResponseReader< ::paxoskv::KVResponse>* KVService::Stub::AsyncGetGlobalRaw(::grpc::ClientContext* context, const ::paxoskv::KVOperator& request, ::grpc::CompletionQueue* cq) {
+  return ::grpc::internal::ClientAsyncResponseReaderFactory< ::paxoskv::KVResponse>::Create(channel_.get(), cq, rpcmethod_GetGlobal_, context, request, true);
 }
 
-::grpc::ClientAsyncResponseReader< ::paxos::KVResponse>* KV::Stub::PrepareAsyncGetGlobalRaw(::grpc::ClientContext* context, const ::paxos::KVOperator& request, ::grpc::CompletionQueue* cq) {
-  return ::grpc::internal::ClientAsyncResponseReaderFactory< ::paxos::KVResponse>::Create(channel_.get(), cq, rpcmethod_GetGlobal_, context, request, false);
+::grpc::ClientAsyncResponseReader< ::paxoskv::KVResponse>* KVService::Stub::PrepareAsyncGetGlobalRaw(::grpc::ClientContext* context, const ::paxoskv::KVOperator& request, ::grpc::CompletionQueue* cq) {
+  return ::grpc::internal::ClientAsyncResponseReaderFactory< ::paxoskv::KVResponse>::Create(channel_.get(), cq, rpcmethod_GetGlobal_, context, request, false);
 }
 
-::grpc::Status KV::Stub::Delete(::grpc::ClientContext* context, const ::paxos::KVOperator& request, ::paxos::KVResponse* response) {
+::grpc::Status KVService::Stub::Delete(::grpc::ClientContext* context, const ::paxoskv::KVOperator& request, ::paxoskv::KVResponse* response) {
   return ::grpc::internal::BlockingUnaryCall(channel_.get(), rpcmethod_Delete_, context, request, response);
 }
 
-::grpc::ClientAsyncResponseReader< ::paxos::KVResponse>* KV::Stub::AsyncDeleteRaw(::grpc::ClientContext* context, const ::paxos::KVOperator& request, ::grpc::CompletionQueue* cq) {
-  return ::grpc::internal::ClientAsyncResponseReaderFactory< ::paxos::KVResponse>::Create(channel_.get(), cq, rpcmethod_Delete_, context, request, true);
+::grpc::ClientAsyncResponseReader< ::paxoskv::KVResponse>* KVService::Stub::AsyncDeleteRaw(::grpc::ClientContext* context, const ::paxoskv::KVOperator& request, ::grpc::CompletionQueue* cq) {
+  return ::grpc::internal::ClientAsyncResponseReaderFactory< ::paxoskv::KVResponse>::Create(channel_.get(), cq, rpcmethod_Delete_, context, request, true);
 }
 
-::grpc::ClientAsyncResponseReader< ::paxos::KVResponse>* KV::Stub::PrepareAsyncDeleteRaw(::grpc::ClientContext* context, const ::paxos::KVOperator& request, ::grpc::CompletionQueue* cq) {
-  return ::grpc::internal::ClientAsyncResponseReaderFactory< ::paxos::KVResponse>::Create(channel_.get(), cq, rpcmethod_Delete_, context, request, false);
+::grpc::ClientAsyncResponseReader< ::paxoskv::KVResponse>* KVService::Stub::PrepareAsyncDeleteRaw(::grpc::ClientContext* context, const ::paxoskv::KVOperator& request, ::grpc::CompletionQueue* cq) {
+  return ::grpc::internal::ClientAsyncResponseReaderFactory< ::paxoskv::KVResponse>::Create(channel_.get(), cq, rpcmethod_Delete_, context, request, false);
 }
 
-KV::Service::Service() {
+KVService::Service::Service() {
   AddMethod(new ::grpc::internal::RpcServiceMethod(
-      KV_method_names[0],
+      KVService_method_names[0],
       ::grpc::internal::RpcMethod::NORMAL_RPC,
-      new ::grpc::internal::RpcMethodHandler< KV::Service, ::paxos::KVOperator, ::paxos::KVResponse>(
-          std::mem_fn(&KV::Service::Put), this)));
+      new ::grpc::internal::RpcMethodHandler< KVService::Service, ::paxoskv::KVOperator, ::paxoskv::KVResponse>(
+          std::mem_fn(&KVService::Service::Put), this)));
   AddMethod(new ::grpc::internal::RpcServiceMethod(
-      KV_method_names[1],
+      KVService_method_names[1],
       ::grpc::internal::RpcMethod::NORMAL_RPC,
-      new ::grpc::internal::RpcMethodHandler< KV::Service, ::paxos::KVOperator, ::paxos::KVResponse>(
-          std::mem_fn(&KV::Service::GetLocal), this)));
+      new ::grpc::internal::RpcMethodHandler< KVService::Service, ::paxoskv::KVOperator, ::paxoskv::KVResponse>(
+          std::mem_fn(&KVService::Service::GetLocal), this)));
   AddMethod(new ::grpc::internal::RpcServiceMethod(
-      KV_method_names[2],
+      KVService_method_names[2],
       ::grpc::internal::RpcMethod::NORMAL_RPC,
-      new ::grpc::internal::RpcMethodHandler< KV::Service, ::paxos::KVOperator, ::paxos::KVResponse>(
-          std::mem_fn(&KV::Service::GetGlobal), this)));
+      new ::grpc::internal::RpcMethodHandler< KVService::Service, ::paxoskv::KVOperator, ::paxoskv::KVResponse>(
+          std::mem_fn(&KVService::Service::GetGlobal), this)));
   AddMethod(new ::grpc::internal::RpcServiceMethod(
-      KV_method_names[3],
+      KVService_method_names[3],
       ::grpc::internal::RpcMethod::NORMAL_RPC,
-      new ::grpc::internal::RpcMethodHandler< KV::Service, ::paxos::KVOperator, ::paxos::KVResponse>(
-          std::mem_fn(&KV::Service::Delete), this)));
+      new ::grpc::internal::RpcMethodHandler< KVService::Service, ::paxoskv::KVOperator, ::paxoskv::KVResponse>(
+          std::mem_fn(&KVService::Service::Delete), this)));
 }
 
-KV::Service::~Service() {
+KVService::Service::~Service() {
 }
 
-::grpc::Status KV::Service::Put(::grpc::ServerContext* context, const ::paxos::KVOperator* request, ::paxos::KVResponse* response) {
+::grpc::Status KVService::Service::Put(::grpc::ServerContext* context, const ::paxoskv::KVOperator* request, ::paxoskv::KVResponse* response) {
   (void) context;
   (void) request;
   (void) response;
   return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
 }
 
-::grpc::Status KV::Service::GetLocal(::grpc::ServerContext* context, const ::paxos::KVOperator* request, ::paxos::KVResponse* response) {
+::grpc::Status KVService::Service::GetLocal(::grpc::ServerContext* context, const ::paxoskv::KVOperator* request, ::paxoskv::KVResponse* response) {
   (void) context;
   (void) request;
   (void) response;
   return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
 }
 
-::grpc::Status KV::Service::GetGlobal(::grpc::ServerContext* context, const ::paxos::KVOperator* request, ::paxos::KVResponse* response) {
+::grpc::Status KVService::Service::GetGlobal(::grpc::ServerContext* context, const ::paxoskv::KVOperator* request, ::paxoskv::KVResponse* response) {
   (void) context;
   (void) request;
   (void) response;
   return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
 }
 
-::grpc::Status KV::Service::Delete(::grpc::ServerContext* context, const ::paxos::KVOperator* request, ::paxos::KVResponse* response) {
+::grpc::Status KVService::Service::Delete(::grpc::ServerContext* context, const ::paxoskv::KVOperator* request, ::paxoskv::KVResponse* response) {
   (void) context;
   (void) request;
   (void) response;
@@ -138,5 +138,5 @@ KV::Service::~Service() {
 }
 
 
-}  // namespace paxos
+}  // namespace paxoskv
 

@@ -1,7 +1,7 @@
 syntax = "proto3";
-package paxos;
+package paxoskv;
 
-service KV {
+service KVService {
     rpc Put(KVOperator) returns (KVResponse) {}
 	rpc GetLocal(KVOperator) returns (KVResponse) {}
 	rpc GetGlobal(KVOperator) returns (KVResponse) {}

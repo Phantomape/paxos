@@ -4,6 +4,8 @@
 #include <string>
 #include <mutex>
 
+namespace paxoskv {
+
 enum KVClientRet {
     KVCLIENT_OK = 0,
     KVCLIENT_SYS_FAIL = -1,
@@ -38,3 +40,5 @@ private:
     bool m_bHasInit;
     std::mutex m_oMutex;
 };
+
+}

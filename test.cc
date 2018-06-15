@@ -4,6 +4,7 @@
 #include <string.h>
 
 using namespace paxos;
+using namespace paxoskv;
 using namespace std;
 
 int parse_ipport(const char * pcStr, paxos::NodeInfo & oNodeInfo) {
