@@ -9,7 +9,16 @@ project(Paxos)
 set (Paxos_VERSION_MAJOR 1)
 set (Paxos_VERSION_MINOR 0)
 
-set (CMAKE_CXX_STANDARD 11)
+macro(use_cxx11)
+if(CMAKE_VERSION VERSION_LESS "3.1.3")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
+else()
+    set(CMAKE_CXX_STANDARD 11)
+    set(CMAKE_CXX_STANDARD_REQUIRED ON)
+endif()
+endmacro(use_cxx11)
+
+use_cxx11()
 
 # Check compilers
 if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
@@ -44,6 +53,13 @@ else()
     message(STATUS "GRPC:" ${GRPC_INCLUDE_PATH})
 endif()
 
+if (NOT PROTOBUF_PROTOC_EXECUTABLE)
+    message(FATAL_ERROR "Fail to find protoc")
+else()
+    message(STATUS "PROTOC:" ${PROTOBUF_PROTOC_EXECUTABLE})
+endif()
+
+# Include source files
 aux_source_directory(. DIR_ROOT_SRCS)
 
 # Include header files
