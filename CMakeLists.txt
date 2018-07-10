@@ -29,6 +29,7 @@ else()
     message(WARNING "You are using an unsupported compiler! Compilation has only been tested with GCC.")
 endif()
 
+# Check dependencies
 find_path(LEVELDB_INCLUDE_PATH NAMES leveldb/db.h)
 find_library(LEVELDB_LIB NAMES leveldb)
 if ((NOT LEVELDB_INCLUDE_PATH) OR (NOT LEVELDB_LIB))
@@ -54,8 +55,8 @@ else()
 endif()
 
 if (NOT PROTOBUF_PROTOC_EXECUTABLE)
-    message(FATAL_ERROR "Fail to find protoc")
-else()
+    find_path(PROTOC_EXEC_DIR NAMES protoc)
+    set(PROTOBUF_PROTOC_EXECUTABLE "${PROTOC_EXEC_DIR}/protoc")
     message(STATUS "PROTOC:" ${PROTOBUF_PROTOC_EXECUTABLE})
 endif()
 
@@ -73,10 +74,12 @@ add_subdirectory(src/core)
 add_subdirectory(src/utils)
 add_subdirectory(proto)
 
-add_executable(Paxos test.cc ${DIR_ROOT_SRCS})
+# Create target in library not executable
+#  add_executable(Paxos test.cc ${DIR_ROOT_SRCS})
+add_library(paxos STATIC ${DIR_ROOT_SRCS})
 
 # Link a target to given libraries, e.g. Paxos is linked to CoreLib
-target_link_libraries(Paxos core comm util conf foo protobuf)
+target_link_libraries(paxos core comm util conf foo protobuf)
 
-set(CMAKE_INSTALL_PREFIX "${CMAKE_SOURCE_DIR}/bin/")
-install(TARGETS Paxos RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX})
+# set(CMAKE_INSTALL_PREFIX "${CMAKE_SOURCE_DIR}/bin/")
+# install(TARGETS Paxos RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX})
