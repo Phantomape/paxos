@@ -1,8 +1,12 @@
 # paxos
 
-paxos lib is a library aims to provide an abstract layer for reliable storage
+paxos lib is a library aims to provide an abstract layer for reliable storage(I just made it up in the last 5 minutes)
 
 # Motivation
+~~To make the chubby from google !~~
+
+Just kidding.
+
 This repo's goal is to make paxos into a library that can be used across projects, the code skeleton is based on Tencent's PhxPaxos.
 
 # Getting started
@@ -20,10 +24,13 @@ in order to build the server, we need to use grpc_cpp_plugin, which is automatic
 * Add multi-platform support
 * Add benchmark
 * Add Jepsen for validation
+* Split examples into a new project, the reason why I haven't done that is because I can't come up with a good project name, LMAO
 
 # Contact
+Don't contact me
 
 # Reporting bugs
+Full of bugs, just leave it
 
 # License
 MIT
