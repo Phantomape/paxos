@@ -192,13 +192,38 @@ int Acceptor::Persist(const uint64_t instance_id, const uint32_t last_checksum) 
     return 0;
 }
 
+/**
+ * @brief Function that defines acceptor's behaviors on receiving an accept
+ * request message
+ *
+ * @param paxos_msg
+ */
 void Acceptor::OnAccept(const PaxosMsg &paxos_msg) {
-    std::cout << "Acceptor::Accept()" << std::endl;
+    // Logging
 
-    PaxosMsg send_paxos_msg;
-    send_paxos_msg.set_instanceid(GetInstanceId());
+    PaxosMsg accept_response_msg;
+    accept_response_msg.set_instanceid(GetInstanceId());
+    accept_response_msg.set_nodeid(config_->GetMyNodeID());
+    accept_response_msg.set_proposalid(paxos_msg.proposalid());
+    accept_response_msg.set_msgtype(MsgType_PaxosAcceptReply);
 
     Ballot ballot(paxos_msg.proposalid(), paxos_msg.nodeid());
+    if (ballot >= GetPromiseBallot()) {
+        // ???
+        SetPromiseBallot(ballot);
+        SetAcceptedBallot(ballot);
+        SetAcceptedValue(paxos_msg.value());
+
+        int ret = Persist(GetInstanceId(), GetLastChecksum());
+        if (ret != 0) {
+            return;
+        }
+    } else {
+        accept_response_msg.set_rejectbypromiseid(GetPromiseBallot().proposal_id_);
+    }
+
+    uint64_t iReplyNodeID = paxos_msg.nodeid();
+    SendMessage(iReplyNodeID, accept_response_msg);
 }
 
 }
