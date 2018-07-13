@@ -54,6 +54,10 @@ const Ballot& Acceptor::GetPromiseBallot() const {
     return promised_ballot_;
 }
 
+const uint32_t Acceptor::GetChecksum() const {
+    return checksum_;
+}
+
 int Acceptor::Load(uint64_t & instance_id) {
     int ret = paxos_log_.GetMaxInstanceIDFromLog(config_->GetMyGroupIdx(), instance_id);
     if (ret != 0 && ret != 1) {

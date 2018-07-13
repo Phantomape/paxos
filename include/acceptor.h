@@ -29,6 +29,8 @@ public:
 
     int Load(uint64_t & instance_id);
 
+    const uint32_t GetChecksum() const;
+
     void SetAcceptedValue(const std::string& accepted_val);
 
     void SetAcceptedBallot(const Ballot& accepted_ballot);

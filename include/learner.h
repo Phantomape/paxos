@@ -35,7 +35,18 @@ public:
 
     void InitLearnerSynchronizer();
 
+    void LearnValueWithoutWrite(
+        const uint64_t instance_id,
+        const std::string & val,
+        const uint32_t checksum
+    );
+
+    void TransmitToFollower();
+
+    void OnProposerSendSuccess(const PaxosMsg& paxos_msg);
+
     void Stop();
+
 private:
     Acceptor* acceptor_;
     LearnerSynchronizer learner_synchronizer_;

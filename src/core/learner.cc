@@ -5,6 +5,18 @@
 
 namespace paxos {
 
+/**
+ * @brief Construct a new Learner:: Learner object
+ * 
+ * @param config 
+ * @param communicate 
+ * @param instance 
+ * @param acceptor 
+ * @param log_storage 
+ * @param ioloop 
+ * @param checkpoint_mgr 
+ * @param state_machine_fac 
+ */
 Learner::Learner(
         const Config* config, 
         const Communicate* communicate,
@@ -14,8 +26,9 @@ Learner::Learner(
         const IoLoop * ioloop,
         const CheckpointMgr * checkpoint_mgr,
         const StateMachineFac * state_machine_fac)
-    : Base(config, communicate, instance), 
-    paxos_log_(log_storage), learner_synchronizer_((Config *)config, this, &paxos_log_) {
+        : Base(config, communicate, instance), 
+        paxos_log_(log_storage), 
+        learner_synchronizer_((Config *)config, this, &paxos_log_) {
     acceptor_ = (Acceptor *)acceptor;
     InitInstance();
 
@@ -42,6 +55,43 @@ const uint64_t Learner::GetLatestInstanceID() {
 
 void Learner::InitLearnerSynchronizer() {
     learner_synchronizer_.Start();
+}
+
+/**
+ * @brief Function that describe what learner should do when the message sent by
+ *        proposer is chosen.
+ *
+ * @param paxos_msg
+ */
+void Learner::OnProposerSendSuccess(const PaxosMsg& paxos_msg) {
+    // Maybe put a log here
+
+    // In normal situation, all nodes will participate in the paxos process(maybe
+    // sth. more clear), so all nodes will have the same instance id. If instance
+    // id not the same, ignore this message
+    if (paxos_msg.instanceid() != GetInstanceId()) {
+        return;
+    }
+
+    // There is sth. I don't understand here in the original code. LOL.
+
+    // Record learned value
+    LearnValueWithoutWrite(
+        paxos_msg.instanceid(),
+        acceptor_->GetAcceptedValue(),
+        acceptor_->GetChecksum()
+    );
+
+    // This function will sync the learner with its followers
+    TransmitToFollower();
+}
+
+/**
+ * @brief Function that sync the learned value to the followers
+ * 
+ */
+void Learner::TransmitToFollower() {
+
 }
 
 void Learner::Stop() {
