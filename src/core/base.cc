@@ -2,7 +2,6 @@
 #include "def.h"
 #include "communicate.h"
 #include "instance.h"
-#include "crc32.h"
 #include <iostream>
 #include <string>
 

@@ -3,6 +3,7 @@
 #include "ballot.h"
 #include "config.h"
 #include "communicate.h"
+#include "crc32.h"
 #include "log_storage.h"
 #include "paxos_msg.pb.h"
 

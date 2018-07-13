@@ -21,6 +21,8 @@ public:
 
     virtual void InitInstance();
 
+    int Persist(const uint64_t instance_id, const uint32_t last_checksum);
+
     const Ballot& GetAcceptedBallot() const;
 
     const Ballot& GetPromiseBallot() const;

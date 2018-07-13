@@ -100,28 +100,94 @@ void Acceptor::SetPromiseBallot(const Ballot& promised_ballot) {
     this->promised_ballot_ = promised_ballot;
 }
 
+/**
+ * @brief Function that defines acceptor's behaviors on receiving a prepare 
+ * request from proposers, will be renamed to OnPrepareRequest() in refactor
+ *
+ * @param recv_paxos_msg
+ * @return int
+ */
 int Acceptor::OnPrepare(const PaxosMsg &recv_paxos_msg) {
-    std::cout << "Acceptor::OnPrepare()" << std::endl;
+    // Logging
 
-    PaxosMsg send_paxos_msg;
-    send_paxos_msg.set_msgtype(1); // Replace thie hard-coded number
+    PaxosMsg prepare_response_msg;
+    prepare_response_msg.set_instanceid(GetInstanceId());
+    prepare_response_msg.set_nodeid(config_->GetMyNodeID());
+    prepare_response_msg.set_proposalid(recv_paxos_msg.proposalid());
+    prepare_response_msg.set_msgtype(MsgType_PaxosPrepareReply);
 
     Ballot ballot(recv_paxos_msg.proposalid(), recv_paxos_msg.nodeid());
     if (ballot >= GetPromiseBallot()) {
-        send_paxos_msg.set_preacceptid(GetAcceptedBallot().proposal_id_);
-        send_paxos_msg.set_preacceptnodeid(GetAcceptedBallot().node_id_);
+        prepare_response_msg.set_preacceptid(GetAcceptedBallot().proposal_id_);
+        prepare_response_msg.set_preacceptnodeid(GetAcceptedBallot().node_id_);
 
         if (GetAcceptedBallot().proposal_id_ > 0) {
-            send_paxos_msg.set_value(GetAcceptedValue());
+            prepare_response_msg.set_value(GetAcceptedValue());
         }
         SetPromiseBallot(ballot);
+
+        // Persist value
+        int res = Persist(GetInstanceId(), GetLastChecksum());
+        if (res != 0) {
+            return -1;
+        }
     }
     else {
-        send_paxos_msg.set_rejectbypromiseid(GetPromiseBallot().proposal_id_);
+        prepare_response_msg.set_rejectbypromiseid(GetPromiseBallot().proposal_id_);
     }
 
     uint64_t send_node_id = recv_paxos_msg.nodeid();
-    //SendMessage(send_node_id, send_paxos_msg);
+    SendMessage(send_node_id, prepare_response_msg);
+
+    return 0;
+}
+
+/**
+ * @brief Function that persist data into disk
+ *
+ * @param instance_id
+ * @param last_checksum
+ * @return int
+ */
+int Acceptor::Persist(const uint64_t instance_id, const uint32_t last_checksum) {
+    // Sth. mysterious
+    if (instance_id > 0 && last_checksum == 0) {
+        checksum_ = 0;
+    } else if (accepted_val_.size() > 0) {
+        checksum_ = crc32(
+            last_checksum, 
+            (const uint8_t*)accepted_val_.data(), 
+            accepted_val_.size(), 
+            CRC32SKIP
+        );
+    }
+
+    // Even more mysterious operations
+    AcceptorStateData state;
+    state.set_instanceid(instance_id);
+    state.set_promiseid(promised_ballot_.proposal_id_);
+    state.set_promisenodeid(promised_ballot_.node_id_);
+    state.set_acceptedid(accepted_ballot_.proposal_id_);
+    state.set_acceptednodeid(accepted_ballot_.node_id_);
+    state.set_acceptedvalue(accepted_val_);
+    state.set_checksum(checksum_);
+
+    WriteOptions write_options;
+    write_options.sync = config_->LogSync();
+    if (write_options.sync){
+        sync_times_++;
+        if (sync_times_ > config_->SyncInterval()) {
+            sync_times_ = 0;
+        } else {
+            write_options.sync = false;
+        }
+    }
+
+    // Damn, I hate the author's style
+    int ret = paxos_log_.WriteState(write_options, config_->GetMyGroupIdx(), instance_id, state);
+    if (ret != 0) {
+        return ret;
+    }
 
     return 0;
 }
