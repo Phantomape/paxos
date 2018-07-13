@@ -18,7 +18,7 @@ namespace paxos {
  * @param state_machine_fac 
  */
 Learner::Learner(
-        const Config* config, 
+        const Config* config,
         const Communicate* communicate,
         const Instance* instance,
         const Acceptor* acceptor,
@@ -26,8 +26,8 @@ Learner::Learner(
         const IoLoop * ioloop,
         const CheckpointMgr * checkpoint_mgr,
         const StateMachineFac * state_machine_fac)
-        : Base(config, communicate, instance), 
-        paxos_log_(log_storage), 
+        : Base(config, communicate, instance),
+        paxos_log_(log_storage),
         learner_synchronizer_((Config *)config, this, &paxos_log_) {
     acceptor_ = (Acceptor *)acceptor;
     InitInstance();
