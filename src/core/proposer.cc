@@ -35,20 +35,31 @@ Proposer::Proposer(
 Proposer::~Proposer() {
 }
 
+/**
+ * @brief Function that sends accept request to acceptors
+ * 
+ */
 void Proposer::Accept() {
-    std::cout << "Proposer::Accept()" << std::endl;
+    // Logging
+
+    // Update necessary states here
     ExitPrepare();
     is_accepting_ = true;
 
     PaxosMsg paxos_msg;
-    paxos_msg.set_msgtype(1);
+    paxos_msg.set_msgtype(MsgType_PaxosAccept);
     paxos_msg.set_instanceid(GetInstanceId());
     paxos_msg.set_proposalid(GetProposalId());
     paxos_msg.set_value(GetValue());
+    paxos_msg.set_lastchecksum(GetLastChecksum());
 
     msg_counter.Init();
 
-    BroadcastMessage(paxos_msg, 1, 1);
+    // Why is this needed
+    AddAcceptTimer();
+
+    // Send accept request message to acceptors
+    BroadcastMessage(paxos_msg, BroadcastMessage_Type_RunSelf_Final);
 }
 
 void Proposer::AddPreAcceptValue(
@@ -91,6 +102,12 @@ void Proposer::AddPrepareTimer(const int timeout_ms) {
     }
 }
 
+/**
+ * @brief Function that sets timeout when proposer receives a rejected message
+ * from acceptors
+ *
+ * @param timeout_ms
+ */
 void Proposer::AddAcceptTimer(const int timeout_ms) {
     if (accept_timer_id_ > 0) {
         ioloop_->RemoveTimer(accept_timer_id_);
@@ -205,6 +222,8 @@ void Proposer::OnAcceptReply(const PaxosMsg &paxos_msg) {
 
     msg_counter.AddReceivedMsg(paxos_msg.nodeid());
 
+    // Still wondering whether the two large if{..} blocks can be merged together.
+    // Will try to do so after adding jepsen test and unit test.
     if (paxos_msg.rejectbypromiseid() == 0) {
         // The response is a reolved message
         msg_counter.AddAcceptedMsg(paxos_msg.nodeid());
@@ -224,8 +243,9 @@ void Proposer::OnAcceptReply(const PaxosMsg &paxos_msg) {
         learner_->ProposerSendSuccess(GetInstanceId(), GetProposalId());
     }
     else if (msg_counter.IsRejected() || msg_counter.IsAllReceived()) {
-        // AddAcceptTimer(OtherUtils::FastRand() % 30 + 10);
-        // No idea yet
+        // If the response message is a rejected message, it should restart the
+        // prepare stage after 30ms
+        AddAcceptTimer(Util::FastRand() % 30 + 10);
     }
 }
 
