@@ -54,21 +54,39 @@ int Acceptor::OnPrepareRequest(const PaxosMsg &recv_paxos_msg) {
     ...
 
     // Send response back to proposer
-    SendMessage(send_node_id, send_paxos_msg);
+    SendMessage(send_node_id, send_paxos_response);
 
     return 0;
 }
 ```
 
-In phase II, the acceptor when received a _**accept request**_, it will normally accept it unless, it has already accepted sth. with greater ballot. This part should be implemented```Acceptro::OnAcceptRequest```
+In phase II, the acceptor when received a _**accept request**_, it will normally accept it unless, it has already accepted sth. with greater ballot. This part should be implemented```Acceptor::OnAcceptRequest```
 ```
 int Acceptor::OnAcceptRequest(const PaxosMsg & oPaxosMsg) {
+    // Update some states
     if (resolve) {
         ...
     } else {
         ...
     }
+
+    // Send the response/message back to learner, but in PhxPaxos's design, the
+    // proposer is also the distinguished learner, which upon response will sync
+    // with follow learners.
+    SendMessage(send_paxos_response);
 }
 ```
 
+##  Learner
+This is probably the most sophisticated role in the paxos algorithm, cause the paper didn't actually define the behaviors of the learner. At this time, no comments in the code is fking torture(Yup PhxPaxos, I'm looking right at you).
 
+The main function call is implemented in ```Learner::ProposerSendSuccess()```, which is called after the proposer receives a response its accept request. This is not a normal case cause PhxPaxos choose the proposer to be the distinguished learner. The paper describes three design related to learner and PhxPaxos used the second one, which is the traditional master-slave architecture. The third approach may seem more reliable, but it would be way more expensive in communication and so fking complicated.
+```
+void Learner::ProposerSendSuccess(
+    const uint64_t llLearnInstanceID, 
+    const uint64_t llProposalID
+    ) {
+        // Send the message to other nodes
+        SendMessage(send_paxos_msg)
+    }
+```

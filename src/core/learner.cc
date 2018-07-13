@@ -58,6 +58,26 @@ void Learner::InitLearnerSynchronizer() {
 }
 
 /**
+ * @brief Function that sends sync signal to other learners
+ *
+ * @param instance_id
+ * @param proposal_id
+ */
+void Learner::ProposerSendSuccess(
+        const uint64_t instance_id,
+        const uint64_t proposal_id
+    ) {
+    PaxosMsg paxos_msg;
+    paxos_msg.set_msgtype(MsgType_PaxosLearner_ProposerSendSuccess);
+    paxos_msg.set_instanceid(instance_id);
+    paxos_msg.set_nodeid(config_->GetMyNodeID());
+    paxos_msg.set_proposalid(proposal_id);
+    paxos_msg.set_lastchecksum(GetLastChecksum());
+
+    BroadcastMessage(paxos_msg, BroadcastMessage_Type_RunSelf_First);
+}
+
+/**
  * @brief Function that describe what learner should do when the message sent by
  *        proposer is chosen.
  *

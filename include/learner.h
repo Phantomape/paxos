@@ -43,6 +43,11 @@ public:
 
     void TransmitToFollower();
 
+    void ProposerSendSuccess(
+        const uint64_t instance_id,
+        const uint64_t proposal_id
+    );
+
     void OnProposerSendSuccess(const PaxosMsg& paxos_msg);
 
     void Stop();
