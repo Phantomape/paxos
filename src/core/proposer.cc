@@ -52,8 +52,9 @@ void Proposer::Accept() {
 }
 
 void Proposer::AddPreAcceptValue(
-        const Ballot & other_pre_accept_ballot, 
-        const std::string & other_pre_accept_val) {
+        const Ballot & other_pre_accept_ballot,
+        const std::string & other_pre_accept_val
+    ) {
     if (other_pre_accept_ballot.isnull()) {
         return;
     }
@@ -178,11 +179,26 @@ void Proposer::Prepare(const bool need_new_ballot) {
     BroadcastMessage(send_paxos_msg);
 }
 
+/**
+ * @brief Function entry after receiving the response message from acceptors, this
+ * function will be renamed to OnAcceptResponse() later and it is called in insta-
+ * nce.cc
+ *
+ * @param paxos_msg
+ */
 void Proposer::OnAcceptReply(const PaxosMsg &paxos_msg) {
+    // Log is required here
+
+    // The original comment in the code says "Skip the message when the proposer 
+    // is not proposing", which is really confusing by checking a state called
+    // is_accepting_ to verify whether the proposer is proposing
     if (!is_accepting_) {
         return;
     }
 
+    // Skip the message if proposal id is not the same, I still have no idea
+    // when such thing would happend. Could be combined with the code above by 
+    // adding detailed description
     if (paxos_msg.proposalid() != proposal_id_) {
         return;
     }
@@ -190,20 +206,26 @@ void Proposer::OnAcceptReply(const PaxosMsg &paxos_msg) {
     msg_counter.AddReceivedMsg(paxos_msg.nodeid());
 
     if (paxos_msg.rejectbypromiseid() == 0) {
+        // The response is a reolved message
         msg_counter.AddAcceptedMsg(paxos_msg.nodeid());
     }
     else {
+        // The response is a rejected message
         msg_counter.AddReceivedMsg(paxos_msg.nodeid());
         is_rejected_ = true;
         UpdateOtherProposalId(paxos_msg.rejectbypromiseid());
     }
 
+    // It seems to be undefined behavior by writing if{...}else if{...} block, 
+    // should take a look during refactor
     if (msg_counter.IsPassed()) {
         can_skip_prepare_ = true;
-        Accept();
+        ExitAccept();
+        learner_->ProposerSendSuccess(GetInstanceId(), GetProposalId());
     }
     else if (msg_counter.IsRejected() || msg_counter.IsAllReceived()) {
-        // Do sth. I don't understand
+        // AddAcceptTimer(OtherUtils::FastRand() % 30 + 10);
+        // No idea yet
     }
 }
 

@@ -1,5 +1,6 @@
 #include <iostream>
 #include <string>
+#include "config.h"
 #include "msg_counter.h"
 
 namespace paxos {
@@ -51,8 +52,16 @@ bool MsgCounter::IsAllReceived() {
     std::cout << "MsgCounter::IsAllReceived()" << std::endl;
 }
 
+/**
+ * @brief Function that determines whether a proposal is passed
+ * 
+ * @return bool
+ */
 bool MsgCounter::IsPassed() {
-    std::cout << "MsgCounter::IsPassed()" << std::endl;
+    // Add logging
+
+    // A proposal is deemed passed when a majority of nodes accepted it
+    return (int)ac_msg_node_ids.size() >= config_->GetMajorityCount();
 }
 
 bool MsgCounter::IsRejected() {
